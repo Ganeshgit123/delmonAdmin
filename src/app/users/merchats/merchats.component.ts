@@ -42,7 +42,7 @@ export class MerchatsComponent implements OnInit {
     }
 
     if (this.showAccept == true) {
-      this.displayedColumns = ['index', 'mobileNumber', 'crNumber', 'userName', 'email', 'merchantType', 'action','active'];
+      this.displayedColumns = ['index', 'mobileNumber', 'crNumber', 'userName', 'email', 'merchantType', 'action', 'active'];
     } else if (this.showAccept == false) {
       this.displayedColumns = ['index', 'mobileNumber', 'crNumber', 'userName', 'email', 'merchantType'];
     }
@@ -109,7 +109,22 @@ export class MerchatsComponent implements OnInit {
       });
   }
 
-  changeActiveStatus(value){
+  reject(id) {
+    this.approveForm.value.isApprove = 2;
+    this.authService.approveMerchant(this.approveForm.value, id)
+      .subscribe((res: any) => {
+        if (res.error == false) {
+          this.toastr.success('Success ', res.message);
+          this.approveForm.reset();
+          this.modalService.dismissAll();
+          this.ngOnInit();
+        } else {
+          this.toastr.warning('Enter valid ', res.message);
+        }
+      });
+  }
+
+  changeActiveStatus(value) {
     if (value.active === 1) {
       var visible = 0
     } else {
@@ -117,14 +132,14 @@ export class MerchatsComponent implements OnInit {
     }
     const object = { active: visible }
     this.authService.updateUserType(object, value.id)
-    .subscribe((res: any) => {
-      if (res.error == false) {
-        this.toastr.success('Success ', res.message);
-        this.ngOnInit();
-      } else {
-        this.toastr.error('Enter valid ', res.message);
-      }
-    });
+      .subscribe((res: any) => {
+        if (res.error == false) {
+          this.toastr.success('Success ', res.message);
+          this.ngOnInit();
+        } else {
+          this.toastr.error('Enter valid ', res.message);
+        }
+      });
   }
 
   exportIt() {

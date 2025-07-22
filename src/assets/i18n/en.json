@@ -461,5 +461,7 @@
     "Most Wanted Address Reports": "Most Wanted Address Reports",
     "Favorite Product Reports": "Favorite Product Reports",
     "ProductId": "Product Id",
-    "ProductCount": "Product Count"
+    "ProductCount": "Product Count",
+    "Reject": "Reject",
+    "Rejected": "Rejected"
 }

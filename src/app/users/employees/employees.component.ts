@@ -45,7 +45,7 @@ export class EmployeesComponent implements OnInit {
     }
 
     if (this.showAccept == true) {
-      this.displayedColumns = ['index', 'mobileNumber', 'employeeNumber', 'userName', 'email', 'walletAmount', 'cartonDiscount', 'dailyLimit', 'created_date', 'status', 'action', 'active', 'walletHistory'];
+      this.displayedColumns = ['index', 'mobileNumber', 'employeeNumber', 'userName', 'email', 'walletAmount', 'cartonDiscount', 'dailyLimit', 'created_date', 'status', 'active', 'action', 'walletHistory'];
       this.historyDisplayedColumns = ['index', 'paymentType', 'orderId', 'amount', 'type'];
     } else if (this.showAccept == false) {
       this.displayedColumns = ['index', 'mobileNumber', 'employeeNumber', 'userName', 'email', 'walletAmount', 'cartonDiscount', 'dailyLimit', 'created_date', 'walletHistory'];
@@ -90,6 +90,20 @@ export class EmployeesComponent implements OnInit {
     const object = { isApprove: 1 }
 
     this.authService.approveEmployee(object, userId)
+      .subscribe((res: any) => {
+        if (res.error == false) {
+          this.toastr.success('Success ', res.massage);
+          this.ngOnInit();
+        } else {
+          this.toastr.error('Enter valid ', res.massage);
+        }
+      });
+  }
+
+  reject(id) {
+    const object = { isApprove: 2 }
+
+    this.authService.approveEmployee(object, id)
       .subscribe((res: any) => {
         if (res.error == false) {
           this.toastr.success('Success ', res.massage);
@@ -173,7 +187,7 @@ export class EmployeesComponent implements OnInit {
     });
   }
 
-  historyExportIt(exporter: MatTableExporterDirective){
+  historyExportIt(exporter: MatTableExporterDirective) {
     const currentDateAndTime: Date = new Date();
     // Extract individual components
     const year: number = currentDateAndTime.getFullYear();
