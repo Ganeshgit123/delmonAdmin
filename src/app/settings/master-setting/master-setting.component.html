@@ -1,0 +1,423 @@
+<div class="d-flex justify-content-between align-items-center flex-wrap grid-margin">
+    <div>
+        <h2 class="mb-3 mb-md-0">{{"Master Settings" | translate}}</h2>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4 text-center">
+        <div class="border">
+            <div class="row" *ngFor="let data of cardPaymentValue;">
+                <div class="col-md-9">
+                    <div class="form-group mb-0">
+                        <label for="name">{{"CardPayment" | translate}}</label>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <button (change)="changeValues(data)" class="tog_btn mb-0 mt-1" *ngIf="showAccept">
+                        <label class="switch">
+                            <input unchecked type="checkbox" *ngIf="data.enValue == '0'">
+                            <input checked type="checkbox" *ngIf="data.enValue == '1'">
+                            <span class="slider"></span>
+                        </label>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="border">
+            <div class="row" *ngFor="let data of deliveryTypeValue;">
+                <div class="col-md-9">
+                    <div class="form-group mb-0">
+                        <label for="name">{{"HomeDelivery" | translate}}</label>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <button (change)="changeValues(data)" class="tog_btn mb-0 mt-1" *ngIf="showAccept">
+                        <label class="switch">
+                            <input unchecked type="checkbox" *ngIf="data.enValue == '0'">
+                            <input checked type="checkbox" *ngIf="data.enValue == '1'">
+                            <span class="slider"></span>
+                        </label>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="col-md-4 text-center">
+       
+        <div class="border">
+            <div class="row" *ngFor="let data of codPaymentValue;">
+                <div class="col-md-9">
+                    <div class="form-group mb-0">
+                        <label for="name">{{"CodPayment" | translate}}</label>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <button (change)="changeValues(data)" class="tog_btn mb-0 mt-1" *ngIf="showAccept">
+                        <label class="switch">
+                            <input unchecked type="checkbox" *ngIf="data.enValue == '0'">
+                            <input checked type="checkbox" *ngIf="data.enValue == '1'">
+                            <span class="slider"></span>
+                        </label>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="border">
+            <div class="row" *ngFor="let data of calendChooseValue;">
+                <div class="col-md-9">
+                    <div class="form-group mb-0">
+                        <label for="name">{{"calenderShowDelivery" | translate}}</label>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <button (change)="changeStatus(data)" class="tog_btn mb-0 mt-1" *ngIf="showAccept">
+                        <label class="switch">
+                            <input unchecked type="checkbox" *ngIf="data.enValue == 'false'">
+                            <input checked type="checkbox" *ngIf="data.enValue == 'true'">
+                            <span class="slider"></span>
+                        </label>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+    <div class="col-md-4 text-center">
+        <div class="border">
+            <div class="row" *ngFor="let data of selfPickupValue;">
+                <div class="col-md-9">
+                    <div class="form-group mb-0">
+                        <label for="name">{{"Self PickUp" | translate}}</label>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <button (change)="changeValues(data)" class="tog_btn mb-0 mt-1" *ngIf="showAccept">
+                        <label class="switch">
+                            <input unchecked type="checkbox" *ngIf="data.enValue == '0'">
+                            <input checked type="checkbox" *ngIf="data.enValue == '1'">
+                            <span class="slider"></span>
+                        </label>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4 text-center">
+        <div class="border">
+            <form [formGroup]="deliveryTimeForm">
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="form-group">
+                            <label for="name">{{"defaultDeliveryDays" | translate}}</label>
+                            <mat-form-field>
+                                <input matInput [matDatepicker]="picker"
+                                    placeholder="{{'DeliveryDate' | translate}}"
+                                    formControlName="enValue">
+                                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                                <mat-datepicker #picker></mat-datepicker>
+                            </mat-form-field>
+                            <!-- <input type="number" class="form-control" placeholder="{{'DeliveryDate' |translate}}"
+                                formControlName="enValue"> -->
+                        </div>
+                    </div>
+                    <div class="col-md-4" *ngIf="showAccept">
+                        <button type="submit" class="btn btn-own mt-4" (click)="submitData('deliveryDate')">{{"Update" |
+                            translate}}</button>
+                    </div>
+                    <!-- <div class="col-md-12">
+                        <p class="notes">{{"NoteSameDayDelivery" | translate}}</p>
+                    </div> -->
+                </div>
+            </form>
+        </div>
+
+        <div class="border">
+            <form [formGroup]="maxCartonPerDayForm">
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="form-group">
+                            <label for="name">{{"maxCartonPerDay" | translate}}</label>
+                            <input type="number" class="form-control" placeholder="{{'maxCartonPerDay' |translate}}"
+                                formControlName="enValue">
+                        </div>
+                    </div>
+                    <div class="col-md-4" *ngIf="showAccept">
+                        <button type="submit" class="btn btn-own mt-4"
+                            (click)="submitData('maxiCartonPerDay')">{{"Update" |
+                            translate}}</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="border">
+            <form [formGroup]="whatsAppForm">
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="form-group">
+                            <label for="name">{{"WhatsAppNum" | translate}}</label>
+                            <input type="number" class="form-control" placeholder="{{'WhatsAppNum' |translate}}"
+                                formControlName="enValue">
+                        </div>
+                    </div>
+                    <div class="col-md-4" *ngIf="showAccept">
+                        <button type="submit" class="btn btn-own mt-4" (click)="submitData('whats')">{{"Update" |
+                            translate}}</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="border">
+            <form [formGroup]="supportUrlForm">
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="form-group">
+                            <label for="name">{{"supportURL" | translate}}</label>
+                            <input type="text" class="form-control" placeholder="{{'supportURL' |translate}}"
+                                formControlName="enValue">
+                        </div>
+                    </div>
+                    <div class="col-md-4" *ngIf="showAccept">
+                        <button type="submit" class="btn btn-own mt-4" (click)="submitData('suportUrl')">{{"Update" |
+                            translate}}</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="border">
+            <form [formGroup]="privacyForm">
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="form-group">
+                            <label for="name">{{"privacyUrl" | translate}}</label>
+                            <input type="text" class="form-control" placeholder="{{'privacyUrl' |translate}}"
+                                formControlName="enValue">
+                        </div>
+                    </div>
+                    <div class="col-md-4" *ngIf="showAccept">
+                        <button type="submit" class="btn btn-own mt-4" (click)="submitData('privacyLink')">{{"Update" |
+                            translate}}</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="border">
+            <form [formGroup]="storeAddressForm">
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="form-group">
+                            <label for="name">{{"storeAddress" | translate}}</label>
+                            <textarea class="form-control" placeholder="{{'storeAddress' |translate}}"
+                            formControlName="enValue"></textarea>
+                        </div>
+                    </div>
+                    <div class="col-md-4" *ngIf="showAccept">
+                        <button type="submit" class="btn btn-own mt-4" (click)="submitData('storeAddss')">{{"Update" |
+                            translate}}</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+    </div>
+
+    <div class="col-md-4 text-center">
+        <div class="border">
+            <form [formGroup]="maxDateChooseForm">
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="form-group">
+                            <label for="name">{{"maxDeliveryChoose" | translate}}</label>
+                            <input type="number" class="form-control" placeholder="{{'DeliveryDate' |translate}}"
+                                formControlName="enValue">
+                        </div>
+                    </div>
+                    <div class="col-md-4" *ngIf="showAccept">
+                        <button type="submit" class="btn btn-own mt-4" (click)="submitData('maxDate')">{{"Update" |
+                            translate}}</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="border">
+            <form [formGroup]="maxCartonPerDayEmployeeForm">
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="form-group">
+                            <label for="name">{{"maxCartonPerDayEmployee" | translate}}</label>
+                            <input type="number" class="form-control"
+                                placeholder="{{'maxCartonPerDayEmployee' |translate}}" formControlName="enValue">
+                        </div>
+                    </div>
+                    <div class="col-md-4" *ngIf="showAccept">
+                        <button type="submit" class="btn btn-own mt-4"
+                            (click)="submitData('maxCartonEmployeePerDay')">{{"Update" |
+                            translate}}</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="border">
+            <form [formGroup]="emailForm">
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="form-group">
+                            <label for="name">{{"Email Id" | translate}}</label>
+                            <input type="email" class="form-control" placeholder="{{'Email Id' |translate}}"
+                                formControlName="enValue">
+                        </div>
+                    </div>
+                    <div class="col-md-4" *ngIf="showAccept">
+                        <button type="submit" class="btn btn-own mt-4" (click)="submitData('email')">{{"Update" |
+                            translate}}</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="border">
+            <form [formGroup]="aboutForm">
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="form-group">
+                            <label for="name">{{"AboutUrl" | translate}}</label>
+                            <input type="text" class="form-control" placeholder="{{'AboutUrl' |translate}}"
+                                formControlName="enValue">
+                        </div>
+                    </div>
+                    <div class="col-md-4" *ngIf="showAccept">
+                        <button type="submit" class="btn btn-own mt-4" (click)="submitData('aboutLink')">{{"Update" |
+                            translate}}</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="border">
+            <form [formGroup]="faqForm">
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="form-group">
+                            <label for="name">{{"faqUrl" | translate}}</label>
+                            <input type="text" class="form-control" placeholder="{{'faqUrl' |translate}}"
+                                formControlName="enValue">
+                        </div>
+                    </div>
+                    <div class="col-md-4" *ngIf="showAccept">
+                        <button type="submit" class="btn btn-own mt-4" (click)="submitData('faqLink')">{{"Update" |
+                            translate}}</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+    </div>
+
+    <div class="col-md-4 text-center">
+        <div class="border">
+            <form [formGroup]="loyaltyPointForm">
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="form-group">
+                            <label for="name">{{"loyaltyPointPerOrder" | translate}}</label>
+                            <input type="text" class="form-control" placeholder="{{'loyaltyPointPerOrder' |translate}}"
+                                formControlName="enValue">
+                        </div>
+                    </div>
+                    <div class="col-md-4" *ngIf="showAccept">
+                        <button type="submit" class="btn btn-own mt-4" (click)="submitData('loyaltyPoint')">{{"Update" |
+                            translate}}</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="border">
+            <form [formGroup]="vatForm">
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="form-group">
+                            <label for="name">{{"VAT" | translate}} %</label>
+                            <input type="text" class="form-control" placeholder="{{'VAT' |translate}}%"
+                                formControlName="enValue">
+                        </div>
+                    </div>
+                    <div class="col-md-4" *ngIf="showAccept">
+                        <button type="submit" class="btn btn-own mt-4" (click)="submitData('vat')">{{"Update" |
+                            translate}}</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="border">
+            <form [formGroup]="callForm">
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="form-group">
+                            <label for="name">{{"PhoneNumber" | translate}}</label>
+                            <input type="number" class="form-control" placeholder="{{'PhoneNumber' |translate}}"
+                                formControlName="enValue">
+                        </div>
+                    </div>
+                    <div class="col-md-4" *ngIf="showAccept">
+                        <button type="submit" class="btn btn-own mt-4" (click)="submitData('phone')">{{"Update" |
+                            translate}}</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="border">
+            <form [formGroup]="termsForm">
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="form-group">
+                            <label for="name">{{"termsUrl" | translate}}</label>
+                            <input type="text" class="form-control" placeholder="{{'termsUrl' |translate}}"
+                                formControlName="enValue">
+                        </div>
+                    </div>
+                    <div class="col-md-4" *ngIf="showAccept">
+                        <button type="submit" class="btn btn-own mt-4" (click)="submitData('termsLink')">{{"Update" |
+                            translate}}</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="border">
+            <form [formGroup]="countryCodeForm">
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="form-group">
+                            <label for="name">{{"countryCode" | translate}}</label>
+                            <input type="text" class="form-control" placeholder="{{'countryCode' |translate}}"
+                                formControlName="enValue">
+                        </div>
+                    </div>
+                    <div class="col-md-4" *ngIf="showAccept">
+                        <button type="submit" class="btn btn-own mt-4" (click)="submitData('countryCode')">{{"Update" |
+                            translate}}</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</div>

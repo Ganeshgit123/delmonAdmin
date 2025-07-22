@@ -1,0 +1,17 @@
+<div class="mt-4">
+    <h5 class="cont_title">Aboutus English</h5>
+    <form [formGroup]="addAboutus">
+        <angular-editor id="editor1" formControlName="enName" [config]="editorConfig"></angular-editor>
+        <div class="text-left mt-3">
+            <button type="submit" class="btn btn-own" (click)="onSubmit()">Save</button>
+        </div>
+    </form>
+    <br><br>
+    <h5 class="cont_title">Aboutus Arabic</h5>
+    <form [formGroup]="addAboutus">
+        <angular-editor id="editor1" formControlName="arName" [config]="editorConfig"></angular-editor>
+        <div class="text-left mt-3">
+            <button type="submit" class="btn btn-own" (click)="onSubmit()">Save</button>
+        </div>
+    </form>
+</div>

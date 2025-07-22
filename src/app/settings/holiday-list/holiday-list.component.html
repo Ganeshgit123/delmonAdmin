@@ -1,0 +1,31 @@
+<div class="d-flex justify-content-between align-items-center flex-wrap grid-margin">
+    <div>
+        <h2 class="mb-3 mb-md-0">{{"Holiday List" | translate}}</h2>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <mat-card class="demo-inline-calendar-card" *ngIf="apiHighlightedDates.length > 0">
+            <mat-calendar [dateClass]="highlightDates" (selectedChange)="onDateSelect($event)">
+            </mat-calendar>
+        </mat-card>
+    </div>
+    <div class="col-md-4">
+        <ul class="list_date">
+            <p *ngIf="selectedDates.length > 0" class="tite">Selected Dates To Add</p>
+            <li *ngFor="let date of selectedDates">
+                {{ date | date : 'dd/MM/yyyy' }}
+                <button mat-button (click)="deleteSelected(date)" class="dele_btn">
+                    <img src="assets/images/delete_icon.svg"
+                        onmouseover="this.src='assets/images/delete_hover_icon.svg'"
+                        onmouseout="this.src='assets/images/delete_icon.svg'">
+                </button>
+            </li>
+        </ul>
+        <span *ngIf="selectedDates.length > 0">
+            <p class="text-center"><button type="submit" class="btn btn-own" (click)="onSubmitData()">{{"Add" |
+                    translate}}</button></p>
+        </span>
+    </div>
+</div>

@@ -1,0 +1,201 @@
+<div class="d-flex justify-content-between align-items-center flex-wrap grid-margin">
+    <div>
+        <h2 class="mb-3 mb-md-0">{{"Feeding Categories" | translate}}</h2>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <mat-form-field appearance="standard">
+            <mat-label>{{"Search" | translate}}</mat-label>
+            <input matInput (keyup)="applyFilter($event)" placeholder="{{'Search' | translate}}" #input>
+        </mat-form-field>
+    </div>
+    <div class="col-md-4"></div>
+    <div class="col-md-4">
+        <!-- <div style="text-align:end;" class="add_popup_btn">
+            <a href="javascript:void(0);" class="btn btn-own mb-2" (click)="openModal(content)">
+                {{"Add Category" | translate}}
+            </a>
+        </div> -->
+    </div>
+</div>
+<ngx-spinner bdColor="rgba(51,51,51,0.8)" size="medium" color="#fff" type="ball-scale-multiple">
+    <p style="font-size: 20px; color: white"> {{"Loading" | translate}}...</p>
+</ngx-spinner>
+
+<ng-template #content role="document" let-modal="close">
+    <div class="modal-header">
+        <h5 class="modal-title" *ngIf="!isEdit">{{"Add Category" | translate}}</h5>
+        <h5 class="modal-title" *ngIf="isEdit">{{"Edit Category" | translate}}</h5>
+        <button type="button" class="close" aria-label="Close" (click)="modal('Cross click')">
+            <span aria-checked="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body p-3">
+        <form [formGroup]="categoryForm">
+            <div class="form-group">
+                <label for="name">{{"Categroy Name" | translate}}</label>
+                <input type="text" class="form-control" placeholder="{{'Categroy Name' |translate}}" 
+                formControlName="enName" [ngClass]="{ 'is-invalid': submitted && f.enName.errors }">
+                <div *ngIf="submitted && f.enName.errors" class="invalid-feedback">
+                    <div *ngIf="f.enName.errors.required">{{"Name is required" | translate}}</div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="name">{{"Categroy Name Arabic" | translate}}</label>
+                <input type="text" class="form-control" placeholder="{{'Categroy Name Arabic' |translate}}" 
+                formControlName="arName" [ngClass]="{ 'is-invalid': submitted && f.arName.errors }">
+                <div *ngIf="submitted && f.arName.errors" class="invalid-feedback">
+                    <div *ngIf="f.arName.errors.required">{{"Arabic Name is required" | translate}}</div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="name">{{"Image" | translate}}</label>
+                <div class="img_upload">
+                    <label for="customFile">
+                        <img class="upload-img" *ngIf="!iconImg" src="assets/images/upload_img.png" />
+                        <img class="upload-img" *ngIf="iconImg" src="{{iconImg}}" />
+                    </label>
+                    <button *ngIf="iconImg" class="btn btn-primary del_btn" (click)=removeImg()>{{"Delete" |
+                        translate}}</button>
+                    <input type="file" class="custom-file-input" id="customFile" formControlName="image"
+                        (change)="uploadImageFile($event)">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="name">{{"Color Code" | translate}}</label><br>
+                <input [(colorPicker)]="color" [cpOutputFormat]="('hex')" formControlName="colorCode" 
+                class="form-control" [style.background]="color" value="#ffffff" 
+                (colorPickerClose)="colorClicked(color)" [ngClass]="{ 'is-invalid': submitted && f.colorCode.errors }"/>
+                <div *ngIf="submitted && f.colorCode.errors" class="invalid-feedback">
+                    <div *ngIf="f.colorCode.errors.required">{{"Color Code is Required" | translate}}</div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="name">{{"VAT" | translate}} %</label>
+                <input type="text" class="form-control" placeholder="{{'VAT' |translate}} %" 
+                formControlName="vat" [ngClass]="{ 'is-invalid': submitted && f.vat.errors }">
+                <div *ngIf="submitted && f.vat.errors" class="invalid-feedback">
+                    <div *ngIf="f.vat.errors.required">{{"VATIsRequired" | translate}}</div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="name">{{"Select Category" | translate}}</label>
+                <select class="form-control" formControlName="parentId"
+                    [ngClass]="{ 'is-invalid': submitted && f.parentId.errors }">
+                    <option value="0">Main Category</option>
+                    <option *ngFor="let item of getvalue" value="{{item.id}}">{{item.enName}} /
+                        {{item.arName}}</option>
+                </select>
+            </div>
+        </form>
+        <div class="text-right">
+            <button type="submit" class="btn btn-own" (click)="onSubmitData()">{{"Save" | translate}}</button>
+            <button type="button" class="btn btn-own-cancel ml-1" (click)="modal('close click')">{{"Cancel" |
+                translate}}</button>
+        </div>
+    </div>
+</ng-template>
+
+<div class="mat-elevation-z8">
+    <table class="table" mat-table [dataSource]="dataSource" matSort>
+
+        <ng-container matColumnDef="index">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>{{"S.No" | translate}}</th>
+            <td mat-cell *matCellDef="let element; let i = index;"> {{matPaginator.pageSize * matPaginator.pageIndex + i
+                + 1}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="enName">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"Category Name" | translate}} </th>
+            <td mat-cell *matCellDef="let element"> {{element.enName}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="arName">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"Category Name Arabic" | translate}} </th>
+            <td mat-cell *matCellDef="let element"> {{element.arName}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="image">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>{{"Image" | translate}} </th>
+            <td mat-cell *matCellDef="let element">
+                <img src="{{element.image}}" alt="logo" class="badge_icon">
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="colorCode">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"Color Code" | translate}} </th>
+            <td mat-cell *matCellDef="let element"> {{element.colorCode}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="vat">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"VAT" | translate}} %</th>
+            <td mat-cell *matCellDef="let element"> {{element.vat}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="rowActionToggle">
+            <th mat-header-cell *matHeaderCellDef>{{"Status" | translate}}</th>
+            <td mat-cell *matCellDef="let element" class="text-center">
+                <button (change)="changeStatus(element)" class="tog_btn">
+                    <label class="switch">
+                        <input unchecked type="checkbox" *ngIf="element.active !== 1">
+                        <input checked type="checkbox" *ngIf="element.active == 1">
+                        <span class="slider"></span>
+                    </label>
+                </button>
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actionUser">
+            <th mat-header-cell *matHeaderCellDef>{{"Users" | translate}}</th>
+            <td mat-cell *matCellDef="let element" class="text-center">
+                <button (change)="changeUserStatus(element)" class="tog_btn">
+                    <label class="switch">
+                        <input unchecked type="checkbox" *ngIf="element.userType == 0">
+                        <input checked type="checkbox" *ngIf="element.userType == 1">
+                        <span class="slider"></span>
+                    </label>
+                </button>
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actionEmployee">
+            <th mat-header-cell *matHeaderCellDef>{{"Employees" | translate}}</th>
+            <td mat-cell *matCellDef="let element" class="text-center">
+                <button (change)="changeEmployeeStatus(element)" class="tog_btn">
+                    <label class="switch">
+                        <input unchecked type="checkbox" *ngIf="element.employeeType == 0">
+                        <input checked type="checkbox" *ngIf="element.employeeType == 1">
+                        <span class="slider"></span>
+                    </label>
+                </button>
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="rowActionIcon">
+            <th mat-header-cell *matHeaderCellDef>{{"Action" | translate}}</th>
+            <td mat-cell *matCellDef="let element" class="text-center">
+                <button mat-button (click)="editCategory(element,content)" class="edit_btn">
+                    <img src="assets/images/edit_icon.svg"
+                        onmouseover="this.src='assets/images/edit_hover_icon.svg'"
+                        onmouseout="this.src='assets/images/edit_icon.svg'">
+                </button>
+                <button mat-button (click)="deleteCategory(element.id)" class="dele_btn">
+                    <img src="assets/images/delete_icon.svg"
+                        onmouseover="this.src='assets/images/delete_hover_icon.svg'"
+                        onmouseout="this.src='assets/images/delete_icon.svg'">
+                </button>
+            </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+        <tr class="mat-row" *matNoDataRow>
+            <td class="mat-cell text-center" colspan="7">{{"No data found" | translate}}</td>
+        </tr>
+    </table>
+    <mat-paginator [pageSizeOptions]="[10, 20, 25]" showFirstLastButtons></mat-paginator>
+
+</div>

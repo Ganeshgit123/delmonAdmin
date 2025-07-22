@@ -1,0 +1,71 @@
+.bord_line {
+  border: 1px solid #dbdbdb;
+  padding: 20px;
+  margin-bottom: 20px;
+  background: var(--white-color);
+}
+
+.weight_box {
+  border-bottom: 1px solid #dbdbdb;
+}
+
+.desc_box {
+  padding: 20px 0;
+}
+
+.delete_btn {
+  cursor: pointer;
+  position: relative;
+  top: 5px;
+  font-size: 25px;
+}
+
+.simi_btn {
+  margin-right: 20px;
+  background: transparent;
+  border: 2px solid var(--main-color);
+  color: var(--main-color);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 30px;
+  border-radius: 10px;
+}
+
+.simi_btn:hover {
+  background: var(--main-color);
+  color: var(--white-color);
+}
+
+.tog_btn.top {
+  margin-top: 5px;
+}
+
+.switch.inner {
+  margin-top: 2.6rem;
+}
+
+select.form-control,
+select {
+  background: #e9ecef !important;
+}
+
+.save_btn {
+  margin-top: 2.1rem;
+  margin-right: 20px;
+  background: transparent;
+  border: 2px solid var(--main-color);
+  color: var(--main-color);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 30px;
+  border-radius: 10px;
+}
+
+.save_btn:hover {
+  background: var(--main-color);
+  color: var(--white-color);
+}
+
+.form-group {
+  margin-bottom: 0px !important;
+}

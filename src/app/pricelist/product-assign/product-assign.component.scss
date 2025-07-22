@@ -1,0 +1,21 @@
+.simi_btn {
+  background: transparent;
+  border: 2px solid var(--main-color);
+  color: var(--main-color);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 20px;
+  border-radius: 10px;
+}
+
+.simi_btn:hover {
+  background: var(--main-color);
+  color: var(--white-color);
+}
+
+.exp_btn_righ label {
+  cursor: pointer;
+}
+th.mat-header-cell:lang(ar){
+  text-align: right !important;
+}

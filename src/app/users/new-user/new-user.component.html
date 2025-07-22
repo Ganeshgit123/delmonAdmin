@@ -1,0 +1,168 @@
+<div class="d-flex justify-content-between align-items-center flex-wrap grid-margin">
+    <div>
+        <h2 class="mb-3 mb-md-0">{{"Create New User" | translate}}</h2>
+    </div>
+</div>
+<div class="row top_margin">
+    <div class="col-md-4">
+        <div class="text-center add_popup_btn">
+            <a href="javascript:void(0);" class="btn btn-own mb-2" (click)="addNormalUser(content)">
+                {{"CreateNormalUser" | translate}}
+            </a>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="text-center add_popup_btn">
+            <a href="javascript:void(0);" class="btn btn-own mb-2" (click)="addEmployee(employeeContent)">
+                {{"CreateEmployee" | translate}}
+            </a>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="text-center add_popup_btn">
+            <a href="javascript:void(0);" class="btn btn-own mb-2" (click)="addMerchant(merchantContent)">
+                {{"CreateMerchant" | translate}}
+            </a>
+        </div>
+    </div>
+</div>
+
+<ng-template #content role="document" let-modal="close">
+    <div class="modal-header">
+        <h5 class="modal-title">{{"CreateNormalUser" | translate}}</h5>
+        <button type="button" class="close" aria-label="Close" (click)="modal('Cross click')">
+            <span aria-checked="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body p-3">
+        <form [formGroup]="normalUserForm">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <p class="text-center"><label for="name">{{"PhoneNumber" | translate}}</label></p>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <input type="text" class="form-control" value="+973" readonly>
+                            </div>
+                            <div class="col-md-9">
+                                <input type="number" class="form-control" placeholder="{{'PhoneNumber' |translate}}"
+                                    formControlName="mobileNumber" onKeyPress="if(this.value.length==8) return false;"
+                                    [ngClass]="{ 'is-invalid': submitted && f['mobileNumber'].errors }">
+                                <div *ngIf="submitted && f['mobileNumber'].errors" class="invalid-feedback">
+                                    <div *ngIf="f['mobileNumber'].errors['required']">{{"MobileisRequired" |
+                                        translate}}</div>
+                                    <div *ngIf="f['mobileNumber'].errors['pattern']">{{"EightDigitsAllowed" |
+                                        translate}}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <div class="text-right">
+            <button type="submit" class="btn btn-own" (click)="onSubmitData()">{{"Save" | translate}}</button>
+            <button type="button" class="btn btn-own-cancel ml-1" (click)="modal('close click')">{{"Cancel" |
+                translate}}</button>
+        </div>
+    </div>
+</ng-template>
+
+
+<ng-template #employeeContent role="document" let-modal="close">
+    <div class="modal-header">
+        <h5 class="modal-title">{{"CreateEmployee" | translate}}</h5>
+        <button type="button" class="close" aria-label="Close" (click)="modal('Cross click')">
+            <span aria-checked="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body p-3">
+        <form [formGroup]="employeeForm">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <p class="text-center"><label for="name">{{"PhoneNumber" | translate}}</label></p>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <input type="text" class="form-control" value="+973" readonly>
+                            </div>
+                            <div class="col-md-9">
+                                <input type="number" class="form-control" placeholder="{{'PhoneNumber' |translate}}"
+                                    formControlName="mobileNumber" onKeyPress="if(this.value.length==8) return false;"
+                                    [ngClass]="{ 'is-invalid': submitted && empf.mobileNumber.errors }">
+                                <div *ngIf="submitted && empf['mobileNumber'].errors" class="invalid-feedback">
+                                    <div *ngIf="empf['mobileNumber'].errors['required']">{{"MobileisRequired" |
+                                        translate}}</div>
+                                    <div *ngIf="empf['mobileNumber'].errors['pattern']">{{"EightDigitsAllowed" |
+                                        translate}}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <p class="text-center"><label for="name">{{"employeeNumber" | translate}}</label></p>
+                        <input type="text" class="form-control" formControlName="employeeNumber" placeholder='{{"EnterEmployeeNumber" | translate}}'
+                        [ngClass]="{ 'is-invalid': submitted && empf.employeeNumber.errors }">
+                      <div *ngIf="submitted && empf['employeeNumber'].errors" class="invalid-feedback">
+                        <div *ngIf="empf['employeeNumber'].errors['required']">{{"EmployeeNumberisRequired" | translate}}</div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <div class="text-right">
+            <button type="submit" class="btn btn-own" (click)="onSubmitEmployeeData()">{{"Save" | translate}}</button>
+            <button type="button" class="btn btn-own-cancel ml-1" (click)="modal('close click')">{{"Cancel" |
+                translate}}</button>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #merchantContent role="document" let-modal="close">
+    <div class="modal-header">
+        <h5 class="modal-title">{{"CreateMerchant" | translate}}</h5>
+        <button type="button" class="close" aria-label="Close" (click)="modal('Cross click')">
+            <span aria-checked="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body p-3">
+        <form [formGroup]="merchantForm">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <p class="text-center"><label for="name">{{"PhoneNumber" | translate}}</label></p>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <input type="text" class="form-control" value="+973" readonly>
+                            </div>
+                            <div class="col-md-9">
+                                <input type="number" class="form-control" placeholder="{{'PhoneNumber' |translate}}"
+                                    formControlName="mobileNumber" onKeyPress="if(this.value.length==8) return false;"
+                                    [ngClass]="{ 'is-invalid': submitted && merchantf.mobileNumber.errors }">
+                                <div *ngIf="submitted && merchantf['mobileNumber'].errors" class="invalid-feedback">
+                                    <div *ngIf="merchantf['mobileNumber'].errors['required']">{{"MobileisRequired" |
+                                        translate}}</div>
+                                    <div *ngIf="merchantf['mobileNumber'].errors['pattern']">{{"EightDigitsAllowed" |
+                                        translate}}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <p class="text-center"><label for="name">{{"crNumber" | translate}}</label></p>
+                        <input type="text" class="form-control" formControlName="crNumber" placeholder='{{"EnterCRNumber" | translate}}'
+                        [ngClass]="{ 'is-invalid': submitted && merchantf.crNumber.errors }">
+                      <div *ngIf="submitted && merchantf['crNumber'].errors" class="invalid-feedback">
+                        <div *ngIf="merchantf['crNumber'].errors['required']">{{"CRNumberRequired" | translate}}</div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <div class="text-right">
+            <button type="submit" class="btn btn-own" (click)="onSubmitMerchantData()">{{"Save" | translate}}</button>
+            <button type="button" class="btn btn-own-cancel ml-1" (click)="modal('close click')">{{"Cancel" |
+                translate}}</button>
+        </div>
+    </div>
+</ng-template>

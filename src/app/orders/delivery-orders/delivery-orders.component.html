@@ -1,0 +1,309 @@
+<div class="d-flex justify-content-between align-items-center flex-wrap grid-margin">
+    <div>
+        <h2 class="mb-3 mb-md-0">{{"DeliveryOrders" | translate}}</h2>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-3">
+        <mat-form-field appearance="standard">
+            <mat-label>{{"Search" | translate}}</mat-label>
+            <input matInput (keyup)="applyFilter($event)" placeholder="{{'Search' | translate}}" #input>
+        </mat-form-field>
+    </div>
+    <div class="col-md-2 city_col" *ngIf="superAdminRole">
+        <select #select (change)="onChangeFilter(select.value)" class="form-control">
+            <option value="POULTRY">{{"Poultry" | translate}}</option>
+            <option value="FEEDING">{{"Feeding" | translate}}</option>
+        </select>
+    </div>
+    <div class="col-md-7"></div>
+</div>
+
+<div class="row" *ngIf="showAccept">
+    <div class="col-md-2" *ngIf="ordSelectId?.length > 0">
+        <button class="appre_btn" (click)="approveMulti()">{{"approoo" | translate}}</button>
+    </div>
+    <div class="col-md-2" *ngIf="ordDriverSelectId?.length > 0 && !multiDriverDropdown">
+        <button class="appre_btn" (click)="assignMultiDriver()">{{"assignDriver" | translate}}</button>
+    </div>
+    <div class="col-md-2" *ngIf="multiDriverDropdown">
+        <select class="form-control" #driver (change)="assignMultiDriverToOrder(driver.value)">
+            <option selected disabled>{{"SelectDriver" | translate}}</option>
+            <option *ngFor="let item of getDrivers" value="{{item.id}}">{{item.userName}}</option>
+        </select>
+    </div>
+</div>
+<div class="mat-elevation-z8">
+    <table class="table" mat-table [dataSource]="dataSource" matSort>
+        <ng-container matColumnDef="checkbox">
+            <th mat-header-cell *matHeaderCellDef>
+                <div *ngIf="newOrders?.length > 0 && notAssignedOrders?.length > 0">
+                    <button class="null_btn" (click)='selectAllClick()'>
+                        <span class="txt_btn" *ngIf='isAllSelect && ordSelectId.length !== 0; else templateName'>
+                            {{"DeselectAll" | translate}}</span>
+                    </button>
+                    <ng-template #templateName>
+                        <span class="txt_btn"
+                            *ngIf="newOrders?.length > 0 && notAssignedOrders?.length > 0">{{"selectAll" |
+                            translate}}</span>
+                    </ng-template>
+                </div>
+                <div *ngIf="notAssignedOrders?.length > 0 && newOrders?.length == 0">
+                    <button class="null_btn" (click)='selectDriverAllClick()'>
+                        <span class="txt_btn"
+                            *ngIf='isAllDriverSelect && ordDriverSelectId.length !== 0; else templateName'>
+                            {{"DeselectAll" | translate}}</span>
+                    </button>
+                    <ng-template #templateName>
+                        <span class="txt_btn"
+                            *ngIf="notAssignedOrders?.length > 0 && newOrders?.length == 0">{{"selectAll" |
+                            translate}}</span>
+                    </ng-template>
+                </div>
+            </th>
+            <td mat-cell *matCellDef="let element" class="text-center">
+                <div *ngIf="newOrders?.length > 0">
+                    <span *ngIf="element.orderStatus == 'PLACED'"><input type="checkbox"
+                            [checked]='((ordSelectId !== [] && ordSelectId.indexOf(element.id) !== -1) || false)'
+                            (change)="onInputChange(element.id)" /></span>
+                </div>
+                <div *ngIf="notAssignedOrders?.length > 0">
+                    <span *ngIf="element.orderStatus == 'USERACCEPTED'"><input type="checkbox"
+                            [checked]='((ordDriverSelectId !== [] && ordDriverSelectId.indexOf(element.id) !== -1) || false)'
+                            (change)="onDriverInputChange(element.id)" /></span>
+                </div>
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="index">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>{{"S.No" | translate}}</th>
+            <td mat-cell *matCellDef="let element; let i = index;"> {{matPaginator.pageSize * matPaginator.pageIndex + i
+                + 1}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="orderId">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"OrderId" | translate}} </th>
+            <td mat-cell *matCellDef="let element"> {{element.orderId}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="orderDetails">
+            <th mat-header-cell *matHeaderCellDef> {{"OrderDetails" | translate}} </th>
+            <td mat-cell *matCellDef="let element" class="text-center">
+                <button class="simi_btn" (click)="openModal(content,element)">
+                    {{"viewOrders" | translate}}
+                </button>
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="approve">
+            <th mat-header-cell *matHeaderCellDef> {{"Approve" | translate}} </th>
+            <td mat-cell *matCellDef="let element" class="text-center">
+                <span *ngIf="element.orderStatus == 'PLACED'"><button class="simi_btn"
+                        (click)="approveOrder(element.id)">
+                        {{"approoo" | translate}}
+                    </button></span>
+                <span
+                    *ngIf="!(element.orderStatus == 'APPROVE' || element.orderStatus == 'CANCELLED' || element.orderStatus == 'COMPLETED' || element.orderStatus == 'USERREJECTED')"><button
+                        class="simi_btn" (click)="cancelOrder(element.id)">
+                        {{"Cancel" | translate}}
+                    </button></span>
+                <span *ngIf="element.orderStatus == 'APPROVE'">{{"ApprovedByAdmin" | translate}}</span>
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="orderStatus">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"orderStatus" | translate}} </th>
+            <td mat-cell *matCellDef="let element">
+                <span *ngIf="element.orderStatus == 'PLACED'" style="color: #666666;font-weight:600">{{"orderPlaced" |
+                    translate}}</span>
+                <span *ngIf="element.orderStatus == 'USERACCEPTED'" style="color: green;font-weight:600">{{"ordConfirm"
+                    | translate}}</span>
+                <span *ngIf="element.orderStatus == 'DRIVERASSIGNED'"
+                    style="color: green;font-weight:600">{{"driverAssigned" | translate}}</span>
+                <span *ngIf="element.orderStatus == 'USERREJECTED'" style="color: red;font-weight:600">{{"OrderCancel" |
+                    translate}}</span>
+                <span *ngIf="element.orderStatus == 'COMPLETED'" style="color: green;font-weight:600">{{"completed" |
+                    translate}}</span>
+                <span *ngIf="element.orderStatus == 'OUTFORDELIVERY'"
+                    style="color: green;font-weight:600">{{"outDelivery" | translate}}</span>
+                <span *ngIf="element.orderStatus == 'CANCELLED'" style="color: red;font-weight:600">{{"OrderCancel" |
+                    translate}}</span>
+                <span *ngIf="element.orderStatus == 'UNAVAILABLE'"
+                    style="color: red;font-weight:600">{{"CustomerUnavailable" |
+                    translate}}</span>
+        </ng-container>
+
+        <ng-container matColumnDef="drivers">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"Assigndrivers" | translate}} </th>
+            <td mat-cell *matCellDef="let element">
+                <span
+                    *ngIf="element.orderStatus == 'DRIVERASSIGNED' || element.orderStatus == 'OUTFORDELIVERY'">{{"OrderAssignedTo"
+                    | translate}}
+                    <span *ngIf="element.deliveryBoyId != null">{{element.driverName}}</span>
+                </span>
+                <span *ngIf="showAccept">
+                    <select class="form-control mt-2"
+                        *ngIf="(element.orderStatus == 'USERACCEPTED' || element.orderStatus == 'DRIVERASSIGNED')"
+                        #driver (change)="assignDriver(driver.value,element.id)">
+                        <option selected disabled>{{"SelectDriver" | translate}}</option>
+                        <option *ngFor="let item of getDrivers" value="{{item.id}}">{{item.userName}}</option>
+                    </select>
+                </span>
+                <span *ngIf="element.orderStatus == 'PLACED'">{{"OrderNotConfirmedYet" | translate}}</span>
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="zone">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"Zones" | translate}} </th>
+            <td mat-cell *matCellDef="let element"> {{element.zoneName}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="area">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"Areas" | translate}} </th>
+            <td mat-cell *matCellDef="let element"> {{element.area}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="orderDate">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"OrderDate" | translate}} </th>
+            <td mat-cell *matCellDef="let element"> {{element.orderPlaceTime | date :'dd/MM/yyyy'}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="deliveryDate">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"DeliveryDate" | translate}} </th>
+            <td mat-cell *matCellDef="let element">
+                <span *ngIf="element.newDeliveryDate == null">
+                    <span [ngSwitch]="isSpecificDateFormat(element.deliveryDate)">
+                        <span *ngSwitchCase="true">{{ element.deliveryDate | date:'dd/MM/yyyy' }}</span>
+                        <span *ngSwitchCase="false">{{ element.deliveryDate }}</span>
+                    </span>
+                </span>
+                <span *ngIf="element.newDeliveryDate != null">{{element.newDeliveryDate}}</span>
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="rowActionIcon">
+            <th mat-header-cell *matHeaderCellDef>{{"Action" | translate}}</th>
+            <td mat-cell *matCellDef="let element" class="text-center">
+                <button mat-button class="edit_btn" (click)="editOrderType(element,editModal)">
+                    <img src="assets/images/edit_icon.svg" onmouseover="this.src='assets/images/edit_hover_icon.svg'"
+                        onmouseout="this.src='assets/images/edit_icon.svg'">
+                </button>
+                <ng-template #editModal role="document" let-modal="close">
+                    <div class="modal-header">
+                        <h5 class="modal-title">{{"ChangeDeliveryType" | translate}}</h5>
+                        <button type="button" class="close" aria-label="Close" (click)="modal('Cross click')">
+                            <span aria-checked="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body p-3">
+                        <h5 class="text-center">{{"DELIVERY" | translate}}<br> {{"to" | translate}} <br>{{"PICKUP" | translate}}
+                        </h5>
+                        <p class="text-center"><button type="submit" class="btn btn-own mr-0 mt-3"
+                                (click)="onSubmitDeliveryType()">{{"Change" | translate}}</button></p>
+                    </div>
+                </ng-template>
+            </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+        <tr class="mat-row" *matNoDataRow>
+            <td class="mat-cell text-center" colspan="12">{{"No data found" | translate}}</td>
+        </tr>
+    </table>
+    <mat-paginator [pageSizeOptions]="[10, 20, 25]" showFirstLastButtons></mat-paginator>
+
+</div>
+
+<ng-template #content role="document" let-modal="close">
+    <div class="modal-header">
+        <h5 class="modal-title">{{"OrderDetails" | translate}}</h5>
+        <button type="button" class="close" aria-label="Close" (click)="modal('Cross click')">
+            <span aria-checked="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body p-3">
+        <p class="text-center mb-0 det_head">{{"CartDetails" | translate}}</p>
+        <div class="table-responsive mb-3">
+            <table id="basic-datatable" class="table table-bordered dt-responsive text-nowrap  no-footer dtr-inline">
+                <thead>
+                    <tr>
+                        <th>{{"Products" | translate}}</th>
+                        <!-- <th>Type</th> -->
+                        <th>{{"Weight" | translate}}</th>
+                        <!-- <th>{{"ProductPrice" | translate}}</th> -->
+                        <th>{{"Quantity" | translate}}</th>
+                        <!-- <th>{{"TotalPrice" | translate}}</th> -->
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let det of orderDetail.cartDetails">
+                        <td class="text-center">{{det?.enProductName}}</td>
+                        <!-- <td class="text-center">{{det.soldType}}</td> -->
+                        <td class="text-center">{{det?.weight}}</td>
+                        <!-- <td class="text-center">{{det?.price}}</td> -->
+                        <td class="text-center">{{det?.quantity}}</td>
+                        <!-- <td class="text-center">{{det?.quantity * det?.price}}</td> -->
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <p class="text-center mb-0 det_head">{{"customerDetails" | translate}}</p>
+        <div class="table-responsive mb-3">
+            <table id="basic-datatable" class="table table-bordered dt-responsive text-nowrap  no-footer dtr-inline">
+                <thead>
+                    <tr>
+                        <th>{{"OrderId" | translate}}</th>
+                        <th>{{"customerName" | translate}}</th>
+                        <th>{{"Phone" | translate}}</th>
+                        <th>{{"Zone Name" | translate}}</th>
+                        <th>{{"Address" | translate}}</th>
+                        <th>{{"DeliveryAddType" | translate}}</th>
+                        <th>{{"PaymentMode" | translate}}</th>
+                        <th>{{"Notes" | translate}}</th>
+                        <th>{{"unavailableNotes" | translate}}</th>
+                        <th>{{"sonicNo" | translate}}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="text-center">{{orderDetail.id}}</td>
+                        <td class="text-center">{{orderDetail?.userName}}</td>
+                        <td class="text-center">{{orderDetail?.mobileNumber}}</td>
+                        <td class="text-center">{{orderDetail?.deliveryAddress?.zoneName}}</td>
+                        <td class="text-center">
+                            {{orderDetail?.deliveryAddress?.area}}, {{orderDetail?.deliveryAddress?.blockNo}},
+                            {{orderDetail?.deliveryAddress?.houseNo}}, {{orderDetail?.deliveryAddress?.roadNo}},
+                            {{orderDetail?.deliveryAddress?.flat}} - {{orderDetail?.deliveryAddress?.pin}}
+                            ({{orderDetail?.deliveryAddress?.notes}})</td>
+                        <td class="text-center">{{orderDetail?.deliveryAddressType}}</td>
+                        <td class="text-center">{{orderDetail?.paymentTypeId}}</td>
+                        <td class="text-center">{{orderDetail?.deliveryNotes}}</td>
+                        <td class="text-center">{{orderDetail?.unAvailableNotes}}</td>
+                        <td class="text-center">{{orderDetail?.sonicNumber}}</td>
+                    </tr>
+                    <tr>
+                        <td class="text-center"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <p class="text-center mb-0 det_head">{{"OrderDetails" | translate}}</p>
+        <div class="table-responsive mb-3">
+            <table id="basic-datatable" class="table table-bordered dt-responsive text-nowrap  no-footer dtr-inline">
+                <tbody>
+                    <tr *ngFor="let det of orderDetail.order">
+                        <td>{{det.title}}</td>
+                        <td>{{det.price}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="text-right">
+            <button type="button" class="btn btn-own-cancel ml-1" (click)="modal('close click')">{{"Cancel" |
+                translate}}</button>
+        </div>
+    </div>
+</ng-template>

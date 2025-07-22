@@ -1,0 +1,29 @@
+p{
+    font-weight: 500;
+    color: gray;
+}
+.card{
+    margin-bottom: 20px;
+}
+.dash_link{
+    color: var(--black-color);
+}
+.dash_link:hover{
+    color: var(--main-color);
+}
+.dash_link:hover p{
+    color: var(--main-color);
+}
+.card{
+    margin-bottom: 0;
+}
+.card .card-title{
+ text-transform: none;
+}
+.card .card-body{
+    padding: 1rem 1rem;
+}
+.mdi{
+    font-size: 28px;
+    color: var(--main-color) !important;
+}

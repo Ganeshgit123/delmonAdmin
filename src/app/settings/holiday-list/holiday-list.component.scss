@@ -1,0 +1,32 @@
+.demo-inline-calendar-card {
+  width: 400px;
+}
+
+::ng-deep .holiday-date .mat-calendar-body-cell-content {
+  background-color: red !important;  /* Holidays */
+  color: white !important;
+}
+
+::ng-deep .selected-date .mat-calendar-body-cell-content {
+  background-color: blue !important; /* User-selected */
+  color: white !important;
+}
+
+::ng-deep .selected-holiday .mat-calendar-body-cell-content {
+  background-color: purple !important; /* Selected + Holiday */
+  color: white !important;
+}
+.list_date{
+  margin-top: 5rem;
+}
+.list_date li{
+  font-size: 18px;
+}
+.list_date li img{
+  width: 18px;
+  height: 18px;
+}
+.tite{
+  font-size: 20px;
+  margin-left: -2rem;
+}

@@ -1,0 +1,21 @@
+.badge_icon{
+    width: 50px;
+    height: 50px;
+}
+.upload-img{
+    width: 150px;
+    height: 150px;
+}
+.cdk-column-ingredients,
+.cdk-column-steps{
+    // word-wrap: break-word !important;
+    // white-space: unset !important;
+    // line-height: 1.3;
+    max-width: 300px; /* feel free to include any other value */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.bord_line.is-invalid{
+    border: 1px solid var(--main-color) !important;
+}

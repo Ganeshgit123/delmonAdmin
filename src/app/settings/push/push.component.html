@@ -1,0 +1,70 @@
+<div class="row">
+    <div class="col-md-6">
+        <h2 class="mb-3 mb-md-0">{{"Push Notification" | translate}}</h2>
+        <br>
+        <div class="card">
+            <div class="card-body">
+                <form [formGroup]="fcmForm">
+                    <div class="form-group">
+                        <label for="name">{{"Title" | translate}}</label>
+                        <input type="text" class="form-control" placeholder="{{'Enter Title' | translate}}"
+                            formControlName="title">
+                    </div>
+                    <div class="form-group">
+                        <label for="name">{{"Message" | translate}}:</label>
+                        <textarea class="form-control" formControlName="message" rows="4" cols="50"
+                            placeholder="{{'Enter Message' | translate}}"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="name">{{"Users" | translate}} </label>
+                        <ng-multiselect-dropdown placeholder="{{'Select Users' | translate}}"
+                            [formControl]="fcmForm.controls['userId']" [settings]="dropdownSettingsuser"
+                            [data]="getuser" (onSelect)="onItemSelectuser($event)"
+                            (onSelectAll)="onSelectAlluser($event)" (onDeSelect)="onItemDeSelect($event)"
+                            (onDeSelectAll)="onDeSelectAll($event)">
+                        </ng-multiselect-dropdown>
+                    </div>
+
+                    <div class="text-right" *ngIf="showAccept">
+                        <button type="submit" class="btn btn-own" (click)="sendFCMNotification()">{{"Send"
+                            | translate}}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <h2 class="mb-3 mb-md-0">{{"Push SMS" | translate}}</h2>
+        <br>
+        <div class="card">
+            <div class="card-body">
+                <form [formGroup]="smsForm">
+                    <div class="form-group">
+                        <label for="name">{{"Title" | translate}}</label>
+                        <input type="text" class="form-control" placeholder="{{'Enter Title' | translate}}"
+                            formControlName="title">
+                    </div>
+                    <div class="form-group">
+                        <label for="name">{{"Message" | translate}}:</label>
+                        <textarea class="form-control" formControlName="message" rows="4" cols="50"
+                            placeholder="{{'Enter Message' | translate}}"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="name">{{"Users" | translate}} </label>
+                        <ng-multiselect-dropdown placeholder="{{'Select Users' | translate}}"
+                            [formControl]="fcmForm.controls['userId']" [settings]="dropdownSettingsuser"
+                            [data]="getuser" (onSelect)="onItemSelectuser($event)"
+                            (onSelectAll)="onSelectAlluser($event)" (onDeSelect)="onItemDeSelect($event)"
+                            (onDeSelectAll)="onDeSelectAll($event)">
+                        </ng-multiselect-dropdown>
+                    </div>
+
+                    <div class="text-right" *ngIf="showAccept">
+                        <button type="submit" class="btn btn-own" (click)="sendSMS()">{{"Send"
+                            | translate}}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

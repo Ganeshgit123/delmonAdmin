@@ -1,0 +1,115 @@
+<div class="row">
+    <div class="col-md-3">
+        <mat-form-field appearance="standard">
+            <mat-label>{{"Search" | translate}}</mat-label>
+            <input matInput (keyup)="applyFilter($event)" placeholder="{{'Search' | translate}}" #input>
+        </mat-form-field>
+    </div>
+    <div class="col-md-2 city_col" *ngIf="superAdminRole">
+        <select #type (change)="onChangeFlowTypeFilter(type.value)" class="form-control">
+            <option value="POULTRY">{{"Poultry" | translate}}</option>
+            <option value="FEEDING">{{"Feeding" | translate}}</option>
+        </select>
+    </div>
+    <div class="col-md-7">
+        <p class="exp_btn_righ" *ngIf="showAccept">
+            <label for="resume" class="export_btn">{{"Import" | translate}}</label>
+            <input type="file" class="custom-file-input" id="resume" (change)="importXl($event)" accept=".xlsx">
+
+            <button (click)="exportToExcel()" class="export_btn ml-4">{{"Export" | translate}}</button>
+        </p>
+    </div>
+</div>
+<ngx-spinner bdColor="rgba(51,51,51,0.8)" size="medium" color="#fff" type="ball-scale-multiple">
+    <p style="font-size: 20px; color: white"> {{"Loading" | translate}}...</p>
+</ngx-spinner>
+<table mat-table matTableExporter [dataSource]="dataSource" #exporter="matTableExporter" [hiddenColumns]="[4]">
+    <ng-container [matColumnDef]="col.key" *ngFor="let col of columnsSchema">
+        <th mat-header-cell *matHeaderCellDef>
+            {{ col.label | translate}}
+        </th>
+        <td mat-cell *matCellDef="let element">
+            <div [ngSwitch]="col.type" *ngIf="!element.isEdit">
+                <div *ngSwitchCase="'isEdit'">
+                    <span *ngIf="showAccept">
+                        <button mat-button class="simi_btn" (click)="element.isEdit = !element.isEdit">
+                            {{"Edit" | translate}}
+                        </button>
+                    </span>
+                </div>
+                <span *ngSwitchCase="'text'">
+                    <span *ngIf="element.weight != null">
+                        {{ element.name }} / {{ element.weight}}
+                        <span *ngIf="element.soldType == 1">
+                            / {{"Pieces" | translate}}
+                        </span>
+                        <span *ngIf="element.soldType == 2">
+                            / {{"Cartons" | translate}}
+                        </span>
+                    </span>
+                    <span *ngIf="element.weight == null && element.isBasket !==1">
+                        {{ element.name }} ({{"Main" | translate}})
+                    </span>
+                    <span *ngIf="element.isBasket == 1">
+                        {{ element.name }} ({{"Baskets" | translate}})
+                    </span>
+                </span>
+                <span *ngSwitchCase="'number'">
+                    {{ element[col.key] | number : '1.0-3' }}
+                </span>
+                <!-- <span *ngSwitchCase="'string'">
+                    <span *ngIf="element.weight != null">
+                        {{ element.weight}}
+                    </span>
+                    <span *ngIf="element.weight == null">
+                        {{"Baskets" | translate}}
+                    </span>
+                </span> -->
+                <span *ngSwitchDefault>
+                    {{ element[col.key] }}
+                </span>
+            </div>
+            <div [ngSwitch]="col.type" *ngIf="element.isEdit">
+                <div *ngSwitchCase="'isEdit'">
+                    <button class="simi_btn" mat-button (click)="updateList(element)">
+                        {{"Done" | translate}}
+                    </button>
+                </div>
+                <div class="form-input" *ngSwitchCase="'text'">
+                    <span *ngIf="element.weight != null">
+                        {{ element.name }} / {{ element.weight}}
+                        <span *ngIf="element.soldType == 1">
+                            / {{"Pieces" | translate}}
+                        </span>
+                        <span *ngIf="element.soldType == 2">
+                            / {{"Cartons" | translate}}
+                        </span>
+                    </span>
+                    <span *ngIf="element.weight == null && element.isBasket !==1">
+                        {{ element.name }} ({{"Main" | translate}})
+                    </span>
+                    <span *ngIf="element.isBasket == 1">
+                        {{ element.name }} ({{"Baskets" | translate}})
+                    </span>
+                </div>
+                <!-- <div class="form-input" *ngSwitchCase="'string'">
+                    <span *ngIf="element.weight != null">
+                        {{ element.weight}}
+                    </span>
+                    <span *ngIf="element.weight == null">
+                        {{"Baskets" | translate}}
+                    </span>
+                </div> -->
+                <mat-form-field class="form-input" *ngSwitchCase="'number'">
+                    <input type="number" matInput (ngModelChange)="element[col.key] = $event"
+                        [ngModel]="element[col.key] | number : '1.0-3' "/>
+                </mat-form-field>
+                <mat-form-field class="form-input" *ngSwitchDefault>
+                    <input [type]="col.type" matInput [(ngModel)]="element[col.key]" />
+                </mat-form-field>
+            </div>
+        </td>
+    </ng-container>
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+</table>
