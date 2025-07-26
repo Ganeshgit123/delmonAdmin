@@ -4,28 +4,14 @@
     </div>
 </div>
 
-<div class="row">
-    <div class="col-md-6">
-        <mat-card class="demo-inline-calendar-card" *ngIf="apiHighlightedDates.length > 0">
-            <mat-calendar [dateClass]="highlightDates" (selectedChange)="onDateSelect($event)">
-            </mat-calendar>
-        </mat-card>
+<form [formGroup]="holidayForm" (ngSubmit)="submit()">
+    <div formArrayName="dates">
+        <div *ngFor="let dateCtrl of dates.controls; let i = index" class="mb-2">
+            <input type="date" [formControlName]="i" class="form-control" [min]="today" />
+            <button type="button" class="btn btn-own-cancel mt-1" (click)="removeDate(i)"
+                *ngIf="dates.length > 1">Remove</button>
+        </div>
     </div>
-    <div class="col-md-4">
-        <ul class="list_date">
-            <p *ngIf="selectedDates.length > 0" class="tite">Selected Dates To Add</p>
-            <li *ngFor="let date of selectedDates">
-                {{ date | date : 'dd/MM/yyyy' }}
-                <button mat-button (click)="deleteSelected(date)" class="dele_btn">
-                    <img src="assets/images/delete_icon.svg"
-                        onmouseover="this.src='assets/images/delete_hover_icon.svg'"
-                        onmouseout="this.src='assets/images/delete_icon.svg'">
-                </button>
-            </li>
-        </ul>
-        <span *ngIf="selectedDates.length > 0">
-            <p class="text-center"><button type="submit" class="btn btn-own" (click)="onSubmitData()">{{"Add" |
-                    translate}}</button></p>
-        </span>
-    </div>
-</div>
+    <button type="button" (click)="addDate()" class="btn btn-own">Add Date</button>
+    <button type="submit" class="btn btn-own">Submit</button>
+</form>

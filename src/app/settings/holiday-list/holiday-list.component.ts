@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormArray, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from 'src/app/shared/auth.service';
-import { take } from 'rxjs/operators';
 import { ToastrService } from 'ngx-toastr';
 
 @Component({
@@ -9,105 +9,90 @@ import { ToastrService } from 'ngx-toastr';
   styleUrls: ['./holiday-list.component.scss']
 })
 export class HolidayListComponent implements OnInit {
-  selectedDates: Date[] = [];
-  apiHighlightedDates: Date[] = [];
-  calendarKey: number = 0; // Key for triggering re-render
+  holidayForm: FormGroup;
+  today = new Date().toISOString().split('T')[0]; // yyyy-mm-dd
 
-  constructor(public authService: AuthService, private toastr: ToastrService) { }
+  constructor(private fb: FormBuilder, public authService: AuthService, private toastr: ToastrService) {
+    this.holidayForm = this.fb.group({
+      dates: this.fb.array([]) // initialize empty
+    });
+  }
 
   ngOnInit(): void {
-    this.fetchHighlightedDates();
+    this.fetchHolidayList();
   }
 
-  fetchHighlightedDates() {
-    this.authService.getSettings().pipe(take(1)).subscribe(
+  fetchHolidayList() {
+    this.dates.clear();
+
+    this.authService.getSettings().subscribe(
       (res: any) => {
-        const holidayEntry = res.data.find(el => el.key === 'holidayList');
-        if (!holidayEntry || !holidayEntry.enValue) {
-          return;
-        }
+        const holidayResponse = res.data.find((element: any) => element.key === 'holidayList');
+        const enValue: string = holidayResponse?.enValue;
 
-        try {
-          const holidayStrings: string[] = JSON.parse(holidayEntry.enValue);
-          if (Array.isArray(holidayStrings)) {
-            this.apiHighlightedDates = holidayStrings
-              .filter(dateStr => /\d{2}\/\d{2}\/\d{4}/.test(dateStr))
-              .map(dateStr => {
-                const [day, month, year] = dateStr.split('/').map(Number);
-                return new Date(year, month - 1, day);
-              });
-
-            // console.log('Parsed holiday dates:', this.apiHighlightedDates);
+        if (enValue && enValue !== 'null') {
+          try {
+            const dateStrings: string[] = JSON.parse(enValue);
+            dateStrings.forEach(dateStr => {
+              const [dd, mm, yyyy] = dateStr.split('/');
+              const formatted = `${yyyy}-${mm}-${dd}`;
+              this.dates.push(this.fb.control(formatted, Validators.required));
+            });
+          } catch (e) {
+            console.error('Invalid JSON for holidayList', e);
+            this.dates.push(this.fb.control('', Validators.required));
           }
-        } catch (error) {
-          console.error('Error parsing holiday dates:', error);
+        } else {
+          this.dates.push(this.fb.control('', Validators.required));
         }
-      });
+      },
+      (error) => {
+        console.error('Error loading holidays', error);
+        this.dates.push(this.fb.control('', Validators.required));
+      }
+    );
   }
 
-  highlightDates = (date: Date): string => {
-    const formattedDate = date.toDateString();
 
-    // Check if it's a holiday
-    const isHoliday = this.apiHighlightedDates.some(d => d.toDateString() === formattedDate);
-
-    if (isHoliday) {
-      return 'holiday-date'; // Red for holidays
-    }
-  };
-
-  onDateSelect(selectedDate: Date) {
-    const formattedDate = selectedDate.toDateString();
-    const index = this.selectedDates.findIndex(d => d.toDateString() === formattedDate);
-
-    if (index !== -1) {
-      // Remove if already selected
-      this.selectedDates.splice(index, 1);
-    } else {
-      // Add new selection
-      this.selectedDates.push(new Date(selectedDate));
-
-      this.selectedDates = this.selectedDates.filter(date => !this.apiHighlightedDates.some(d => d.getTime() === date.getTime()));
-    }
+  get dates(): FormArray {
+    return this.holidayForm.get('dates') as FormArray;
   }
 
-  deleteSelected(selectedDate: Date) {
-    const formattedDate = selectedDate.toDateString();
-    const index = this.selectedDates.findIndex(d => d.toDateString() === formattedDate);
-
-    if (index !== -1) {
-      // Remove if already selected
-      this.selectedDates.splice(index, 1);
-    } else {
-      // Add new selection
-      this.selectedDates.push(new Date(selectedDate));
-
-      this.selectedDates = this.selectedDates.filter(date => !this.apiHighlightedDates.some(d => d.getTime() === date.getTime()));
-    }
+  addDate(): void {
+    this.dates.push(this.fb.control('', Validators.required));
   }
 
-  onSubmitData() {
+  removeDate(index: number): void {
+    this.dates.removeAt(index);
+  }
 
-    let datesArray = this.selectedDates;
 
-    // Convert each date in the array to DD/MM/YYYY format
-    let formattedDates = datesArray.map(date => {
-      let day = date.getDate().toString().padStart(2, '0');
-      let month = (date.getMonth() + 1).toString().padStart(2, '0');
-      let year = date.getFullYear();
+  submit() {
+    this.dates.controls.forEach(control => control.markAsTouched());
+
+    if (this.holidayForm.invalid) {
+      this.toastr.error('Please fill all dates correctly', 'Validation Error');
+      return;
+    }
+
+    const formattedDates = this.dates.value.map((date: string) => {
+      const [year, month, day] = date.split('-');
       return `${day}/${month}/${year}`;
     });
 
-    const stingDate = JSON.stringify(formattedDates);
-    // console.log("Fef", stingDate)
+    const payload = {
+      key: 'holidayList',
+      enValue: JSON.stringify(formattedDates),
+      arValue: 'null',
+      latitude: null,
+      longitude: null
+    };
 
-    const object = { key: 'holidayList', enValue: stingDate }
-    this.authService.updateSetting(object, 26)
+    this.authService.updateSetting(payload, 26)
       .subscribe((res: any) => {
         if (res.success == true) {
           this.toastr.success('Success ', 'Updated Successfully');
-          // Refresh the page
-          window.location.reload();
+          this.ngOnInit();
         } else {
           this.toastr.error('Enter valid ', 'Error');
         }
@@ -115,4 +100,3 @@ export class HolidayListComponent implements OnInit {
   }
 
 }
-

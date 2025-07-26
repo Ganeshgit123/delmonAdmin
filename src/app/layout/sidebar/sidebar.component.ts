@@ -464,10 +464,10 @@ export class SidebarComponent implements OnInit, AfterViewInit {
             label: 'Spin Wheel Winner',
             link: '/spin-winner',
           },
-          // {
-          //   label: 'Holiday List',
-          //   link: '/holiday_list',
-          // }
+          {
+            label: 'Holiday List',
+            link: '/holiday_list',
+          }
         ]
       } : false,
       (this.isSuperAdmin || (!this.isSuperAdmin && datat?.find(ele => ele.area == 'drivers')?.read == 1)) ? {

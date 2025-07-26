@@ -51,9 +51,10 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="name">{{"CouponCode" | translate}}</label>
+                        <label for="name">{{"CouponCode" | translate}} ({{"EnterEnglishWords" | translate}})</label>
                         <input type="text" class="form-control" placeholder="{{'CouponCode' |translate}}"
-                            formControlName="couponCode" [ngClass]="{ 'is-invalid': submitted && f.couponCode.errors }">
+                            formControlName="couponCode" (input)="onCouponInput($event)" (paste)="onCouponPaste($event)"
+                            [ngClass]="{ 'is-invalid': submitted && f.couponCode.errors }">
                         <div *ngIf="submitted && f.couponCode.errors" class="invalid-feedback">
                             <div *ngIf="f.couponCode.errors.required">{{"CouponCodeRequired" | translate}}</div>
                         </div>

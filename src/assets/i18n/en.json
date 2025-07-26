@@ -463,5 +463,6 @@
     "ProductId": "Product Id",
     "ProductCount": "Product Count",
     "Reject": "Reject",
-    "Rejected": "Rejected"
+    "Rejected": "Rejected",
+    "EnterEnglishWords": "Enter only English Words"
 }

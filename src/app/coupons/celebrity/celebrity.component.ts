@@ -57,7 +57,7 @@ export class CelebrityComponent implements OnInit {
     this.couponForm = this.fb.group({
       enCouponName: ['', [Validators.required]],
       arCouponName: ['', [Validators.required]],
-      couponCode: ['', [Validators.required]],
+      couponCode: ['', [Validators.required, Validators.pattern(/^[a-zA-Z]*$/)]],
       discountPercentage: ['', [Validators.required]],
       maximumDiscount: ['', [Validators.required]],
       title: ['', [Validators.required]],
@@ -77,9 +77,25 @@ export class CelebrityComponent implements OnInit {
       this.showAccept = orderPermission
     }
   }
-  
+
   ngAfterViewInit(): void {
     this.matPaginator._intl.itemsPerPageLabel = this.translate.instant("itemsPerPage");
+  }
+
+  onCouponInput(event: any): void {
+    const input = event.target as HTMLInputElement;
+    const filteredValue = input.value.replace(/[^a-zA-Z]/g, '');
+    input.value = filteredValue;
+    this.couponForm.controls['couponCode'].setValue(filteredValue, { emitEvent: false });
+  }
+
+  onCouponPaste(event: ClipboardEvent): void {
+    event.preventDefault();
+    const pastedText = event.clipboardData?.getData('text') || '';
+    const sanitized = pastedText.replace(/[^a-zA-Z]/g, '');
+    const input = event.target as HTMLInputElement;
+    input.value = sanitized;
+    this.couponForm.controls['couponCode'].setValue(sanitized, { emitEvent: false });
   }
 
   applyFilter(event: Event) {
