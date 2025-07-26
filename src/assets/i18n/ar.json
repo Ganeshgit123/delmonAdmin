@@ -464,5 +464,8 @@
     "ProductCount": "Product Count",
     "Reject": "Reject",
     "Rejected": "Rejected",
-    "EnterEnglishWords": "Enter only English Words"
+    "EnterEnglishWords": "Enter only English Words",
+    "AddDate": "Add Date",
+    "Submit": "Submit",
+    "Remove": "Remove"
 }

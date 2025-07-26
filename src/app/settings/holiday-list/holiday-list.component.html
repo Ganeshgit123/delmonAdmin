@@ -9,9 +9,9 @@
         <div *ngFor="let dateCtrl of dates.controls; let i = index" class="mb-2">
             <input type="date" [formControlName]="i" class="form-control" [min]="today" />
             <button type="button" class="btn btn-own-cancel mt-1" (click)="removeDate(i)"
-                *ngIf="dates.length > 1">Remove</button>
+                *ngIf="dates.length > 1">{{"Remove" | translate}}</button>
         </div>
     </div>
-    <button type="button" (click)="addDate()" class="btn btn-own">Add Date</button>
-    <button type="submit" class="btn btn-own">Submit</button>
+    <button type="button" (click)="addDate()" class="btn btn-own">{{"AddDate" | translate}}</button>
+    <button type="submit" class="btn btn-own">{{"Submit" | translate}}</button>
 </form>
