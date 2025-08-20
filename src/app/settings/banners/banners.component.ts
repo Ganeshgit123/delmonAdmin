@@ -58,7 +58,7 @@ export class BannersComponent implements OnInit {
 
     this.userType = sessionStorage.getItem('userType');
 
-    if (this.userType == 1) {
+    if (this.userType == 1 || this.superAdminRole == true) {
       this.authService.getBanner().subscribe(
         (res: any) => {
           this.getvalue = res.data.filter(
@@ -74,16 +74,6 @@ export class BannersComponent implements OnInit {
           this.getvalue = res.data.filter(
             (data) => data.type == "FEEDING"
           )
-          this.dataSource = new MatTableDataSource(this.getvalue);
-          this.dataSource.paginator = this.matPaginator;
-          this.dataSource.sort = this.matSort;
-        });
-    }
-
-    if (this.superAdminRole == true) {
-      this.authService.getBanner().subscribe(
-        (res: any) => {
-          this.getvalue = res.data;
           this.dataSource = new MatTableDataSource(this.getvalue);
           this.dataSource.paginator = this.matPaginator;
           this.dataSource.sort = this.matSort;
@@ -138,6 +128,10 @@ export class BannersComponent implements OnInit {
     }
   }
 
+  sanitizeFileName(fileName: string): string {
+    return fileName.replace(/\s+/g, ''); // remove all spaces
+  }
+
   removeImg() {
     this.iconImg = "";
     this.fileImgUpload = "";
@@ -145,14 +139,20 @@ export class BannersComponent implements OnInit {
 
   uploadImageFile(event) {
     const file = event.target.files && event.target.files[0];
-    var valid = this.checkFileFormat(event.target.files[0]);
+    if (!file) return;
+
+    var valid = this.checkFileFormat(file);
     if (!valid) {
+      const sanitizedFileName = this.sanitizeFileName(file.name);
+      const sanitizedFile = new File([file], sanitizedFileName, { type: file.type });
+
       var reader = new FileReader();
       reader.onload = (event: any) => {
         this.iconImg = event.target.result;
-      }
-      reader.readAsDataURL(event.target.files[0]);
-      this.fileImgUpload = file;
+      };
+      reader.readAsDataURL(file);
+
+      this.fileImgUpload = sanitizedFile;
     }
   }
 
@@ -163,14 +163,20 @@ export class BannersComponent implements OnInit {
 
   uploadarImageFile(event) {
     const file = event.target.files && event.target.files[0];
-    var valid = this.checkFileFormat(event.target.files[0]);
+    if (!file) return;
+
+    var valid = this.checkFileFormat(file);
     if (!valid) {
+      const sanitizedFileName = this.sanitizeFileName(file.name);
+      const sanitizedFile = new File([file], sanitizedFileName, { type: file.type });
+
       var reader = new FileReader();
       reader.onload = (event: any) => {
         this.ariconImg = event.target.result;
-      }
-      reader.readAsDataURL(event.target.files[0]);
-      this.arfileImgUpload = file;
+      };
+      reader.readAsDataURL(file);
+
+      this.arfileImgUpload = sanitizedFile;
     }
   }
 
