@@ -29,9 +29,10 @@
             <mat-datepicker #picker1></mat-datepicker>
         </mat-form-field>
     </div>
-    <div class="col-md-3 date_col">
+    <div class="col-md-3">
         <form [formGroup]="timeForm">
             <div class="form-group">
+                <label for="timeInSeconds">{{"timeInSeconds" | translate}}</label>
                 <input type="text" class="form-control" placeholder="{{'timeInSeconds' |translate}}"
                     formControlName="timeInSeconds" (keypress)="restrictNumeric($event)">
             </div>
@@ -46,7 +47,7 @@
     </div>
 </div>
 
-<div *ngIf="filteredOrders.length > 0">
+<div *ngIf="filteredOrders.length > 0 && !currentOrder">
     <h3>{{"Orders" | translate}}:</h3>
     <ul>
         <li *ngFor="let order of filteredOrders">

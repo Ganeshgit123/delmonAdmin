@@ -143,6 +143,8 @@
 <ng-template #content role="document" let-modal="close">
     <div class="modal-header">
         <h5 class="modal-title">{{"OrderDetails" | translate}}</h5>
+        <h5 class="modal-title">{{"userType" | translate}} : {{orderDetail?.userType}}</h5>
+
         <button type="button" class="close" aria-label="Close" (click)="modal('Cross click')">
             <span aria-checked="true">&times;</span>
         </button>

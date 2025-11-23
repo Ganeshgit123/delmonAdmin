@@ -49,19 +49,26 @@
                 + 1}} </td>
         </ng-container>
 
-        <ng-container matColumnDef="name">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"Product Name" | translate}}</th>
-            <td mat-cell *matCellDef="let element">{{element.name}} </td>
+        <ng-container matColumnDef="zoneName">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"Zone Name" | translate}}</th>
+            <td mat-cell *matCellDef="let element">{{element.zone_name}} </td>
         </ng-container>
 
-        <ng-container matColumnDef="productId">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"ProductId" | translate}}</th>
-            <td mat-cell *matCellDef="let element"> {{element.productId}}</td>
+        <ng-container matColumnDef="address">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"Address" | translate}}</th>
+            <td mat-cell *matCellDef="let element"> {{element?.area}}, {{element?.blockNo}},
+                {{element?.houseNo}}, {{element?.roadNo}},
+                {{element?.flat}} - {{element?.pin}}</td>
         </ng-container>
 
-        <ng-container matColumnDef="productCount">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"ProductCount" | translate}}</th>
-            <td mat-cell *matCellDef="let element"> {{element.productCount}} </td>
+        <ng-container matColumnDef="notes">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"Notes" | translate}}</th>
+            <td mat-cell *matCellDef="let element"> {{element.notes}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="addressCount">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"AddressCount" | translate}}</th>
+            <td mat-cell *matCellDef="let element"> {{element.addressCount}} </td>
         </ng-container>
 
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>

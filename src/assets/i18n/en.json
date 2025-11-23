@@ -467,5 +467,7 @@
     "EnterEnglishWords": "Enter only English Words",
     "AddDate": "Add Date",
     "Submit": "Submit",
-    "Remove": "Remove"
+    "Remove": "Remove",
+    "TotalNoEmployee": "Total No of Employees",
+    "AddressCount": "Total Address Count"
 }

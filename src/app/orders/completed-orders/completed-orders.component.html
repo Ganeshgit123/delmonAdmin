@@ -77,7 +77,8 @@
             <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"DeliveryDate" | translate}} </th>
             <td mat-cell *matCellDef="let element">
                 <span *ngIf="element.newDeliveryDate == null">
-                    <span>{{ isDateValid(element.deliveryDate) ? (element.deliveryDate | date:'dd/MM/yyyy') : element.deliveryDate }}</span>
+                    <span>{{ isDateValid(element.deliveryDate) ? (element.deliveryDate | date:'dd/MM/yyyy') :
+                        element.deliveryDate }}</span>
                 </span>
                 <span *ngIf="element.newDeliveryDate != null">{{element.newDeliveryDate}}</span>
             </td>
@@ -96,6 +97,8 @@
 <ng-template #content role="document" let-modal="close">
     <div class="modal-header">
         <h5 class="modal-title">{{"OrderDetails" | translate}}</h5>
+        <h5 class="modal-title">{{"userType" | translate}} : {{orderDetail?.userType}}</h5>
+
         <button type="button" class="close" aria-label="Close" (click)="modal('Cross click')">
             <span aria-checked="true">&times;</span>
         </button>
@@ -154,8 +157,10 @@
                             {{orderDetail?.deliveryAddress?.houseNo}}, {{orderDetail?.deliveryAddress?.roadNo}},
                             {{orderDetail?.deliveryAddress?.flat}} - {{orderDetail?.deliveryAddress?.pin}}
                             ({{orderDetail?.deliveryAddress?.notes}})</td>
-                        <td class="text-center" *ngIf="orderDetail?.deliveryAddress !== null">{{orderDetail?.deliveryAddressType}}</td>
-                        <td class="text-center" *ngIf="orderDetail?.deliveryAddress == null">{{orderDetail?.pickupAddress}}</td>
+                        <td class="text-center" *ngIf="orderDetail?.deliveryAddress !== null">
+                            {{orderDetail?.deliveryAddressType}}</td>
+                        <td class="text-center" *ngIf="orderDetail?.deliveryAddress == null">
+                            {{orderDetail?.pickupAddress}}</td>
                         <td class="text-center">{{orderDetail?.paymentTypeId}}</td>
                         <td class="text-center">{{orderDetail?.deliveryNotes}}</td>
                         <td class="text-center">{{orderDetail?.unAvailableNotes}}</td>

@@ -42,7 +42,7 @@ export class MostWantedAddressComponent implements OnInit {
 
     this.userType = sessionStorage.getItem('userType');
 
-    this.displayedColumns = ['index', 'name', 'productId', 'productCount'];
+    this.displayedColumns = ['index', 'zoneName', 'address', 'notes', 'addressCount'];
 
     if (this.userType == 1 || this.userType == 0) {
       this.flowType = 'POULTRY'

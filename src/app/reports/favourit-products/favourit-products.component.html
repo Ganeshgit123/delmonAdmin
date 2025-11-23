@@ -51,7 +51,7 @@
 
         <ng-container matColumnDef="name">
             <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"Product Name" | translate}}</th>
-            <td mat-cell *matCellDef="let element">{{element.name}} </td>
+            <td mat-cell *matCellDef="let element">{{element.en_product_name}} / {{element.ar_product_name}}</td>
         </ng-container>
 
         <ng-container matColumnDef="productId">

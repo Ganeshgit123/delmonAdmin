@@ -67,7 +67,7 @@ export class DashboardComponent implements OnInit {
         height: 300,
         type: "donut"
       },
-      chartLabels: ['Total Sales for the week', 'Total Sales for the month','Total Sales during the year'],
+      chartLabels: ['Total Sales for the week', 'Total Sales for the month', 'Total Sales during the year'],
       stroke: {
         colors: ['rgba(0,0,0,0)']
       },
@@ -86,15 +86,17 @@ export class DashboardComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.adsArrayLabels = ['Total Sales for the week', 'Total Sales for the month','Total Sales during the year'];
+    this.adsArrayLabels = ['Total Sales for the week', 'Total Sales for the month', 'Total Sales during the year'];
     this.authService.dashboard('POULTRY').subscribe(
       (res: any) => {
         this.getvalue = res.data;
-        this.postsArray.push(this.getvalue[0].dailySalesCount.dailySalesCount, this.getvalue[0].weekSalesCount.weekSalesCount, 
-          this.getvalue[0].yearSalesCount.yearSalesCount 
+        this.postsArray.push(
+          Number(this.getvalue[0].dailySalesCount.dailySalesCount),
+          Number(this.getvalue[0].weekSalesCount.weekSalesCount),
+          Number(this.getvalue[0].yearSalesCount.yearSalesCount)
         );
         // this.postsArray.push(90, 89, 89);
-        // console.log("vdf",this.postsArray)
+        // console.log("vdf", this.postsArray)
         this.pieChartOptions = {
           nonAxisSeries: this.postsArray,
           colors: ["#50a820", "#f3c64f", "#ee9e43"],

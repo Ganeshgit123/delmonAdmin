@@ -193,7 +193,8 @@
                         </button>
                     </div>
                     <div class="modal-body p-3">
-                        <h5 class="text-center">{{"PICKUP" | translate}}<br> {{"to" | translate}} <br>{{"DELIVERY" | translate}}
+                        <h5 class="text-center">{{"PICKUP" | translate}}<br> {{"to" | translate}} <br>{{"DELIVERY" |
+                            translate}}
                         </h5>
                         <p class="text-center"><button type="submit" class="btn btn-own mr-0 mt-3"
                                 (click)="onSubmitDeliveryType()">{{"Change" | translate}}</button></p>
@@ -217,9 +218,12 @@
 <ng-template #content role="document" let-modal="close">
     <div class="modal-header">
         <h5 class="modal-title">{{"OrderDetails" | translate}}</h5>
+        <h5 class="modal-title">{{"userType" | translate}} : {{orderDetail?.userType}}</h5>
+
         <button type="button" class="close" aria-label="Close" (click)="modal('Cross click')">
             <span aria-checked="true">&times;</span>
         </button>
+
     </div>
     <div class="modal-body p-3">
         <p class="text-center mb-0 det_head">{{"CartDetails" | translate}}</p>

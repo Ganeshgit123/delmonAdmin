@@ -24,6 +24,11 @@ export class FinancialComponent implements OnInit {
   dir: any;
   flowType: any;
   userType: any;
+  translations: Record<string, { en: string; ar: string }> = {
+    "VAT": { en: "VAT", ar: "ضريبة القيمة المضافة" },
+    "Total Amount": { en: "Total Amount", ar: "المجموع" },
+    "Delivery Fees": { en: "Delivery Fees", ar: "مبلغ التوصيل" }
+  };
 
   @ViewChild(MatPaginator) matPaginator: MatPaginator;
   @ViewChild(MatSort) matSort: MatSort;
@@ -59,7 +64,22 @@ export class FinancialComponent implements OnInit {
         this.dataSource = new MatTableDataSource(this.getOrders);
         this.dataSource.paginator = this.matPaginator;
         this.dataSource.sort = this.matSort;
+        const orderArrays = this.getOrders.map((o: any) => o.order);
+
+        // console.log(orderArrays);
+
+        orderArrays.forEach((item) => {
+          const { value, currency } = this.parsePrice(item.price);
+          // console.log(value, currency);
+          const translation = this.translations[item.title];
+
+          if (translation) {
+            // console.log(`${translation.en} (${translation.ar}): ${value} ${currency}`);
+          }
+
+        });
       });
+
   }
 
   callRolePermission() {
@@ -150,5 +170,21 @@ export class FinancialComponent implements OnInit {
       fileName: `Financial Report ${this.formattedDateTime}`,
     });
   }
+
+  parsePrice(price: string | number | undefined) {
+    if (price == null || price === '') return { value: 0, currency: '' };
+    if (typeof price === 'number') return { value: price, currency: '' };
+
+    const str = price.toString().trim();
+    // Match number + optional space + currency
+    const match = str.match(/^([\d.,]+)\s*(.*)$/);
+    if (!match) return { value: 0, currency: '' };
+
+    const value = parseFloat(match[1].replace(',', '.')) || 0;
+    const currency = (match[2] || '').trim();
+
+    return { value, currency };
+  }
+
 
 }
