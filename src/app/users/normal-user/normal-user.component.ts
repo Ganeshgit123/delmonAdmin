@@ -49,10 +49,10 @@ export class NormalUserComponent implements OnInit {
     }
 
     if (this.showAccept == true) {
-      this.displayedColumns = ['index', 'mobileNumber', 'userName', 'email', 'walletAmount', 'dailyLimit', 'created_date', 'edit', 'active', 'walletHistory'];
+      this.displayedColumns = ['index', 'mobileNumber', 'userName', 'email', 'walletAmount', 'loyaltyPoint', 'dailyLimit', 'created_date', 'edit', 'active', 'walletHistory'];
       this.historyDisplayedColumns = ['index', 'paymentType', 'orderId', 'amount', 'type'];
     } else if (this.showAccept == false) {
-      this.displayedColumns = ['index', 'mobileNumber', 'userName', 'email', 'walletAmount', 'dailyLimit', 'created_date', 'walletHistory'];
+      this.displayedColumns = ['index', 'mobileNumber', 'userName', 'email', 'walletAmount', 'loyaltyPoint', 'dailyLimit', 'created_date', 'walletHistory'];
       this.historyDisplayedColumns = ['index', 'paymentType', 'orderId', 'amount', 'type'];
     }
 

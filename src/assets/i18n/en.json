@@ -469,5 +469,6 @@
     "Submit": "Submit",
     "Remove": "Remove",
     "TotalNoEmployee": "Total No of Employees",
-    "AddressCount": "Total Address Count"
+    "AddressCount": "Total Address Count",
+    "LoyalityPoints": "Loyality Points"
 }
