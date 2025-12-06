@@ -10,7 +10,7 @@
                         <input type="text" class="form-control" placeholder="{{'Enter Title' | translate}}"
                             formControlName="title" [ngClass]="{ 'is-invalid': submittedFcm && fF.title.errors }">
                         <div *ngIf="submittedFcm && fF.title.errors" class="invalid-feedback">
-                            <div *ngIf="fF.title.errors.required">{{"Title is required" | translate}}</div>
+                            <div *ngIf="fF.title.errors.required">{{"TitleRequire" | translate}}</div>
                         </div>
                     </div>
                     <div class="form-group">
@@ -19,25 +19,25 @@
                             placeholder="{{'Enter Message' | translate}}"
                             [ngClass]="{ 'is-invalid': submittedFcm && fF.message.errors }"></textarea>
                         <div *ngIf="submittedFcm && fF.message.errors" class="invalid-feedback">
-                            <div *ngIf="fF.message.errors.required">{{"Message is required" | translate}}</div>
+                            <div *ngIf="fF.message.errors.required">{{"MessageRequired" | translate}}</div>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="recipientType">{{"Recipient Type" | translate}}</label>
+                        <label for="recipientType">{{"RecipientType" | translate}}</label>
                         <select class="form-control" formControlName="recipientType"
                             [ngClass]="{ 'is-invalid': submittedFcm && fF.recipientType.errors }">
-                            <option value="group">{{'User Group' | translate}}</option>
-                            <option value="single">{{'Single Users' | translate}}</option>
+                            <option value="group">{{'UserGroup' | translate}}</option>
+                            <option value="single">{{'SingleUsers' | translate}}</option>
                         </select>
                         <div *ngIf="submittedFcm && fF.recipientType.errors" class="invalid-feedback">
-                            <div *ngIf="fF.recipientType.errors.required">{{"Recipient Type is required" | translate}}
+                            <div *ngIf="fF.recipientType.errors.required">{{"RecipientTypeRequired" | translate}}
                             </div>
                         </div>
                     </div>
 
                     <!-- show group dropdown when 'group' selected -->
                     <div class="form-group" *ngIf="fcmForm.get('recipientType')?.value === 'group'">
-                        <label for="group">{{"User Group" | translate}}</label>
+                        <label for="group">{{"UserGroup" | translate}}</label>
                         <select class="form-control" formControlName="groupId">
                             <option *ngFor="let g of userGroups" [value]="g.id">{{ g.name }}</option>
                         </select>
@@ -73,7 +73,7 @@
                         <input type="text" class="form-control" placeholder="{{'Enter Title' | translate}}"
                             formControlName="title" [ngClass]="{ 'is-invalid': submittedSms && fS.title.errors }">
                         <div *ngIf="submittedSms && fS.title.errors" class="invalid-feedback">
-                            <div *ngIf="fS.title.errors.required">{{"Title is required" | translate}}</div>
+                            <div *ngIf="fS.title.errors.required">{{"TitleRequire" | translate}}</div>
                         </div>
                     </div>
                     <div class="form-group">
@@ -82,25 +82,25 @@
                             placeholder="{{'Enter Message' | translate}}"
                             [ngClass]="{ 'is-invalid': submittedSms && fS.message.errors }"></textarea>
                         <div *ngIf="submittedSms && fS.message.errors" class="invalid-feedback">
-                            <div *ngIf="fS.message.errors.required">{{"Message is required" | translate}}</div>
+                            <div *ngIf="fS.message.errors.required">{{"MessageRequired" | translate}}</div>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="recipientType">{{"Recipient Type" | translate}}</label>
+                        <label for="recipientType">{{"RecipientType" | translate}}</label>
                         <select class="form-control" formControlName="recipientType"
                             [ngClass]="{ 'is-invalid': submittedSms && fS.recipientType.errors }">
-                            <option value="group">{{'User Group' | translate}}</option>
-                            <option value="single">{{'Single Users' | translate}}</option>
+                            <option value="group">{{'UserGroup' | translate}}</option>
+                            <option value="single">{{'SingleUsers' | translate}}</option>
                         </select>
                         <div *ngIf="submittedSms && fS.recipientType.errors" class="invalid-feedback">
-                            <div *ngIf="fS.recipientType.errors.required">{{"Recipient Type is required" | translate}}
+                            <div *ngIf="fS.recipientType.errors.required">{{"RecipientTypeRequired" | translate}}
                             </div>
                         </div>
                     </div>
 
                     <!-- show group dropdown when 'group' selected -->
                     <div class="form-group" *ngIf="smsForm.get('recipientType')?.value === 'group'">
-                        <label for="group">{{"User Group" | translate}}</label>
+                        <label for="group">{{"UserGroup" | translate}}</label>
                         <select class="form-control" formControlName="groupId">
                             <option *ngFor="let g of userGroups" [value]="g.id">{{ g.name }}</option>
                         </select>

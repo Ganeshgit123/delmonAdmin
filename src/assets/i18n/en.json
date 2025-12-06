@@ -470,5 +470,17 @@
     "Remove": "Remove",
     "TotalNoEmployee": "Total No of Employees",
     "AddressCount": "Total Address Count",
-    "LoyalityPoints": "Loyality Points"
+    "LoyalityPoints": "Loyality Points",
+    "Push Emails": "Push Emails",
+    "MessageRequired": "Message is required",
+    "RecipientType": "Recipient Type",
+    "UserGroup": "User Group",
+    "SingleUsers": "Single Users",
+    "RecipientTypeRequired": "Recipient Type is required",
+    "Subject": "Subject",
+    "EnterSubject": "Enter Subject",
+    "SubjectRequire": "Subject is Required",
+    "EmailBody": "Email Body",
+    "EnterBody": "Enter Body",
+    "BodyRequired": "Body is Required"
 }

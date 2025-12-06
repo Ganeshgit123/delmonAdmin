@@ -449,6 +449,10 @@ export class SidebarComponent implements OnInit, AfterViewInit {
             link: '/push-notifications',
           },
           {
+            label: 'Push Emails',
+            link: '/push-emails',
+          },
+          {
             label: 'Lucky Draw',
             link: '/lucky-draw',
           },

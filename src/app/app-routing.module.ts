@@ -169,6 +169,10 @@ const routes: Routes = [
         loadChildren: () => import("./settings/push/push.module").then((m) => m.PushModule),
       },
       {
+        path: "push-emails",
+        loadChildren: () => import("./settings/push-email/push-email.module").then((m) => m.PushEmailModule),
+      },
+      {
         path: "financial-reports",
         loadChildren: () => import("./reports/financial/financial.module").then((m) => m.FinancialModule),
       },

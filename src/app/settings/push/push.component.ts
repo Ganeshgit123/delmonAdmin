@@ -52,6 +52,32 @@ export class PushComponent implements OnInit {
       groupId: ['']
     });
 
+    // add subscription to toggle validators based on recipientType for fcmForm
+    this.fcmForm.get('recipientType')?.valueChanges.subscribe((val) => {
+      if (val === 'group') {
+        this.fcmForm.get('groupId')?.setValidators([Validators.required]);
+        this.fcmForm.get('groupId')?.updateValueAndValidity();
+        // clear selected users when switching to group (optional)
+        this.selectuser = [];
+      } else if (val === 'single') {
+        this.fcmForm.get('groupId')?.clearValidators();
+        this.fcmForm.get('groupId')?.updateValueAndValidity();
+      }
+    });
+
+    // add subscription to toggle validators based on recipientType for smsForm
+    this.smsForm.get('recipientType')?.valueChanges.subscribe((val) => {
+      if (val === 'group') {
+        this.smsForm.get('groupId')?.setValidators([Validators.required]);
+        this.smsForm.get('groupId')?.updateValueAndValidity();
+        // clear selected users when switching to group (optional)
+        this.selectuser = [];
+      } else if (val === 'single') {
+        this.smsForm.get('groupId')?.clearValidators();
+        this.smsForm.get('groupId')?.updateValueAndValidity();
+      }
+    });
+
     this.dropdownSettingsuser = {
       singleSelection: false,
       idField: 'id',
@@ -115,27 +141,48 @@ export class PushComponent implements OnInit {
       return;
     }
 
-    // if single selection required and no users selected, block (optional)
-    if (this.fcmForm.get('recipientType')?.value === 'single' && this.selectuser.length === 0) {
-      this.toastr.error('Please select at least one user');
+    const recipientType = this.fcmForm.get('recipientType')?.value;
+
+    // validate based on recipientType
+    if (recipientType === 'single' && this.selectuser.length === 0) {
+      this.toastr.error('Please select at least one user', '', { timeOut: 2000 });
       return;
     }
 
-    this.fcmForm.value.userId = this.selectuser;
-    // console.log("values", this.fcmForm.value)
+    if (recipientType === 'group' && !this.fcmForm.get('groupId')?.value) {
+      this.toastr.error('Please select a group', '', { timeOut: 2000 });
+      return;
+    }
 
-    this.authService.pushnotification(this.fcmForm.value)
+    // build payload with only the relevant key
+    const payload: any = {
+      title: this.fcmForm.get('title')?.value,
+      message: this.fcmForm.get('message')?.value,
+      recipientType: recipientType
+    };
+
+    if (recipientType === 'single') {
+      payload.userId = this.selectuser;
+    } else if (recipientType === 'group') {
+      payload.groupId = this.fcmForm.get('groupId')?.value;
+    }
+
+    this.authService.pushnotification(payload)
       .subscribe((res: any) => {
         if (res.success == true) {
-          this.toastr.success("Notification Sent Successfully");
+          this.toastr.success("Notification Sent Successfully", '', { timeOut: 2000 });
           // reset form and submitted flag
-          this.fcmForm.reset({ userId: [], recipientType: '' });
+          this.fcmForm.reset({ userId: [], recipientType: '', groupId: '' });
           this.selectuser = [];
           this.submittedFcm = false;
-          this.ngOnInit();
+          // reinitialize validators/state if needed
+          this.fcmForm.get('groupId')?.clearValidators();
+          this.fcmForm.get('groupId')?.updateValueAndValidity();
         } else {
-          this.toastr.error(res.massage);
+          this.toastr.error(res.massage || 'Failed to send notification', '', { timeOut: 2000 });
         }
+      }, (err) => {
+        this.toastr.error('Failed to send notification', '', { timeOut: 2000 });
       });
   }
 
@@ -145,25 +192,46 @@ export class PushComponent implements OnInit {
       return;
     }
 
-    if (this.smsForm.get('recipientType')?.value === 'single' && this.selectuser.length === 0) {
-      this.toastr.error('Please select at least one user');
+    const recipientType = this.smsForm.get('recipientType')?.value;
+
+    // validate based on recipientType
+    if (recipientType === 'single' && this.selectuser.length === 0) {
+      this.toastr.error('Please select at least one user', '', { timeOut: 2000 });
       return;
     }
 
-    this.smsForm.value.userId = this.selectuser;
-    // console.log("values", this.fcmForm.value)
+    if (recipientType === 'group' && !this.smsForm.get('groupId')?.value) {
+      this.toastr.error('Please select a group', '', { timeOut: 2000 });
+      return;
+    }
 
-    this.authService.pushSms(this.smsForm.value)
+    // build payload with only the relevant key
+    const payload: any = {
+      title: this.smsForm.get('title')?.value,
+      message: this.smsForm.get('message')?.value,
+      recipientType: recipientType
+    };
+
+    if (recipientType === 'single') {
+      payload.userId = this.selectuser;
+    } else if (recipientType === 'group') {
+      payload.groupId = this.smsForm.get('groupId')?.value;
+    }
+
+    this.authService.pushSms(payload)
       .subscribe((res: any) => {
         if (res.success == true) {
-          this.toastr.success("SMS Sent Successfully");
-          this.smsForm.reset({ userId: [], recipientType: '' });
+          this.toastr.success("SMS Sent Successfully", '', { timeOut: 2000 });
+          this.smsForm.reset({ userId: [], recipientType: '', groupId: '' });
           this.selectuser = [];
           this.submittedSms = false;
-          this.ngOnInit();
+          this.smsForm.get('groupId')?.clearValidators();
+          this.smsForm.get('groupId')?.updateValueAndValidity();
         } else {
-          this.toastr.error(res.massage);
+          this.toastr.error(res.massage || 'Failed to send SMS', '', { timeOut: 2000 });
         }
+      }, (err) => {
+        this.toastr.error('Failed to send SMS', '', { timeOut: 2000 });
       });
   }
 

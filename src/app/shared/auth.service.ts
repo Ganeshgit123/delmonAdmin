@@ -734,6 +734,14 @@ export class AuthService {
         { headers: headers });
   }
 
+  pushEMails(data: any) {
+    const headers = new HttpHeaders()
+      .set('type', 'POULTRY')
+    return this.http
+      .post<any>(`${this.endpoint}/emailNotification`, data,
+        { headers: headers });
+  }
+
   addSpinWheel(data: any) {
     const headers = new HttpHeaders()
       .set('type', 'POULTRY')
