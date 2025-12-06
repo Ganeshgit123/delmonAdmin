@@ -18,6 +18,14 @@ export class PushComponent implements OnInit {
   selectuser = [];
   showAccept = true;
   superAdminRole = false;
+  userGroups = [
+    { id: 'USER', name: 'Customers' },
+    { id: 'EMPLOYEE', name: 'Employees' }
+  ];
+
+  // added submitted flags
+  submittedFcm = false;
+  submittedSms = false;
 
   constructor(public fb: FormBuilder, public authService: AuthService, private toastr: ToastrService) { }
 
@@ -31,13 +39,17 @@ export class PushComponent implements OnInit {
     this.fcmForm = this.fb.group({
       title: ['', Validators.required],
       message: ['', [Validators.required]],
-      userId: ['', [Validators.required]],
+      userId: [[]],
+      recipientType: ['', Validators.required], // <- added required validator
+      groupId: ['']
     });
 
     this.smsForm = this.fb.group({
       title: ['', Validators.required],
       message: ['', [Validators.required]],
-      userId: ['', [Validators.required]],
+      userId: [[]],
+      recipientType: ['', Validators.required], // <- added required validator
+      groupId: ['']
     });
 
     this.dropdownSettingsuser = {
@@ -67,6 +79,10 @@ export class PushComponent implements OnInit {
     }
   }
 
+  // convenience getters for template
+  get fF() { return this.fcmForm.controls; }
+  get fS() { return this.smsForm.controls; }
+
   onItemSelectuser(item: any) {
 
     this.selectuser.push(item.id);
@@ -89,11 +105,22 @@ export class PushComponent implements OnInit {
     });
   }
 
-  onDeSelectAll(items: any){
+  onDeSelectAll(items: any) {
     this.selectuser = items;
   }
 
   sendFCMNotification() {
+    this.submittedFcm = true;
+    if (this.fcmForm.invalid) {
+      return;
+    }
+
+    // if single selection required and no users selected, block (optional)
+    if (this.fcmForm.get('recipientType')?.value === 'single' && this.selectuser.length === 0) {
+      this.toastr.error('Please select at least one user');
+      return;
+    }
+
     this.fcmForm.value.userId = this.selectuser;
     // console.log("values", this.fcmForm.value)
 
@@ -101,8 +128,10 @@ export class PushComponent implements OnInit {
       .subscribe((res: any) => {
         if (res.success == true) {
           this.toastr.success("Notification Sent Successfully");
-          this.fcmForm.reset();
+          // reset form and submitted flag
+          this.fcmForm.reset({ userId: [], recipientType: '' });
           this.selectuser = [];
+          this.submittedFcm = false;
           this.ngOnInit();
         } else {
           this.toastr.error(res.massage);
@@ -111,6 +140,16 @@ export class PushComponent implements OnInit {
   }
 
   sendSMS() {
+    this.submittedSms = true;
+    if (this.smsForm.invalid) {
+      return;
+    }
+
+    if (this.smsForm.get('recipientType')?.value === 'single' && this.selectuser.length === 0) {
+      this.toastr.error('Please select at least one user');
+      return;
+    }
+
     this.smsForm.value.userId = this.selectuser;
     // console.log("values", this.fcmForm.value)
 
@@ -118,8 +157,9 @@ export class PushComponent implements OnInit {
       .subscribe((res: any) => {
         if (res.success == true) {
           this.toastr.success("SMS Sent Successfully");
-          this.smsForm.reset();
+          this.smsForm.reset({ userId: [], recipientType: '' });
           this.selectuser = [];
+          this.submittedSms = false;
           this.ngOnInit();
         } else {
           this.toastr.error(res.massage);

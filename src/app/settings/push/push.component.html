@@ -8,14 +8,43 @@
                     <div class="form-group">
                         <label for="name">{{"Title" | translate}}</label>
                         <input type="text" class="form-control" placeholder="{{'Enter Title' | translate}}"
-                            formControlName="title">
+                            formControlName="title" [ngClass]="{ 'is-invalid': submittedFcm && fF.title.errors }">
+                        <div *ngIf="submittedFcm && fF.title.errors" class="invalid-feedback">
+                            <div *ngIf="fF.title.errors.required">{{"Title is required" | translate}}</div>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label for="name">{{"Message" | translate}}:</label>
                         <textarea class="form-control" formControlName="message" rows="4" cols="50"
-                            placeholder="{{'Enter Message' | translate}}"></textarea>
+                            placeholder="{{'Enter Message' | translate}}"
+                            [ngClass]="{ 'is-invalid': submittedFcm && fF.message.errors }"></textarea>
+                        <div *ngIf="submittedFcm && fF.message.errors" class="invalid-feedback">
+                            <div *ngIf="fF.message.errors.required">{{"Message is required" | translate}}</div>
+                        </div>
                     </div>
                     <div class="form-group">
+                        <label for="recipientType">{{"Recipient Type" | translate}}</label>
+                        <select class="form-control" formControlName="recipientType"
+                            [ngClass]="{ 'is-invalid': submittedFcm && fF.recipientType.errors }">
+                            <option value="group">{{'User Group' | translate}}</option>
+                            <option value="single">{{'Single Users' | translate}}</option>
+                        </select>
+                        <div *ngIf="submittedFcm && fF.recipientType.errors" class="invalid-feedback">
+                            <div *ngIf="fF.recipientType.errors.required">{{"Recipient Type is required" | translate}}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- show group dropdown when 'group' selected -->
+                    <div class="form-group" *ngIf="fcmForm.get('recipientType')?.value === 'group'">
+                        <label for="group">{{"User Group" | translate}}</label>
+                        <select class="form-control" formControlName="groupId">
+                            <option *ngFor="let g of userGroups" [value]="g.id">{{ g.name }}</option>
+                        </select>
+                    </div>
+
+                    <!-- show single-user multiselect when 'single' selected -->
+                    <div class="form-group" *ngIf="fcmForm.get('recipientType')?.value === 'single'">
                         <label for="name">{{"Users" | translate}} </label>
                         <ng-multiselect-dropdown placeholder="{{'Select Users' | translate}}"
                             [formControl]="fcmForm.controls['userId']" [settings]="dropdownSettingsuser"
@@ -42,17 +71,46 @@
                     <div class="form-group">
                         <label for="name">{{"Title" | translate}}</label>
                         <input type="text" class="form-control" placeholder="{{'Enter Title' | translate}}"
-                            formControlName="title">
+                            formControlName="title" [ngClass]="{ 'is-invalid': submittedSms && fS.title.errors }">
+                        <div *ngIf="submittedSms && fS.title.errors" class="invalid-feedback">
+                            <div *ngIf="fS.title.errors.required">{{"Title is required" | translate}}</div>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label for="name">{{"Message" | translate}}:</label>
                         <textarea class="form-control" formControlName="message" rows="4" cols="50"
-                            placeholder="{{'Enter Message' | translate}}"></textarea>
+                            placeholder="{{'Enter Message' | translate}}"
+                            [ngClass]="{ 'is-invalid': submittedSms && fS.message.errors }"></textarea>
+                        <div *ngIf="submittedSms && fS.message.errors" class="invalid-feedback">
+                            <div *ngIf="fS.message.errors.required">{{"Message is required" | translate}}</div>
+                        </div>
                     </div>
                     <div class="form-group">
+                        <label for="recipientType">{{"Recipient Type" | translate}}</label>
+                        <select class="form-control" formControlName="recipientType"
+                            [ngClass]="{ 'is-invalid': submittedSms && fS.recipientType.errors }">
+                            <option value="group">{{'User Group' | translate}}</option>
+                            <option value="single">{{'Single Users' | translate}}</option>
+                        </select>
+                        <div *ngIf="submittedSms && fS.recipientType.errors" class="invalid-feedback">
+                            <div *ngIf="fS.recipientType.errors.required">{{"Recipient Type is required" | translate}}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- show group dropdown when 'group' selected -->
+                    <div class="form-group" *ngIf="smsForm.get('recipientType')?.value === 'group'">
+                        <label for="group">{{"User Group" | translate}}</label>
+                        <select class="form-control" formControlName="groupId">
+                            <option *ngFor="let g of userGroups" [value]="g.id">{{ g.name }}</option>
+                        </select>
+                    </div>
+
+                    <!-- show single-user multiselect when 'single' selected -->
+                    <div class="form-group" *ngIf="smsForm.get('recipientType')?.value === 'single'">
                         <label for="name">{{"Users" | translate}} </label>
                         <ng-multiselect-dropdown placeholder="{{'Select Users' | translate}}"
-                            [formControl]="fcmForm.controls['userId']" [settings]="dropdownSettingsuser"
+                            [formControl]="smsForm.controls['userId']" [settings]="dropdownSettingsuser"
                             [data]="getuser" (onSelect)="onItemSelectuser($event)"
                             (onSelectAll)="onSelectAlluser($event)" (onDeSelect)="onItemDeSelect($event)"
                             (onDeSelectAll)="onDeSelectAll($event)">
