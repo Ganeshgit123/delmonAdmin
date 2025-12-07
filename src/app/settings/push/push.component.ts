@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { AuthService } from 'src/app/shared/auth.service';
 import { IDropdownSettings } from 'ng-multiselect-dropdown';
 import { ToastrService } from 'ngx-toastr';
+import { map, Observable, startWith } from 'rxjs';
 
 @Component({
   selector: 'app-push',
@@ -26,6 +27,12 @@ export class PushComponent implements OnInit {
   // added submitted flags
   submittedFcm = false;
   submittedSms = false;
+
+  userCtrl = new FormControl('');
+  filteredUsers: Observable<any[]> = new Observable();
+
+  allUsers: any[] = [];
+  selectedUsers: any[] = [];
 
   constructor(public fb: FormBuilder, public authService: AuthService, private toastr: ToastrService) { }
 
@@ -52,48 +59,20 @@ export class PushComponent implements OnInit {
       groupId: ['']
     });
 
-    // add subscription to toggle validators based on recipientType for fcmForm
-    this.fcmForm.get('recipientType')?.valueChanges.subscribe((val) => {
-      if (val === 'group') {
-        this.fcmForm.get('groupId')?.setValidators([Validators.required]);
-        this.fcmForm.get('groupId')?.updateValueAndValidity();
-        // clear selected users when switching to group (optional)
-        this.selectuser = [];
-      } else if (val === 'single') {
-        this.fcmForm.get('groupId')?.clearValidators();
-        this.fcmForm.get('groupId')?.updateValueAndValidity();
-      }
+    // Load & map API users
+    this.authService.getNormalUsers().subscribe((res: any) => {
+      this.allUsers = res.data
+        .map(u => ({
+          id: u.id,
+          text: u.mobileNumber
+        }));
     });
 
-    // add subscription to toggle validators based on recipientType for smsForm
-    this.smsForm.get('recipientType')?.valueChanges.subscribe((val) => {
-      if (val === 'group') {
-        this.smsForm.get('groupId')?.setValidators([Validators.required]);
-        this.smsForm.get('groupId')?.updateValueAndValidity();
-        // clear selected users when switching to group (optional)
-        this.selectuser = [];
-      } else if (val === 'single') {
-        this.smsForm.get('groupId')?.clearValidators();
-        this.smsForm.get('groupId')?.updateValueAndValidity();
-      }
-    });
-
-    this.dropdownSettingsuser = {
-      singleSelection: false,
-      idField: 'id',
-      textField: 'mobileNumber',
-      selectAllText: 'Select All',
-      unSelectAllText: 'UnSelect All',
-      itemsShowLimit: 3,
-      allowSearchFilter: true,
-      // enableCheckAll: true,
-    };
-    this.authService.getNormalUsers().subscribe(
-      (res: any) => {
-        this.getuser = res.data;
-      }
+    // Autocomplete filter
+    this.filteredUsers = this.userCtrl.valueChanges.pipe(
+      startWith(''),
+      map(value => this.filterUsers(value))
     );
-    this.dropdownList = this.getuser;
   }
 
   callRolePermission() {
@@ -109,30 +88,91 @@ export class PushComponent implements OnInit {
   get fF() { return this.fcmForm.controls; }
   get fS() { return this.smsForm.controls; }
 
-  onItemSelectuser(item: any) {
+  // Normalize autocomplete input
+  private filterUsers(value: any) {
+    const filterValue =
+      typeof value === 'string'
+        ? value.toLowerCase()
+        : value?.text?.toLowerCase() || '';
 
-    this.selectuser.push(item.id);
-    // console.log('dropdownafterseledct5', this.selectuser);
-
+    return this.allUsers.filter(option =>
+      option.text.toLowerCase().includes(filterValue)
+    );
   }
 
-  onItemDeSelect(items: any) {
-    this.selectuser = this.selectuser.filter(function (letter) {
-      return letter !== items.id;
+  // For autocomplete display
+  displayFn(user: any): string {
+    return user?.text || '';
+  }
+
+  // When selecting autocomplete option
+  selectUser(option: any) {
+    if (this.selectedUsers.some(u => u.id === option.id)) {
+      this.toastr.warning("User already added");
+      this.userCtrl.setValue('');
+      return;
+    }
+
+    this.selectedUsers.push({
+      id: option.id,
+      text: option.text
     });
-    // console.log("deselec",this.selectuser);
+
+    this.userCtrl.setValue('');
   }
 
-  onSelectAlluser(items: any) {
-    // console.log(items);
-    items.forEach(element => {
-      this.selectuser.push(element.id);
-      // console.log('dropdownafterseledct5', this.selectuser);
+  // Press ENTER → Select first autocomplete or add manual entry
+  handleEnter(event: any) {
+    event.preventDefault();
+
+    const value = this.userCtrl.value?.trim();
+
+    const list = this.filteredUsersSource(value);
+
+    if (list.length > 0) {
+      this.selectUser(list[0]);
+    } else {
+      this.addTypedUserManual(value);
+    }
+  }
+
+  // Manual chip addition for number input
+  addTypedUserManual(value: string) {
+    if (!value) return;
+
+    if (!/^[0-9]+$/.test(value)) {
+      this.toastr.error("Only numbers allowed");
+      return;
+    }
+
+    if (this.selectedUsers.some(u => u.text === value)) {
+      this.toastr.warning("User already added");
+      return;
+    }
+
+    this.selectedUsers.push({
+      id: value,      // fallback id = number
+      text: value
     });
+
+    this.userCtrl.setValue('');
   }
 
-  onDeSelectAll(items: any) {
-    this.selectuser = items;
+  // Helper to get filtered list synchronously
+  private filteredUsersSource(value: string) {
+    return this.allUsers.filter(u =>
+      u.text.toLowerCase().includes((value || '').toLowerCase())
+    );
+  }
+
+  // Block non-numeric keys
+  allowOnlyNumber(event: KeyboardEvent) {
+    if (!/[0-9]/.test(event.key)) event.preventDefault();
+  }
+
+  // Remove chip
+  removeUser(index: number) {
+    this.selectedUsers.splice(index, 1);
   }
 
   sendFCMNotification() {
@@ -162,22 +202,20 @@ export class PushComponent implements OnInit {
     };
 
     if (recipientType === 'single') {
-      payload.userId = this.selectuser;
-    } else if (recipientType === 'group') {
-      payload.groupId = this.fcmForm.get('groupId')?.value;
+      payload.userId = this.selectedUsers.map(u => u.id);
+    } else {
+      payload.groupId = this.fcmForm.value.groupId;
     }
+
 
     this.authService.pushnotification(payload)
       .subscribe((res: any) => {
         if (res.success == true) {
           this.toastr.success("Notification Sent Successfully", '', { timeOut: 2000 });
           // reset form and submitted flag
-          this.fcmForm.reset({ userId: [], recipientType: '', groupId: '' });
-          this.selectuser = [];
+          this.fcmForm.reset();
+          this.selectedUsers = [];
           this.submittedFcm = false;
-          // reinitialize validators/state if needed
-          this.fcmForm.get('groupId')?.clearValidators();
-          this.fcmForm.get('groupId')?.updateValueAndValidity();
         } else {
           this.toastr.error(res.massage || 'Failed to send notification', '', { timeOut: 2000 });
         }
@@ -213,20 +251,18 @@ export class PushComponent implements OnInit {
     };
 
     if (recipientType === 'single') {
-      payload.userId = this.selectuser;
-    } else if (recipientType === 'group') {
-      payload.groupId = this.smsForm.get('groupId')?.value;
+      payload.userId = this.selectedUsers.map(u => u.id);
+    } else {
+      payload.groupId = this.smsForm.value.groupId;
     }
 
     this.authService.pushSms(payload)
       .subscribe((res: any) => {
         if (res.success == true) {
           this.toastr.success("SMS Sent Successfully", '', { timeOut: 2000 });
-          this.smsForm.reset({ userId: [], recipientType: '', groupId: '' });
-          this.selectuser = [];
+          this.smsForm.reset();
+          this.selectedUsers = [];
           this.submittedSms = false;
-          this.smsForm.get('groupId')?.clearValidators();
-          this.smsForm.get('groupId')?.updateValueAndValidity();
         } else {
           this.toastr.error(res.massage || 'Failed to send SMS', '', { timeOut: 2000 });
         }

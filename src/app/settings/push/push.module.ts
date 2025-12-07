@@ -5,7 +5,11 @@ import { RouterModule } from '@angular/router';
 import { NgMaterialModule } from '../../ng-material.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
-import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatIconModule } from '@angular/material/icon';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 
 @NgModule({
   declarations: [
@@ -15,15 +19,19 @@ import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
     CommonModule,
     RouterModule.forChild([
       {
-        path:"",
+        path: "",
         component: PushComponent
       }
     ]),
     NgMaterialModule,
-    FormsModule, 
+    FormsModule,
     ReactiveFormsModule,
     TranslateModule,
-    NgMultiSelectDropDownModule
+    MatChipsModule,
+    MatIconModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatAutocompleteModule
   ]
 })
 export class PushModule { }

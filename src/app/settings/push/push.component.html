@@ -45,13 +45,41 @@
 
                     <!-- show single-user multiselect when 'single' selected -->
                     <div class="form-group" *ngIf="fcmForm.get('recipientType')?.value === 'single'">
-                        <label for="name">{{"Users" | translate}} </label>
-                        <ng-multiselect-dropdown placeholder="{{'Select Users' | translate}}"
-                            [formControl]="fcmForm.controls['userId']" [settings]="dropdownSettingsuser"
-                            [data]="getuser" (onSelect)="onItemSelectuser($event)"
-                            (onSelectAll)="onSelectAlluser($event)" (onDeSelect)="onItemDeSelect($event)"
-                            (onDeSelectAll)="onDeSelectAll($event)">
-                        </ng-multiselect-dropdown>
+                        <label>{{ "Users" | translate }}</label>
+
+                        <mat-form-field appearance="outline" class="w-100">
+
+                            <mat-chip-list #chipList>
+
+                                <mat-chip *ngFor="let user of selectedUsers; let i = index" [removable]="true"
+                                    (removed)="removeUser(i)">
+                                    {{ user.text }}
+                                    <mat-icon matChipRemove>cancel</mat-icon>
+                                </mat-chip>
+
+                                <input placeholder="Type number or select from list" matInput [formControl]="userCtrl"
+                                    [matAutocomplete]="auto" [matChipInputFor]="chipList"
+                                    (keydown.enter)="handleEnter($event)" (keypress)="allowOnlyNumber($event)" />
+
+                            </mat-chip-list>
+
+                            <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selectUser($event.option.value)"
+                                [displayWith]="displayFn">
+
+                                <!-- Show list -->
+                                <mat-option *ngFor="let option of filteredUsers | async" [value]="option">
+                                    {{ option.text }}
+                                </mat-option>
+
+                                <!-- Show when no match -->
+                                <mat-option *ngIf="(filteredUsers | async)?.length === 0" disabled>
+                                    No users found
+                                </mat-option>
+
+                            </mat-autocomplete>
+
+                        </mat-form-field>
+
                     </div>
 
                     <div class="text-right" *ngIf="showAccept">
@@ -108,13 +136,41 @@
 
                     <!-- show single-user multiselect when 'single' selected -->
                     <div class="form-group" *ngIf="smsForm.get('recipientType')?.value === 'single'">
-                        <label for="name">{{"Users" | translate}} </label>
-                        <ng-multiselect-dropdown placeholder="{{'Select Users' | translate}}"
-                            [formControl]="smsForm.controls['userId']" [settings]="dropdownSettingsuser"
-                            [data]="getuser" (onSelect)="onItemSelectuser($event)"
-                            (onSelectAll)="onSelectAlluser($event)" (onDeSelect)="onItemDeSelect($event)"
-                            (onDeSelectAll)="onDeSelectAll($event)">
-                        </ng-multiselect-dropdown>
+                        <label>{{ "Users" | translate }}</label>
+
+                        <mat-form-field appearance="outline" class="w-100">
+
+                            <mat-chip-list #chipList>
+
+                                <mat-chip *ngFor="let user of selectedUsers; let i = index" [removable]="true"
+                                    (removed)="removeUser(i)">
+                                    {{ user.text }}
+                                    <mat-icon matChipRemove>cancel</mat-icon>
+                                </mat-chip>
+
+                                <input placeholder="Type number or select from list" matInput [formControl]="userCtrl"
+                                    [matAutocomplete]="auto" [matChipInputFor]="chipList"
+                                    (keydown.enter)="handleEnter($event)" (keypress)="allowOnlyNumber($event)" />
+
+                            </mat-chip-list>
+
+                            <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selectUser($event.option.value)"
+                                [displayWith]="displayFn">
+
+                                <!-- Show list -->
+                                <mat-option *ngFor="let option of filteredUsers | async" [value]="option">
+                                    {{ option.text }}
+                                </mat-option>
+
+                                <!-- Show when no match -->
+                                <mat-option *ngIf="(filteredUsers | async)?.length === 0" disabled>
+                                    No users found
+                                </mat-option>
+
+                            </mat-autocomplete>
+
+                        </mat-form-field>
+
                     </div>
 
                     <div class="text-right" *ngIf="showAccept">

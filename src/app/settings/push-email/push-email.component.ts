@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { AuthService } from 'src/app/shared/auth.service';
-import { IDropdownSettings } from 'ng-multiselect-dropdown';
 import { ToastrService } from 'ngx-toastr';
+import { Observable } from 'rxjs';
+import { map, startWith } from 'rxjs/operators';
 
 @Component({
   selector: 'app-push-email',
@@ -10,11 +11,16 @@ import { ToastrService } from 'ngx-toastr';
   styleUrls: ['./push-email.component.scss']
 })
 export class PushEmailComponent implements OnInit {
+
   emailForm: FormGroup;
-  dropdownSettingsuser: IDropdownSettings = {};
-  getuser;
-  dropdownList;
-  selectuser = [];
+
+  userCtrl = new FormControl('');
+  filteredUsers: Observable<any[]> = new Observable();
+
+  allUsers: any[] = [];
+  selectedUsers: any[] = [];
+
+  submittedEmail = false;
   showAccept = true;
   superAdminRole = false;
   userGroups = [
@@ -22,106 +28,137 @@ export class PushEmailComponent implements OnInit {
     { id: 'EMPLOYEE', name: 'Employees' }
   ];
 
-  // added submitted flags
-  submittedEmail = false;
 
-  constructor(public fb: FormBuilder, public authService: AuthService, private toastr: ToastrService) { }
+  constructor(
+    public fb: FormBuilder,
+    public authService: AuthService,
+    private toastr: ToastrService
+  ) { }
 
   ngOnInit(): void {
-    this.callRolePermission();
-    if (sessionStorage.getItem('roleName') == 'superAdmin') {
-      this.superAdminRole = true;
-    } else {
-      this.superAdminRole = false;
-    }
+
     this.emailForm = this.fb.group({
       subject: ['', Validators.required],
-      body: ['', [Validators.required]],
-      userId: [[]],
-      recipientType: ['', Validators.required], // <- added required validator
-      groupId: ['']
+      body: ['', Validators.required],
+      recipientType: ['', Validators.required],
+      groupId: [''],
+      userId: [[]]
     });
 
-    // add subscription to toggle validators based on recipientType
-    this.emailForm.get('recipientType')?.valueChanges.subscribe((val) => {
-      if (val === 'group') {
-        this.emailForm.get('groupId')?.setValidators([Validators.required]);
-        this.emailForm.get('groupId')?.updateValueAndValidity();
-        // clear selected users when switching to group (optional)
-        this.selectuser = [];
-      } else if (val === 'single') {
-        this.emailForm.get('groupId')?.clearValidators();
-        this.emailForm.get('groupId')?.updateValueAndValidity();
-      }
+    // Load & map API users
+    this.authService.getNormalUsers().subscribe((res: any) => {
+      this.allUsers = res.data
+        .map(u => ({
+          id: u.id,
+          text: u.mobileNumber
+        }));
     });
 
-    this.dropdownSettingsuser = {
-      singleSelection: false,
-      idField: 'id',
-      textField: 'mobileNumber',
-      selectAllText: 'Select All',
-      unSelectAllText: 'UnSelect All',
-      itemsShowLimit: 3,
-      allowSearchFilter: true,
-      // enableCheckAll: true,
-    };
-    this.authService.getNormalUsers().subscribe(
-      (res: any) => {
-        this.getuser = res.data;
-      }
+    // Autocomplete filter
+    this.filteredUsers = this.userCtrl.valueChanges.pipe(
+      startWith(''),
+      map(value => this.filterUsers(value))
     );
-    this.dropdownList = this.getuser;
   }
 
-  callRolePermission() {
-    if (sessionStorage.getItem('roleName') !== 'superAdmin') {
-      let settingPermssion = JSON.parse(sessionStorage.getItem('permission'))
-      const orderPermission = settingPermssion?.find(ele => ele.area == 'master')?.write == 1
-      // console.log("fef",orderPermission)
-      this.showAccept = orderPermission
-    }
+  // Normalize autocomplete input
+  private filterUsers(value: any) {
+    const filterValue =
+      typeof value === 'string'
+        ? value.toLowerCase()
+        : value?.text?.toLowerCase() || '';
+
+    return this.allUsers.filter(option =>
+      option.text.toLowerCase().includes(filterValue)
+    );
   }
 
-  // convenience getters for template
-  get fEmail() { return this.emailForm.controls; }
-
-  onItemSelectuser(item: any) {
-
-    this.selectuser.push(item.id);
-    // console.log('dropdownafterseledct5', this.selectuser);
-
+  // For autocomplete display
+  displayFn(user: any): string {
+    return user?.text || '';
   }
 
-  onItemDeSelect(items: any) {
-    this.selectuser = this.selectuser.filter(function (letter) {
-      return letter !== items.id;
-    });
-    // console.log("deselec",this.selectuser);
-  }
-
-  onSelectAlluser(items: any) {
-    // console.log(items);
-    items.forEach(element => {
-      this.selectuser.push(element.id);
-      // console.log('dropdownafterseledct5', this.selectuser);
-    });
-  }
-
-  onDeSelectAll(items: any) {
-    this.selectuser = items;
-  }
-
-  sendEmailNotification() {
-    this.submittedEmail = true;
-    if (this.emailForm.invalid) {
+  // When selecting autocomplete option
+  selectUser(option: any) {
+    if (this.selectedUsers.some(u => u.id === option.id)) {
+      this.toastr.warning("User already added");
+      this.userCtrl.setValue('');
       return;
     }
 
+    this.selectedUsers.push({
+      id: option.id,
+      text: option.text
+    });
+
+    this.userCtrl.setValue('');
+  }
+
+  // Press ENTER → Select first autocomplete or add manual entry
+  handleEnter(event: any) {
+    event.preventDefault();
+
+    const value = this.userCtrl.value?.trim();
+
+    const list = this.filteredUsersSource(value);
+
+    if (list.length > 0) {
+      this.selectUser(list[0]);
+    } else {
+      this.addTypedUserManual(value);
+    }
+  }
+
+  // Manual chip addition for number input
+  addTypedUserManual(value: string) {
+    if (!value) return;
+
+    if (!/^[0-9]+$/.test(value)) {
+      this.toastr.error("Only numbers allowed");
+      return;
+    }
+
+    if (this.selectedUsers.some(u => u.text === value)) {
+      this.toastr.warning("User already added");
+      return;
+    }
+
+    this.selectedUsers.push({
+      id: value,      // fallback id = number
+      text: value
+    });
+
+    this.userCtrl.setValue('');
+  }
+
+  // Helper to get filtered list synchronously
+  private filteredUsersSource(value: string) {
+    return this.allUsers.filter(u =>
+      u.text.toLowerCase().includes((value || '').toLowerCase())
+    );
+  }
+
+  // Block non-numeric keys
+  allowOnlyNumber(event: KeyboardEvent) {
+    if (!/[0-9]/.test(event.key)) event.preventDefault();
+  }
+
+  // Remove chip
+  removeUser(index: number) {
+    this.selectedUsers.splice(index, 1);
+  }
+
+  get fEmail() { return this.emailForm.controls; }
+
+  sendEmailNotification() {
+    this.submittedEmail = true;
+
+    if (this.emailForm.invalid) return;
+
     const recipientType = this.emailForm.get('recipientType')?.value;
 
-    // validate based on recipientType
-    if (recipientType === 'single' && this.selectuser.length === 0) {
-      this.toastr.error('Please select at least one user', '', { timeOut: 2000 });
+    if (recipientType === 'single' && this.selectedUsers.length === 0) {
+      this.toastr.error('Please add at least one user', '', { timeOut: 2000 });
       return;
     }
 
@@ -130,38 +167,30 @@ export class PushEmailComponent implements OnInit {
       return;
     }
 
-    // build payload with only the relevant key
     const payload: any = {
-      subject: this.emailForm.get('subject')?.value,
-      body: this.emailForm.get('body')?.value,
-      recipientType: recipientType
+      subject: this.emailForm.value.subject,
+      body: this.emailForm.value.body,
+      recipientType
     };
 
     if (recipientType === 'single') {
-      payload.userId = this.selectuser;
-    } else if (recipientType === 'group') {
-      payload.groupId = this.emailForm.get('groupId')?.value;
+      payload.userId = this.selectedUsers.map(u => u.id);
+    } else {
+      payload.groupId = this.emailForm.value.groupId;
     }
 
-    // console.log("payload", payload);
-
-    this.authService.pushEMails(payload)
-      .subscribe((res: any) => {
-        if (res.success == true) {
-          this.toastr.success("Email Sent Successfully", '', { timeOut: 2000 });
-          // reset form and submitted flag
-          this.emailForm.reset({ userId: [], recipientType: '', groupId: '' });
-          this.selectuser = [];
+    this.authService.pushEMails(payload).subscribe(
+      (res: any) => {
+        if (res.success) {
+          this.toastr.success("Email Sent Successfully");
+          this.emailForm.reset();
+          this.selectedUsers = [];
           this.submittedEmail = false;
-          // reinitialize validators/state if needed
-          this.emailForm.get('groupId')?.clearValidators();
-          this.emailForm.get('groupId')?.updateValueAndValidity();
         } else {
-          this.toastr.error(res.massage || 'Failed to send email', '', { timeOut: 2000 });
+          this.toastr.error(res.massage || 'Failed to send SMS', '', { timeOut: 2000 });
         }
       }, (err) => {
-        this.toastr.error('Failed to send email', '', { timeOut: 2000 });
+        this.toastr.error('Failed to send SMS', '', { timeOut: 2000 });
       });
   }
-
 }
