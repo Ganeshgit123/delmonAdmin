@@ -48,11 +48,11 @@ export class EmployeePurchaseComponent implements OnInit {
     this.displayedColumns = ['index', 'orderId', 'customerName', 'userType', 'driverName', 'deliveryCost', 'discountPercentage',
       'total', 'paymentType', 'salesInvoiceNo', 'orderStatus', 'adminUserName', 'deliveryDate'];
 
-      if (this.userType == 1 || this.userType == 0) {
-        this.flowType = 'POULTRY'
-      } else if (this.userType == 2) {
-        this.flowType = 'FEEDING'
-      }
+    if (this.userType == 1 || this.userType == 0) {
+      this.flowType = 'POULTRY'
+    } else if (this.userType == 2) {
+      this.flowType = 'FEEDING'
+    }
 
     const object = { type: this.flowType, startDate: '', endDate: '' }
     this.authService.getFinanceReport(object).subscribe(
@@ -112,8 +112,8 @@ export class EmployeePurchaseComponent implements OnInit {
 
     this.startDate = startFomatDate;
 
-    const object = { type: this.flowType, startDate: this.startDate, endDate: this.endDate }
-    this.getDateQuery(object)
+    // const object = { type: this.flowType, startDate: this.startDate, endDate: this.endDate }
+    // this.getDateQuery(object)
   }
 
   endEvent(event) {

@@ -673,6 +673,7 @@ export class AuthService {
           .set('startDate', object.startDate)
           .set('endDate', object.endDate)
           .set('deliveryType', object.deliveryType)
+          .set('orderStatus', object.orderStatus)
       });
   }
 

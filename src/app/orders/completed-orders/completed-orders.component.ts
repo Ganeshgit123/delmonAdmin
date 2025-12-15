@@ -49,7 +49,7 @@ export class CompletedOrdersComponent implements OnInit {
       this.userFlowType = 'FEEDING';
     }
 
-    this.displayedColumns = ['index', 'orderId', 'orderDetails','drivers',
+    this.displayedColumns = ['index', 'orderId', 'orderDetails', 'drivers',
       'zone', 'area', 'orderDate', 'deliveryDate'];
 
     if (this.userType == 1 || this.userType == 0) {
@@ -93,20 +93,22 @@ export class CompletedOrdersComponent implements OnInit {
   }
 
   getTypeFilter(value) {
-      const object = { deliveryType: value.deliveryType, orderStatus: value.orderStatus, type: value.type }
-      this.authService.getOrdersWithStatus(object).subscribe(
-        (res: any) => {
-          res.data.forEach(element => {
-            element.zoneName = element.deliveryAddress?.zoneName,
-              element.area = element.deliveryAddress?.area,
-              element.driverName = element.deliveryBoyDetail?.userName
-          });
-          this.getvalue = res.data;
-          this.dataSource = new MatTableDataSource(this.getvalue);
-          this.dataSource.paginator = this.matPaginator;
-          this.dataSource.sort = this.matSort;
+    this.spinner.show();
+    const object = { deliveryType: value.deliveryType, orderStatus: value.orderStatus, type: value.type }
+    this.authService.getOrdersWithStatus(object).subscribe(
+      (res: any) => {
+        res.data.forEach(element => {
+          element.zoneName = element.deliveryAddress?.zoneName,
+            element.area = element.deliveryAddress?.area,
+            element.driverName = element.deliveryBoyDetail?.userName
         });
-    }
+        this.getvalue = res.data;
+        this.spinner.hide();
+        this.dataSource = new MatTableDataSource(this.getvalue);
+        this.dataSource.paginator = this.matPaginator;
+        this.dataSource.sort = this.matSort;
+      });
+  }
 
   onChangeFilter(value) {
     this.deliveryType = value;
@@ -119,8 +121,8 @@ export class CompletedOrdersComponent implements OnInit {
     }
   }
 
-  onChangeFlowTypeFilter(value){
-    this.userFlowType  = value;
+  onChangeFlowTypeFilter(value) {
+    this.userFlowType = value;
     const object = { deliveryType: this.deliveryType, orderStatus: 'COMPLETED', type: this.userFlowType }
     this.getTypeFilter(object)
   }

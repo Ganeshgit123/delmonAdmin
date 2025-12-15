@@ -4,6 +4,7 @@ import { OnlineSalesComponent } from './online-sales.component';
 import { RouterModule } from '@angular/router';
 import { NgMaterialModule } from '../../ng-material.module';
 import { TranslateModule } from '@ngx-translate/core';
+import { NgxSpinnerModule } from 'ngx-spinner';
 
 @NgModule({
   declarations: [
@@ -13,12 +14,13 @@ import { TranslateModule } from '@ngx-translate/core';
     CommonModule,
     RouterModule.forChild([
       {
-        path:"",
+        path: "",
         component: OnlineSalesComponent
       }
     ]),
     NgMaterialModule,
     TranslateModule,
+    NgxSpinnerModule
   ]
 })
 export class OnlineSalesModule { }

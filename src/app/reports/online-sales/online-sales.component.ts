@@ -6,6 +6,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { TranslateService } from '@ngx-translate/core';
 import { ExportType, MatTableExporterDirective } from 'mat-table-exporter';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 @Component({
   selector: 'app-online-sales',
@@ -29,7 +30,9 @@ export class OnlineSalesComponent implements OnInit {
   @ViewChild(MatSort) matSort: MatSort;
   @ViewChild(MatTableExporterDirective, { static: true }) exporter: MatTableExporterDirective;
 
-  constructor(public authService: AuthService, private router: Router, private translate: TranslateService,) { }
+  constructor(public authService: AuthService, private router: Router, private translate: TranslateService,
+    private spinner: NgxSpinnerService,
+  ) { }
 
   ngOnInit(): void {
     this.dir = localStorage.getItem('dir') || 'ltr';
@@ -43,8 +46,8 @@ export class OnlineSalesComponent implements OnInit {
 
     this.userType = sessionStorage.getItem('userType');
 
-    this.displayedColumns = ['index', 'orderId', 'customerName', 'userType', 'driverName', 'zoneName','item', 'qty', 'weight', 'total', 'paymentType','phoneNo',
-      'area','blockNo','roadNo','houseNo','flat','pin','notes'
+    this.displayedColumns = ['index', 'orderId', 'customerName', 'userType', 'driverName', 'zoneName', 'item', 'qty', 'weight', 'total', 'paymentType', 'phoneNo',
+      'area', 'blockNo', 'roadNo', 'houseNo', 'flat', 'pin', 'notes'
     ];
 
     if (this.userType == 1 || this.userType == 0) {
@@ -53,10 +56,16 @@ export class OnlineSalesComponent implements OnInit {
       this.flowType = 'FEEDING'
     }
 
-    const object = { type: this.flowType, startDate: '', endDate: '', deliveryType: 1 }
+    const object = {
+      type: this.flowType, startDate: '', endDate: '', deliveryType: 1,
+      orderStatus: 'PLACED,USERACCEPTED,DRIVERASSIGNED,OUTFORDELIVERY,COMPLETED'
+    }
+
+    this.spinner.show();
     this.authService.getInternalSalesReport(object).subscribe(
       (res: any) => {
         this.getOrders = res.data;
+        this.spinner.hide();
         // console.log("Fef",this.getOrders)
         this.dataSource = new MatTableDataSource(this.getOrders);
         this.dataSource.paginator = this.matPaginator;
@@ -74,9 +83,11 @@ export class OnlineSalesComponent implements OnInit {
   }
 
   getDateQuery(object) {
+    this.spinner.show();
     this.authService.getInternalSalesReport(object).subscribe(
       (res: any) => {
         this.getOrders = res.data;
+        this.spinner.hide();
         this.dataSource = new MatTableDataSource(this.getOrders);
         this.dataSource.paginator = this.matPaginator;
         this.dataSource.sort = this.matSort;
@@ -108,8 +119,8 @@ export class OnlineSalesComponent implements OnInit {
 
     this.startDate = startFomatDate;
 
-    const object = { type: this.flowType, startDate: this.startDate, endDate: this.endDate, deliveryType: 1 }
-    this.getDateQuery(object)
+    // const object = { type: this.flowType, startDate: this.startDate, endDate: this.endDate, deliveryType: 1 }
+    // this.getDateQuery(object)
   }
 
   endEvent(event) {
@@ -130,7 +141,10 @@ export class OnlineSalesComponent implements OnInit {
 
   onChangeFlowTypeFilter(value) {
     this.flowType = value;
-    const object = { type: this.flowType, startDate: this.startDate, endDate: this.endDate, deliveryType: 1 }
+    const object = {
+      type: this.flowType, startDate: this.startDate, endDate: this.endDate, deliveryType: 1,
+      orderStatus: 'PLACED,USERACCEPTED,DRIVERASSIGNED,OUTFORDELIVERY,COMPLETED'
+    }
     this.getDateQuery(object)
   }
 

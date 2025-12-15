@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AuthService } from 'src/app/shared/auth.service';
@@ -109,19 +109,21 @@ export class CanelledOrdersComponent implements OnInit {
   }
 
   getTypeFilter(value) {
-      const object = { deliveryType: value.deliveryType, orderStatus: value.orderStatus, type: this.userFlowType }
-      this.authService.getOrdersWithStatus(object).subscribe(
-        (res: any) => {
-          res.data.forEach(element => {
-            element.zoneName = element.deliveryAddress?.zoneName,
-              element.area = element.deliveryAddress?.area,
-              element.driverName = element.deliveryBoyDetail?.userName
-          });
-          this.getvalue = res.data;
-          this.dataSource = new MatTableDataSource(this.getvalue);
-          this.dataSource.paginator = this.matPaginator;
-          this.dataSource.sort = this.matSort;
+    this.spinner.show();
+    const object = { deliveryType: value.deliveryType, orderStatus: value.orderStatus, type: this.userFlowType }
+    this.authService.getOrdersWithStatus(object).subscribe(
+      (res: any) => {
+        res.data.forEach(element => {
+          element.zoneName = element.deliveryAddress?.zoneName,
+            element.area = element.deliveryAddress?.area,
+            element.driverName = element.deliveryBoyDetail?.userName
         });
+        this.getvalue = res.data;
+        this.spinner.hide();
+        this.dataSource = new MatTableDataSource(this.getvalue);
+        this.dataSource.paginator = this.matPaginator;
+        this.dataSource.sort = this.matSort;
+      });
   }
 
   onChangeFilter(value) {
@@ -135,8 +137,8 @@ export class CanelledOrdersComponent implements OnInit {
     }
   }
 
-  onChangeFlowTypeFilter(value){
-    this.userFlowType  = value;
+  onChangeFlowTypeFilter(value) {
+    this.userFlowType = value;
     const object = { deliveryType: this.deliveryType, orderStatus: 'USERREJECTED,CANCELLED', type: this.userFlowType }
     this.getTypeFilter(object)
   }

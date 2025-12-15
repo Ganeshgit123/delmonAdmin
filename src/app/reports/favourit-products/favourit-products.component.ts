@@ -106,8 +106,8 @@ export class FavouritProductsComponent implements OnInit {
 
     this.startDate = startFomatDate;
 
-    const object = { type: this.flowType, startDate: this.startDate, endDate: this.endDate }
-    this.getDateQuery(object)
+    // const object = { type: this.flowType, startDate: this.startDate, endDate: this.endDate }
+    // this.getDateQuery(object)
   }
 
   endEvent(event) {

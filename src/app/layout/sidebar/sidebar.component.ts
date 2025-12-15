@@ -547,7 +547,7 @@ export class SidebarComponent implements OnInit, AfterViewInit {
             } : false,
           (this.isSuperAdmin || (!this.isSuperAdmin && datat?.find(ele => ele.area == 'online-sales-reports')?.read == 1)) ?
             {
-              label: 'Online Order Reports',
+              label: 'Online Sales Reports',
               link: '/online-sales-reports',
             } : false,
           (this.isSuperAdmin || (!this.isSuperAdmin && datat?.find(ele => ele.area == 'employee-purchase-reports')?.read == 1)) ?

@@ -3,7 +3,9 @@
         <h2 class="mb-3 mb-md-0">{{"Online Order Reports" | translate}}</h2>
     </div>
 </div>
-
+<ngx-spinner bdColor="rgba(51,51,51,0.8)" size="medium" color="#fff" type="ball-scale-multiple">
+    <p style="font-size: 20px; color: white"> {{"Loading" | translate}}...</p>
+</ngx-spinner>
 <div class="row">
     <div class="col-md-3">
         <mat-form-field appearance="standard">
@@ -71,7 +73,7 @@
 
         <ng-container matColumnDef="zoneName">
             <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"Zone Name" | translate}}</th>
-            <td mat-cell *matCellDef="let element"> {{element?.deliveryAddress.zoneName}} </td>
+            <td mat-cell *matCellDef="let element"> {{element?.deliveryAddress?.zoneName}} </td>
         </ng-container>
 
         <ng-container matColumnDef="item">
@@ -118,37 +120,37 @@
 
         <ng-container matColumnDef="area">
             <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"Areas" | translate}}</th>
-            <td mat-cell *matCellDef="let element"> {{element?.deliveryAddress.area}} </td>
+            <td mat-cell *matCellDef="let element"> {{element?.deliveryAddress?.area}} </td>
         </ng-container>
 
         <ng-container matColumnDef="blockNo">
             <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"blockNo" | translate}}</th>
-            <td mat-cell *matCellDef="let element"> {{element?.deliveryAddress.blockNo}} </td>
+            <td mat-cell *matCellDef="let element"> {{element?.deliveryAddress?.blockNo}} </td>
         </ng-container>
 
         <ng-container matColumnDef="roadNo">
             <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"roadNo" | translate}}</th>
-            <td mat-cell *matCellDef="let element"> {{element?.deliveryAddress.roadNo}} </td>
+            <td mat-cell *matCellDef="let element"> {{element?.deliveryAddress?.roadNo}} </td>
         </ng-container>
 
         <ng-container matColumnDef="houseNo">
             <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"houseNum" | translate}}</th>
-            <td mat-cell *matCellDef="let element"> {{element?.deliveryAddress.houseNo}} </td>
+            <td mat-cell *matCellDef="let element"> {{element?.deliveryAddress?.houseNo}} </td>
         </ng-container>
 
         <ng-container matColumnDef="flat">
             <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"flat" | translate}}</th>
-            <td mat-cell *matCellDef="let element"> {{element?.deliveryAddress.flat}} </td>
+            <td mat-cell *matCellDef="let element"> {{element?.deliveryAddress?.flat}} </td>
         </ng-container>
 
         <ng-container matColumnDef="pin">
             <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"PinCode" | translate}}</th>
-            <td mat-cell *matCellDef="let element"> {{element?.deliveryAddress.pin}} </td>
+            <td mat-cell *matCellDef="let element"> {{element?.deliveryAddress?.pin}} </td>
         </ng-container>
 
         <ng-container matColumnDef="notes">
             <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"Notes" | translate}}</th>
-            <td mat-cell *matCellDef="let element"> {{element?.deliveryAddress.notes}} </td>
+            <td mat-cell *matCellDef="let element"> {{element?.deliveryAddress?.notes}} </td>
         </ng-container>
 
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>

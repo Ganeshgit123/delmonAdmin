@@ -110,8 +110,8 @@ export class SalesmanReportComponent implements OnInit {
 
     this.startDate = startFomatDate;
 
-    const object = {type: this.flowType, startDate: this.startDate, endDate: this.endDate }
-    this.getDateQuery(object)
+    // const object = {type: this.flowType, startDate: this.startDate, endDate: this.endDate }
+    // this.getDateQuery(object)
   }
 
   endEvent(event) {
@@ -135,7 +135,7 @@ export class SalesmanReportComponent implements OnInit {
     const object = { type: this.flowType, startDate: this.startDate, endDate: this.endDate }
     this.getDateQuery(object)
   }
-  
+
   exportIt() {
     const currentDateAndTime: Date = new Date();
     // Extract individual components
