@@ -118,6 +118,8 @@ export class PushComponent implements OnInit {
       text: option.text
     });
 
+    // keep form controls in sync
+    this.updateFormUserIds();
     this.userCtrl.setValue('');
   }
 
@@ -155,6 +157,8 @@ export class PushComponent implements OnInit {
       text: value
     });
 
+    // keep form controls in sync
+    this.updateFormUserIds();
     this.userCtrl.setValue('');
   }
 
@@ -173,6 +177,15 @@ export class PushComponent implements OnInit {
   // Remove chip
   removeUser(index: number) {
     this.selectedUsers.splice(index, 1);
+    // keep form controls in sync
+    this.updateFormUserIds();
+  }
+
+  // keep both forms' userId in sync with selectedUsers
+  private updateFormUserIds() {
+    const ids = this.selectedUsers.map(u => u.id);
+    this.fcmForm.get('userId')?.setValue(ids);
+    this.smsForm.get('userId')?.setValue(ids);
   }
 
   sendFCMNotification() {
@@ -180,11 +193,12 @@ export class PushComponent implements OnInit {
     if (this.fcmForm.invalid) {
       return;
     }
-
     const recipientType = this.fcmForm.get('recipientType')?.value;
 
+    console.log("selectedUsers", this.selectedUsers, recipientType);
+
     // validate based on recipientType
-    if (recipientType === 'single' && this.selectuser.length === 0) {
+    if (recipientType === 'single' && this.selectedUsers.length === 0) {
       this.toastr.error('Please select at least one user', '', { timeOut: 2000 });
       return;
     }
@@ -202,7 +216,8 @@ export class PushComponent implements OnInit {
     };
 
     if (recipientType === 'single') {
-      payload.userId = this.selectedUsers.map(u => u.id);
+      // use synced form control
+      payload.userId = this.fcmForm.value.userId;
     } else {
       payload.groupId = this.fcmForm.value.groupId;
     }
@@ -215,6 +230,7 @@ export class PushComponent implements OnInit {
           // reset form and submitted flag
           this.fcmForm.reset();
           this.selectedUsers = [];
+          this.updateFormUserIds();
           this.submittedFcm = false;
         } else {
           this.toastr.error(res.massage || 'Failed to send notification', '', { timeOut: 2000 });
@@ -233,7 +249,7 @@ export class PushComponent implements OnInit {
     const recipientType = this.smsForm.get('recipientType')?.value;
 
     // validate based on recipientType
-    if (recipientType === 'single' && this.selectuser.length === 0) {
+    if (recipientType === 'single' && this.selectedUsers.length === 0) {
       this.toastr.error('Please select at least one user', '', { timeOut: 2000 });
       return;
     }
@@ -251,7 +267,8 @@ export class PushComponent implements OnInit {
     };
 
     if (recipientType === 'single') {
-      payload.userId = this.selectedUsers.map(u => u.id);
+      // use synced form control
+      payload.userId = this.smsForm.value.userId;
     } else {
       payload.groupId = this.smsForm.value.groupId;
     }
@@ -262,6 +279,7 @@ export class PushComponent implements OnInit {
           this.toastr.success("SMS Sent Successfully", '', { timeOut: 2000 });
           this.smsForm.reset();
           this.selectedUsers = [];
+          this.updateFormUserIds();
           this.submittedSms = false;
         } else {
           this.toastr.error(res.massage || 'Failed to send SMS', '', { timeOut: 2000 });

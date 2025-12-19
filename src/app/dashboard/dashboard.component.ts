@@ -91,8 +91,8 @@ export class DashboardComponent implements OnInit {
       (res: any) => {
         this.getvalue = res.data;
         this.postsArray.push(
-          Number(this.getvalue[0].dailySalesCount.dailySalesCount),
           Number(this.getvalue[0].weekSalesCount.weekSalesCount),
+          Number(this.getvalue[0].monthSalesCount.monthSalesCount),
           Number(this.getvalue[0].yearSalesCount.yearSalesCount)
         );
         // this.postsArray.push(90, 89, 89);
