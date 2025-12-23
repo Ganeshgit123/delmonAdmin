@@ -11,6 +11,12 @@ import { NgxSpinnerService } from 'ngx-spinner';
 import Swal from 'sweetalert2';
 import { TranslateService } from '@ngx-translate/core';
 
+interface ApiResponse<T> {
+  error: boolean;
+  data: T;
+  message: string;
+}
+
 @Component({
   selector: 'app-poultry-product',
   templateUrl: './poultry-product.component.html',
@@ -59,13 +65,13 @@ export class PoultryProductComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.callRolePermission();
-    if (sessionStorage.getItem('roleName') == 'superAdmin') {
+    if (sessionStorage.getItem('roleName') === 'superAdmin') {
       this.superAdminRole = true;
     } else {
       this.superAdminRole = false;
     }
 
-    if (this.showAccept == true) {
+    if (this.showAccept === true) {
       this.displayedColumns = [
         'index',
         'categoryId',
@@ -81,7 +87,7 @@ export class PoultryProductComponent implements OnInit, AfterViewInit {
         'newProduct',
         'rowActionToggle',
       ];
-    } else if (this.showAccept == false) {
+    } else if (this.showAccept === false) {
       this.displayedColumns = [
         'index',
         'categoryId',
@@ -93,14 +99,14 @@ export class PoultryProductComponent implements OnInit, AfterViewInit {
       ];
     }
 
-    this.authService.getProductsWithParentOnly('POULTRY').subscribe((res: any) => {
+    this.authService.getProductsWithParentOnly('POULTRY').subscribe((res: ApiResponse<unknown>) => {
       this.getvalue = res.data;
       this.dataSource = new MatTableDataSource(this.getvalue);
       this.dataSource.paginator = this.matPaginator;
       this.dataSource.sort = this.matSort;
     });
 
-    this.authService.getCategory('POULTRY').subscribe((res: any) => {
+    this.authService.getCategory('POULTRY').subscribe((res: ApiResponse<unknown>) => {
       this.getCategory = res.data;
     });
 
@@ -123,7 +129,7 @@ export class PoultryProductComponent implements OnInit, AfterViewInit {
   callRolePermission() {
     if (sessionStorage.getItem('roleName') !== 'superAdmin') {
       const settingPermssion = JSON.parse(sessionStorage.getItem('permission'));
-      const orderPermission = settingPermssion?.find((ele) => ele.area == 'products')?.write == 1;
+      const orderPermission = settingPermssion?.find((ele) => ele.area === 'products')?.write === 1;
       // console.log("fef",orderPermission)
       this.showAccept = orderPermission;
     }
@@ -187,8 +193,9 @@ export class PoultryProductComponent implements OnInit, AfterViewInit {
     if (event.target.files && event.target.files[0]) {
       const file = event.target.files && event.target.files[0];
       const reader = new FileReader();
-      reader.onload = (event: any) => {
-        this.prodImg = event.target.result;
+      reader.onload = (e: ProgressEvent<FileReader>) => {
+        const result = (e.target as FileReader).result as string | ArrayBuffer;
+        this.prodImg = result as string;
       };
       reader.readAsDataURL(event.target.files[0]);
       this.fileImgUpload = file;
@@ -214,8 +221,8 @@ export class PoultryProductComponent implements OnInit, AfterViewInit {
       this.spinner.show();
       const postData = new FormData();
       postData.append('image', this.fileImgUpload);
-      this.authService.s3upload(postData).subscribe((res: any) => {
-        if (res.error == false) {
+      this.authService.s3upload(postData).subscribe((res: ApiResponse<unknown>) => {
+        if (res.error === false) {
           this.iconImg = res.files;
           this.imgs3.push(this.iconImg);
           this.productForm.value.image = JSON.stringify(this.imgs3);
@@ -254,11 +261,11 @@ export class PoultryProductComponent implements OnInit, AfterViewInit {
   }
 
   typeChange(event) {
-    if (event.source.value == 'piece') {
-      this.checkPieceValue = event.source.checked == true ? true : false;
+    if (event.source.value === 'piece') {
+      this.checkPieceValue = event.source.checked === true ? true : false;
     }
-    if (event.source.value == 'carton') {
-      this.checkCartonValue = event.source.checked == true ? true : false;
+    if (event.source.value === 'carton') {
+      this.checkCartonValue = event.source.checked === true ? true : false;
     }
   }
 
@@ -283,8 +290,8 @@ export class PoultryProductComponent implements OnInit, AfterViewInit {
     this.productForm.value.parentId = 0;
     this.productForm.value.isBasket = 0;
     // console.log("submit", this.productForm.value)
-    this.authService.addProduct(data).subscribe((res: any) => {
-      if (res.error == false) {
+    this.authService.addProduct(data).subscribe((res: ApiResponse<unknown>) => {
+      if (res.error === false) {
         this.toastr.success('Success ', res.message);
         this.spinner.hide();
         this.submitted = false;
@@ -307,17 +314,17 @@ export class PoultryProductComponent implements OnInit, AfterViewInit {
     this.productId = data['id'];
     this.uploadFiles = [];
     this.iconImg = data['image'];
-    if (this.iconImg.length == 0) {
+    if (this.iconImg.length === 0) {
       this.iconImg = '';
       this.prodImg = '';
     }
-    if (data['piecesActive'] == 1 && data['cartonActive'] == 0) {
+    if (data['piecesActive'] === 1 && data['cartonActive'] === 0) {
       this.checkPieceValue = true;
       this.checkCartonValue = false;
-    } else if (data['cartonActive'] == 1 && data['piecesActive'] == 0) {
+    } else if (data['cartonActive'] === 1 && data['piecesActive'] === 0) {
       this.checkCartonValue = true;
       this.checkPieceValue = false;
-    } else if (data['piecesActive'] == 1 && data['cartonActive'] == 1) {
+    } else if (data['piecesActive'] === 1 && data['cartonActive'] === 1) {
       this.checkPieceValue = true;
       this.checkCartonValue = true;
     }
@@ -340,8 +347,8 @@ export class PoultryProductComponent implements OnInit, AfterViewInit {
       this.spinner.show();
       const postData = new FormData();
       postData.append('image', this.fileImgUpload);
-      this.authService.s3upload(postData).subscribe((res: any) => {
-        if (res.error == false) {
+      this.authService.s3upload(postData).subscribe((res: ApiResponse<unknown>) => {
+        if (res.error === false) {
           this.iconImg = res.files;
           this.imgs3.push(this.iconImg);
           this.productForm.value.image = JSON.stringify(this.imgs3);
@@ -381,23 +388,23 @@ export class PoultryProductComponent implements OnInit, AfterViewInit {
   }
 
   editProductImage(data) {
-    if (this.checkPieceValue == true && this.checkCartonValue == false) {
+    if (this.checkPieceValue === true && this.checkCartonValue === false) {
       this.productForm.value.soldType = 1;
       this.productForm.value.piecesActive = 1;
       this.productForm.value.cartonActive = 0;
     }
-    if (this.checkCartonValue == true && this.checkPieceValue == false) {
+    if (this.checkCartonValue === true && this.checkPieceValue === false) {
       this.productForm.value.soldType = 2;
       this.productForm.value.cartonActive = 1;
       this.productForm.value.piecesActive = 0;
     }
-    if (this.checkPieceValue == true && this.checkCartonValue == true) {
+    if (this.checkPieceValue === true && this.checkCartonValue === true) {
       this.productForm.value.soldType = 3;
       this.productForm.value.piecesActive = 1;
       this.productForm.value.cartonActive = 1;
     }
-    this.authService.editProduct(data, this.productId).subscribe((res: any) => {
-      if (res.error == false) {
+    this.authService.editProduct(data, this.productId).subscribe((res: ApiResponse<unknown>) => {
+      if (res.error === false) {
         this.toastr.success('Success ', res.message);
         this.spinner.hide();
         this.getRelatedProduct();
@@ -413,7 +420,7 @@ export class PoultryProductComponent implements OnInit, AfterViewInit {
   }
 
   getRelatedProduct() {
-    this.authService.getProductsDetails('POULTRY', this.productId).subscribe((res: any) => {
+    this.authService.getProductsDetails('POULTRY', this.productId).subscribe((res: ApiResponse<unknown>) => {
       const filteredData = res.data.filter((item) => item.id !== this.productId);
       const updatedData = filteredData.map((obj) => ({
         id: obj.id,
@@ -425,8 +432,8 @@ export class PoultryProductComponent implements OnInit, AfterViewInit {
       }));
       // console.log("afterUpdate", updatedData)
       const object = { product: updatedData };
-      this.authService.editReletedProduct(object).subscribe((res: any) => {
-        if (res.error == false) {
+      this.authService.editReletedProduct(object).subscribe((res: ApiResponse<unknown>) => {
+        if (res.error === false) {
           this.productForm.reset();
           this.ngOnInit();
         }
@@ -438,8 +445,8 @@ export class PoultryProductComponent implements OnInit, AfterViewInit {
     const visible = value.active === 1 ? 0 : 1;
     const object = { active: visible };
 
-    this.authService.editProduct(object, value.id).subscribe((res: any) => {
-      if (res.error == false) {
+    this.authService.editProduct(object, value.id).subscribe((res: ApiResponse<unknown>) => {
+      if (res.error === false) {
         this.toastr.success('Success ', res.message);
         this.ngOnInit();
       } else {
@@ -460,20 +467,20 @@ export class PoultryProductComponent implements OnInit, AfterViewInit {
       confirmButtonText: this.translate.instant('YesDeleteIt'),
     }).then((result) => {
       if (result.isConfirmed) {
-        (Swal.fire({
+        Swal.fire({
           title: this.translate.instant('Deleted'),
           text: this.translate.instant('YourFileHasBeenDeleted'),
           icon: 'success',
           confirmButtonText: this.translate.instant('Ok'),
-        }),
-          this.authService.deleteProd(value).subscribe((res: any) => {
-            if (res.error == false) {
-              this.toastr.success('Success ', res.message);
-              this.ngOnInit();
-            } else {
-              this.toastr.error('Error', res.message);
-            }
-          }));
+        });
+        this.authService.deleteProd(value).subscribe((res: ApiResponse<unknown>) => {
+          if (res.error === false) {
+            this.toastr.success('Success ', res.message);
+            this.ngOnInit();
+          } else {
+            this.toastr.error('Error', res.message);
+          }
+        });
       }
     });
   }
@@ -496,7 +503,7 @@ export class PoultryProductComponent implements OnInit, AfterViewInit {
 
   sentProdutId(id) {
     const result = this.getReceipeList.filter((obj) => {
-      return obj.id == id;
+      return obj.id === id;
     });
 
     // concatenate the above arrays using spread operator
@@ -509,7 +516,9 @@ export class PoultryProductComponent implements OnInit, AfterViewInit {
   removeImg(id) {
     const findIndex = this.filteredProd.findIndex((a) => a.id === id);
 
-    findIndex !== -1 && this.filteredProd.splice(findIndex, 1);
+    if (findIndex !== -1) {
+      this.filteredProd.splice(findIndex, 1);
+    }
   }
 
   recipeSubmit() {
@@ -525,8 +534,8 @@ export class PoultryProductComponent implements OnInit, AfterViewInit {
       recipiesId: JSON.stringify(lastArray),
     };
 
-    this.authService.editProduct(data, this.productId).subscribe((res: any) => {
-      if (res.error == false) {
+    this.authService.editProduct(data, this.productId).subscribe((res: ApiResponse<unknown>) => {
+      if (res.error === false) {
         this.toastr.success('Success ', res.message);
         this.productForm.reset();
         lastArray = [];
@@ -543,8 +552,8 @@ export class PoultryProductComponent implements OnInit, AfterViewInit {
     const visible = value.mostWantedProduct === 1 ? 0 : 1;
     const object = { mostWantedProduct: visible };
 
-    this.authService.editProduct(object, value.id).subscribe((res: any) => {
-      if (res.error == false) {
+    this.authService.editProduct(object, value.id).subscribe((res: ApiResponse<unknown>) => {
+      if (res.error === false) {
         this.toastr.success('Success ', res.message);
         this.ngOnInit();
       } else {
@@ -557,8 +566,8 @@ export class PoultryProductComponent implements OnInit, AfterViewInit {
     const visible = value.offers === 1 ? 0 : 1;
     const object = { offers: visible };
 
-    this.authService.editProduct(object, value.id).subscribe((res: any) => {
-      if (res.error == false) {
+    this.authService.editProduct(object, value.id).subscribe((res: ApiResponse<unknown>) => {
+      if (res.error === false) {
         this.toastr.success('Success ', res.message);
         this.ngOnInit();
       } else {
@@ -570,8 +579,8 @@ export class PoultryProductComponent implements OnInit, AfterViewInit {
     const visible = value.newProduct === 1 ? 0 : 1;
     const object = { newProduct: visible };
 
-    this.authService.editProduct(object, value.id).subscribe((res: any) => {
-      if (res.error == false) {
+    this.authService.editProduct(object, value.id).subscribe((res: ApiResponse<unknown>) => {
+      if (res.error === false) {
         this.toastr.success('Success ', res.message);
         this.ngOnInit();
       } else {
