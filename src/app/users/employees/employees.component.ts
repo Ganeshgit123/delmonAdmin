@@ -19,12 +19,12 @@ export class EmployeesComponent implements OnInit, AfterViewInit {
   historyDisplayedColumns: string[];
   dataSource: MatTableDataSource<any>;
   historyDataSource: MatTableDataSource<any>;
-  getUsers = [];
+  getUsers: any[] = [];
   userId: any;
   showAccept = true;
   superAdminRole = false;
   formattedDateTime: string;
-  getHistory = [];
+  getHistory: any[] = [];
 
   @ViewChild('paginator1') paginator1!: MatPaginator;
   @ViewChild('sort1') sort1!: MatSort;
@@ -83,7 +83,7 @@ export class EmployeesComponent implements OnInit, AfterViewInit {
 
     this.authService.getEmployeeUsers().subscribe((res: any) => {
       this.getUsers = res.data;
-      this.dataSource = new MatTableDataSource(this.getUsers);
+      this.dataSource = new MatTableDataSource<any>(this.getUsers as any[]);
       this.dataSource.paginator = this.paginator1;
       this.dataSource.sort = this.sort1;
     });
@@ -91,7 +91,8 @@ export class EmployeesComponent implements OnInit, AfterViewInit {
 
   callRolePermission() {
     if (sessionStorage.getItem('roleName') !== 'superAdmin') {
-      const settingPermssion = JSON.parse(sessionStorage.getItem('permission'));
+      const rawPermission = sessionStorage.getItem('permission');
+      const settingPermssion = rawPermission ? JSON.parse(rawPermission) : null;
       const orderPermission = settingPermssion?.find((ele) => ele.area == 'users')?.write == 1;
       // console.log("fef",orderPermission)
       this.showAccept = orderPermission;
@@ -182,7 +183,7 @@ export class EmployeesComponent implements OnInit, AfterViewInit {
     this.authService.getUserHistory(id).subscribe({
       next: (res: any) => {
         this.getHistory = res.data;
-        this.historyDataSource = new MatTableDataSource(this.getHistory);
+        this.historyDataSource = new MatTableDataSource<any>(this.getHistory as any[]);
         this.historyDataSource.paginator = this.paginator2;
         this.historyDataSource.sort = this.sort2;
       },

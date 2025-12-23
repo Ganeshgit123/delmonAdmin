@@ -21,14 +21,14 @@ export class NormalUserComponent implements OnInit, AfterViewInit {
   historyDisplayedColumns: string[];
   dataSource: MatTableDataSource<any>;
   historyDataSource: MatTableDataSource<any>;
-  getUsers = [];
+  getUsers: any[] = [];
   employeeForm: FormGroup;
   submitted = false;
   userId: any;
   showAccept = true;
   superAdminRole = false;
   formattedDateTime: string;
-  getHistory = [];
+  getHistory: any[] = [];
 
   @ViewChild('paginator1') paginator1!: MatPaginator;
   @ViewChild('sort1') sort1!: MatSort;
@@ -88,7 +88,7 @@ export class NormalUserComponent implements OnInit, AfterViewInit {
     this.authService.getNormalUsers().subscribe((res: any) => {
       this.getUsers = res.data;
       this.spinner.hide();
-      this.dataSource = new MatTableDataSource(this.getUsers);
+      this.dataSource = new MatTableDataSource<any>(this.getUsers as any[]);
       this.dataSource.paginator = this.paginator1;
       this.dataSource.sort = this.sort1;
     });
@@ -191,7 +191,7 @@ export class NormalUserComponent implements OnInit, AfterViewInit {
     this.authService.getUserHistory(id).subscribe({
       next: (res: any) => {
         this.getHistory = res.data;
-        this.historyDataSource = new MatTableDataSource(this.getHistory);
+        this.historyDataSource = new MatTableDataSource<any>(this.getHistory as any[]);
         this.historyDataSource.paginator = this.paginator2;
         this.historyDataSource.sort = this.sort2;
       },

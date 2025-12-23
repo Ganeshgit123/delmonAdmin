@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { Router, ActivatedRoute } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AuthService } from 'src/app/shared/auth.service';
 import { MatPaginator } from '@angular/material/paginator';
@@ -15,10 +15,10 @@ import { TranslateService } from '@ngx-translate/core';
   styleUrls: ['./pin.component.scss'],
 })
 export class PinComponent implements OnInit, AfterViewInit {
-  displayedColumns: string[];
-  dataSource: MatTableDataSource<any>;
-  getvalue = [];
-  pinForm: FormGroup;
+  displayedColumns!: string[];
+  dataSource!: MatTableDataSource<any>;
+  getvalue: any[] = [];
+  pinForm!: FormGroup;
   isEdit = false;
   areaId: any;
   pinId: any;
@@ -26,15 +26,14 @@ export class PinComponent implements OnInit, AfterViewInit {
   showAccept = true;
   superAdminRole = false;
 
-  @ViewChild(MatPaginator) matPaginator: MatPaginator;
-  @ViewChild(MatSort) matSort: MatSort;
+  @ViewChild(MatPaginator) matPaginator!: MatPaginator;
+  @ViewChild(MatSort) matSort!: MatSort;
 
   constructor(
     private modalService: NgbModal,
     public fb: FormBuilder,
     public authService: AuthService,
     private toastr: ToastrService,
-    private router: Router,
     private route: ActivatedRoute,
     private translate: TranslateService,
   ) {}
@@ -59,7 +58,7 @@ export class PinComponent implements OnInit, AfterViewInit {
 
     this.authService.getPin(this.areaId).subscribe((res: any) => {
       this.getvalue = res.data;
-      this.dataSource = new MatTableDataSource(this.getvalue);
+      this.dataSource = new MatTableDataSource<any>(this.getvalue as any[]);
       this.dataSource.paginator = this.matPaginator;
       this.dataSource.sort = this.matSort;
     });
@@ -76,7 +75,8 @@ export class PinComponent implements OnInit, AfterViewInit {
 
   callRolePermission() {
     if (sessionStorage.getItem('roleName') !== 'superAdmin') {
-      const settingPermssion = JSON.parse(sessionStorage.getItem('permission'));
+      const rawPermission = sessionStorage.getItem('permission');
+      const settingPermssion = rawPermission ? JSON.parse(rawPermission) : null;
       const orderPermission = settingPermssion?.find((ele) => ele.area == 'zones')?.write == 1;
       // console.log("fef",orderPermission)
       this.showAccept = orderPermission;

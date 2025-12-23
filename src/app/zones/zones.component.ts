@@ -15,18 +15,18 @@ import { TranslateService } from '@ngx-translate/core';
   styleUrls: ['./zones.component.scss'],
 })
 export class ZonesComponent implements OnInit, AfterViewInit {
-  displayedColumns: string[];
-  dataSource: MatTableDataSource<any>;
-  getvalue = [];
-  zoneForm: FormGroup;
+  displayedColumns!: string[];
+  dataSource!: MatTableDataSource<any>;
+  getvalue: any[] = [];
+  zoneForm!: FormGroup;
   isEdit = false;
   zoneId: any;
   submitted = false;
   showAccept = true;
   superAdminRole = false;
 
-  @ViewChild(MatPaginator) matPaginator: MatPaginator;
-  @ViewChild(MatSort) matSort: MatSort;
+  @ViewChild(MatPaginator) matPaginator!: MatPaginator;
+  @ViewChild(MatSort) matSort!: MatSort;
 
   constructor(
     private modalService: NgbModal,
@@ -53,7 +53,7 @@ export class ZonesComponent implements OnInit, AfterViewInit {
 
     this.authService.getZones().subscribe((res: any) => {
       this.getvalue = res.data;
-      this.dataSource = new MatTableDataSource(this.getvalue);
+      this.dataSource = new MatTableDataSource<any>(this.getvalue as any[]);
       this.dataSource.paginator = this.matPaginator;
       this.dataSource.sort = this.matSort;
     });
@@ -71,7 +71,8 @@ export class ZonesComponent implements OnInit, AfterViewInit {
 
   callRolePermission() {
     if (sessionStorage.getItem('roleName') !== 'superAdmin') {
-      const settingPermssion = JSON.parse(sessionStorage.getItem('permission'));
+      const rawPermission = sessionStorage.getItem('permission');
+      const settingPermssion = rawPermission ? JSON.parse(rawPermission) : null;
       const orderPermission = settingPermssion?.find((ele) => ele.area == 'zones')?.write == 1;
       // console.log("fef",orderPermission)
       this.showAccept = orderPermission;
