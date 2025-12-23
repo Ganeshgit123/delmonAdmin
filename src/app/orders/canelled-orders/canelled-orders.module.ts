@@ -8,22 +8,20 @@ import { TranslateModule } from '@ngx-translate/core';
 import { NgxSpinnerModule } from 'ngx-spinner';
 
 @NgModule({
-  declarations: [
-    CanelledOrdersComponent
-  ],
+  declarations: [CanelledOrdersComponent],
   imports: [
     CommonModule,
     RouterModule.forChild([
       {
-        path: "",
-        component: CanelledOrdersComponent
-      }
+        path: '',
+        component: CanelledOrdersComponent,
+      },
     ]),
     NgMaterialModule,
     TranslateModule,
     FormsModule,
     ReactiveFormsModule,
-    NgxSpinnerModule
-  ]
+    NgxSpinnerModule,
+  ],
 })
-export class CanelledOrdersModule { }
+export class CanelledOrdersModule {}

@@ -39,9 +39,9 @@ bootstrapApplication(AppComponent, {
         loader: {
           provide: TranslateLoader,
           useFactory: createTranslateLoader,
-          deps: [HttpClient]
-        }
-      })
+          deps: [HttpClient],
+        },
+      }),
     ),
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
     AuthGuard,
@@ -53,8 +53,8 @@ bootstrapApplication(AppComponent, {
           xml: () => import('highlight.js/lib/languages/xml'),
           typescript: () => import('highlight.js/lib/languages/typescript'),
           scss: () => import('highlight.js/lib/languages/scss'),
-        }
-      }
-    }
-  ]
-}).catch(err => console.error(err));
+        },
+      },
+    },
+  ],
+}).catch((err) => console.error(err));

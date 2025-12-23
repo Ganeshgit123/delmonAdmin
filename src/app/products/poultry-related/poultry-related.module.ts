@@ -7,24 +7,21 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgxSpinnerModule } from 'ngx-spinner';
 import { TranslateModule } from '@ngx-translate/core';
 
-
 @NgModule({
-  declarations: [
-    PoultryRelatedComponent
-  ],
+  declarations: [PoultryRelatedComponent],
   imports: [
     CommonModule,
     RouterModule.forChild([
       {
-        path:"",
-        component: PoultryRelatedComponent
-      }
+        path: '',
+        component: PoultryRelatedComponent,
+      },
     ]),
     NgMaterialModule,
     TranslateModule,
-    FormsModule, 
+    FormsModule,
     ReactiveFormsModule,
     NgxSpinnerModule,
-  ]
+  ],
 })
-export class PoultryRelatedModule { }
+export class PoultryRelatedModule {}

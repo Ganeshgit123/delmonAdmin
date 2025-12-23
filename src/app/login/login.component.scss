@@ -1,58 +1,57 @@
-
-.img_logo{
+.img_logo {
   position: relative;
   top: -6.5rem;
   left: 2rem;
 }
 
-.img_logo:lang(ar){
+.img_logo:lang(ar) {
   position: relative;
   top: -6.5rem;
   right: 2rem;
 }
-.long_illu_img{
+.long_illu_img {
   position: relative;
   top: -3rem;
 }
-.img_left{
+.img_left {
   background: url('../../assets/images/background_imagee.svg') no-repeat;
   background-size: cover;
   padding: 8rem 0;
-} 
-.common_sec{
+}
+.common_sec {
   padding: 60px 0 0 0;
 }
-@media only screen and (min-width: 768px) and (max-width: 1023px) { 
-  .common_sec{
+@media only screen and (min-width: 768px) and (max-width: 1023px) {
+  .common_sec {
     padding: 60px 80px 0 80px;
   }
-  .img_left{
+  .img_left {
     background: none;
   }
 }
-.eye_symbol{
+.eye_symbol {
   position: relative;
   float: right;
   right: 19px;
   font-size: 24px;
   top: -28px;
 }
-.eye_symbol:lang(ar){
+.eye_symbol:lang(ar) {
   float: left;
   left: 19px;
   right: auto;
 }
 .hide {
-display: none;
+  display: none;
 }
 
-.form-group label{
+.form-group label {
   font-size: 1rem;
 }
-.form-control{
+.form-control {
   height: 40px !important;
   font-size: 1rem !important;
 }
-.btn{
+.btn {
   font-size: 1rem;
 }

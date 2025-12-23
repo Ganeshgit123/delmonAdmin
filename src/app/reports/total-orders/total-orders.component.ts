@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/shared/auth.service';
 import { MatPaginator } from '@angular/material/paginator';
@@ -10,9 +10,9 @@ import { ExportType, MatTableExporterDirective } from '@csmart/mat-table-exporte
 @Component({
   selector: 'app-total-orders',
   templateUrl: './total-orders.component.html',
-  styleUrls: ['./total-orders.component.scss']
+  styleUrls: ['./total-orders.component.scss'],
 })
-export class TotalOrdersComponent implements OnInit {
+export class TotalOrdersComponent implements OnInit, AfterViewInit {
   displayedColumns: string[];
   dataSource: MatTableDataSource<any>;
   getOrders = [];
@@ -31,7 +31,11 @@ export class TotalOrdersComponent implements OnInit {
   @ViewChild(MatSort) matSort: MatSort;
   @ViewChild(MatTableExporterDirective, { static: true }) exporter: MatTableExporterDirective;
 
-  constructor(public authService: AuthService, private router: Router, private translate: TranslateService,) { }
+  constructor(
+    public authService: AuthService,
+    private router: Router,
+    private translate: TranslateService,
+  ) {}
 
   ngOnInit(): void {
     this.dir = localStorage.getItem('dir') || 'ltr';
@@ -44,47 +48,60 @@ export class TotalOrdersComponent implements OnInit {
 
     this.userType = sessionStorage.getItem('userType');
 
-    this.displayedColumns = ['index', 'driverName', 'productName', 'soldType', 'weight', 'quantity', 'orderDate', 'deliveryDate'];
+    this.displayedColumns = [
+      'index',
+      'driverName',
+      'productName',
+      'soldType',
+      'weight',
+      'quantity',
+      'orderDate',
+      'deliveryDate',
+    ];
 
     if (this.userType == 1 || this.userType == 0) {
-      this.flowType = 'POULTRY'
+      this.flowType = 'POULTRY';
     } else if (this.userType == 2) {
-      this.flowType = 'FEEDING'
+      this.flowType = 'FEEDING';
     }
 
-    const object = { type: this.flowType, deliveryBoyId: '', startDate: '', endDate: '', orderStatus: 'DRIVERASSIGNED,OUTFORDELIVERY' }
-    this.authService.getSalesReport(object).subscribe(
-      (res: any) => {
-        res.deliveryBoyOrderList.forEach(element => {
-          element.cartDetails.forEach(cartdet => {
-            cartdet.driverName = element.driverName
-            cartdet.orderPlaceTime = element.orderPlaceTime
-            cartdet.deliveryDate = element.deliveryDate
-            cartdet.deliveryOrderDate = element.deliveryOrderDate
-            cartdet.newDeliveryDate = element.newDeliveryDate
-            this.getOrders.push(cartdet);
-          });
+    const object = {
+      type: this.flowType,
+      deliveryBoyId: '',
+      startDate: '',
+      endDate: '',
+      orderStatus: 'DRIVERASSIGNED,OUTFORDELIVERY',
+    };
+    this.authService.getSalesReport(object).subscribe((res: any) => {
+      res.deliveryBoyOrderList.forEach((element) => {
+        element.cartDetails.forEach((cartdet) => {
+          cartdet.driverName = element.driverName;
+          cartdet.orderPlaceTime = element.orderPlaceTime;
+          cartdet.deliveryDate = element.deliveryDate;
+          cartdet.deliveryOrderDate = element.deliveryOrderDate;
+          cartdet.newDeliveryDate = element.newDeliveryDate;
+          this.getOrders.push(cartdet);
         });
-        const aggregatedOrders = this.aggregateOrders(this.getOrders);
-        // console.log(aggregatedOrders);
-        var revOrder = aggregatedOrders.reverse();
-        this.dataSource = new MatTableDataSource(revOrder);
-        this.dataSource.paginator = this.matPaginator;
-        this.dataSource.sort = this.matSort;
       });
+      const aggregatedOrders = this.aggregateOrders(this.getOrders);
+      // console.log(aggregatedOrders);
+      const revOrder = aggregatedOrders.reverse();
+      this.dataSource = new MatTableDataSource(revOrder);
+      this.dataSource.paginator = this.matPaginator;
+      this.dataSource.sort = this.matSort;
+    });
 
-    this.authService.getDriversActive(1).subscribe(
-      (res: any) => {
-        this.getDrivers = res.data.reverse();
-      });
+    this.authService.getDriversActive(1).subscribe((res: any) => {
+      this.getDrivers = res.data.reverse();
+    });
   }
 
   aggregateOrders(orders) {
     const aggregated = {};
 
-    orders.forEach(order => {
-      const date = order.newDeliveryDate || order.deliveryOrderDate;  // Use newDeliveryDate if it exists, else use deliveryOrderDate
-      const key = `${order.productId}-${date}-${order.driverName}`;  // Unique key based on productId, date, and driverName
+    orders.forEach((order) => {
+      const date = order.newDeliveryDate || order.deliveryOrderDate; // Use newDeliveryDate if it exists, else use deliveryOrderDate
+      const key = `${order.productId}-${date}-${order.driverName}`; // Unique key based on productId, date, and driverName
 
       if (aggregated[key]) {
         // If the key exists, add the quantity
@@ -93,7 +110,7 @@ export class TotalOrdersComponent implements OnInit {
         // If the key doesn't exist, initialize it with the current order's data
         aggregated[key] = {
           ...order,
-          quantity: order.quantity  // Ensure the quantity is initialized
+          quantity: order.quantity, // Ensure the quantity is initialized
         };
       }
     });
@@ -104,40 +121,38 @@ export class TotalOrdersComponent implements OnInit {
 
   callRolePermission() {
     if (sessionStorage.getItem('roleName') !== 'superAdmin') {
-      let settingPermssion = JSON.parse(sessionStorage.getItem('permission'))
-      const orderPermission = settingPermssion?.find(ele => ele.area == 'total-orders')?.write == 1
+      const settingPermssion = JSON.parse(sessionStorage.getItem('permission'));
+      const orderPermission = settingPermssion?.find((ele) => ele.area == 'total-orders')?.write == 1;
       // console.log("fef",orderPermission)
-      this.showAccept = orderPermission
+      this.showAccept = orderPermission;
     }
   }
 
   ngAfterViewInit(): void {
-    this.matPaginator._intl.itemsPerPageLabel = this.translate.instant("itemsPerPage");
+    this.matPaginator._intl.itemsPerPageLabel = this.translate.instant('itemsPerPage');
   }
 
   getDateQuery(object) {
-    this.authService.getSalesReport(object).subscribe(
-      (res: any) => {
-        let filterArray = [];
-        res.deliveryBoyOrderList.forEach(element => {
-          element.cartDetails.forEach(cartdet => {
-            cartdet.driverName = element.driverName
-            cartdet.driverName = element.driverName
-            cartdet.orderPlaceTime = element.orderPlaceTime
-            cartdet.deliveryDate = element.deliveryDate
-            cartdet.deliveryOrderDate = element.deliveryOrderDate
-            cartdet.newDeliveryDate = element.newDeliveryDate
-            filterArray.push(cartdet);
-          });
+    this.authService.getSalesReport(object).subscribe((res: any) => {
+      const filterArray = [];
+      res.deliveryBoyOrderList.forEach((element) => {
+        element.cartDetails.forEach((cartdet) => {
+          cartdet.driverName = element.driverName;
+          cartdet.driverName = element.driverName;
+          cartdet.orderPlaceTime = element.orderPlaceTime;
+          cartdet.deliveryDate = element.deliveryDate;
+          cartdet.deliveryOrderDate = element.deliveryOrderDate;
+          cartdet.newDeliveryDate = element.newDeliveryDate;
+          filterArray.push(cartdet);
         });
-        const aggregatedOrders = this.aggregateOrders(filterArray);
-        // console.log(aggregatedOrders);
-        var revOrder = aggregatedOrders.reverse();
-        this.dataSource = new MatTableDataSource(revOrder);
-        this.dataSource.paginator = this.matPaginator;
-        this.dataSource.sort = this.matSort;
-      }
-    );
+      });
+      const aggregatedOrders = this.aggregateOrders(filterArray);
+      // console.log(aggregatedOrders);
+      const revOrder = aggregatedOrders.reverse();
+      this.dataSource = new MatTableDataSource(revOrder);
+      this.dataSource.paginator = this.matPaginator;
+      this.dataSource.sort = this.matSort;
+    });
   }
 
   applyFilter(event: Event) {
@@ -150,53 +165,83 @@ export class TotalOrdersComponent implements OnInit {
   }
 
   startEvent(event) {
-    var stDate = event.value
-    var date = new Date(stDate);
+    const stDate = event.value;
+    const date = new Date(stDate);
 
     const year: number = date.getFullYear();
     const month: number = date.getMonth() + 1; // Note: Months are zero-indexed, so add 1
     const day: number = date.getDate();
 
-    const startFomatDate: string = `${day.toString().padStart(2, '0')}/${month.toString().padStart(2, '0')}/${year}`;
+    const startFomatDate = `${day.toString().padStart(2, '0')}/${month.toString().padStart(2, '0')}/${year}`;
 
     this.startDate = startFomatDate;
 
-    const object = { type: this.flowType, deliveryBoyId: this.driverId, startDate: this.startDate, endDate: this.endDate, orderStatus: 'DRIVERASSIGNED,OUTFORDELIVERY' }
-    this.getDateQuery(object)
+    const object = {
+      type: this.flowType,
+      deliveryBoyId: this.driverId,
+      startDate: this.startDate,
+      endDate: this.endDate,
+      orderStatus: 'DRIVERASSIGNED,OUTFORDELIVERY',
+    };
+    this.getDateQuery(object);
   }
 
   endEvent(event) {
-    var stDate = event.value
-    var date = new Date(stDate);
+    const stDate = event.value;
+    const date = new Date(stDate);
 
     const year: number = date.getFullYear();
     const month: number = date.getMonth() + 1; // Note: Months are zero-indexed, so add 1
     const day: number = date.getDate();
 
-    const endFomatDate: string = `${day.toString().padStart(2, '0')}/${month.toString().padStart(2, '0')}/${year}`;
+    const endFomatDate = `${day.toString().padStart(2, '0')}/${month.toString().padStart(2, '0')}/${year}`;
 
     this.endDate = endFomatDate;
 
-    const object = { type: this.flowType, deliveryBoyId: this.driverId, startDate: this.startDate, endDate: this.endDate, orderStatus: 'DRIVERASSIGNED,OUTFORDELIVERY' }
-    this.getDateQuery(object)
+    const object = {
+      type: this.flowType,
+      deliveryBoyId: this.driverId,
+      startDate: this.startDate,
+      endDate: this.endDate,
+      orderStatus: 'DRIVERASSIGNED,OUTFORDELIVERY',
+    };
+    this.getDateQuery(object);
   }
 
   onChangeFilter(value) {
     // console.log("se", value)
-    if (value == "all") {
-      const object = { type: this.flowType, deliveryBoyId: '', startDate: this.startDate, endDate: this.endDate, orderStatus: 'DRIVERASSIGNED,OUTFORDELIVERY' }
-      this.getDateQuery(object)
+    if (value == 'all') {
+      const object = {
+        type: this.flowType,
+        deliveryBoyId: '',
+        startDate: this.startDate,
+        endDate: this.endDate,
+        orderStatus: 'DRIVERASSIGNED,OUTFORDELIVERY',
+      };
+      this.getDateQuery(object);
     } else {
       this.driverId = Number(value);
-      const object = { type: this.flowType, deliveryBoyId: this.driverId, startDate: this.startDate, endDate: this.endDate, orderStatus: 'DRIVERASSIGNED,OUTFORDELIVERY' }
-      this.getDateQuery(object)
+      const object = {
+        type: this.flowType,
+        deliveryBoyId: this.driverId,
+        startDate: this.startDate,
+        endDate: this.endDate,
+        orderStatus: 'DRIVERASSIGNED,OUTFORDELIVERY',
+      };
+      this.getDateQuery(object);
     }
   }
 
   onChangeFlowTypeFilter(value) {
     this.flowType = value;
-    const object = { type: this.flowType, deliveryBoyId: this.driverId, startDate: this.startDate, endDate: this.endDate, orderStatus: 'DRIVERASSIGNED,OUTFORDELIVERY' }
-    this.getDateQuery(object)
+    const object = {
+      type: this.flowType,
+      deliveryBoyId: this.driverId,
+      startDate: this.startDate,
+      endDate: this.endDate,
+      orderStatus: 'DRIVERASSIGNED,OUTFORDELIVERY',
+    };
+    this.getDateQuery(object);
   }
 
   exportIt() {

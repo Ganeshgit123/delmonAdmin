@@ -10,7 +10,7 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 @Component({
   selector: 'app-lucky-draw',
   templateUrl: './lucky-draw.component.html',
-  styleUrls: ['./lucky-draw.component.scss']
+  styleUrls: ['./lucky-draw.component.scss'],
 })
 export class LuckyDrawComponent implements OnInit {
   displayedColumns: string[];
@@ -25,16 +25,19 @@ export class LuckyDrawComponent implements OnInit {
   winner: any = null;
   intervalId: any;
   timeForm: FormGroup;
-  showTable: boolean = false;
+  showTable = false;
   userType: any;
   flowType: any;
 
   @ViewChild(MatPaginator) matPaginator: MatPaginator;
   @ViewChild(MatSort) matSort: MatSort;
 
-  constructor(public authService: AuthService, private router: Router, private translate: TranslateService,
-    public fb: FormBuilder
-  ) { }
+  constructor(
+    public authService: AuthService,
+    private router: Router,
+    private translate: TranslateService,
+    public fb: FormBuilder,
+  ) {}
 
   ngOnInit(): void {
     this.dir = localStorage.getItem('dir') || 'ltr';
@@ -43,22 +46,27 @@ export class LuckyDrawComponent implements OnInit {
     this.displayedColumns = ['index', 'orderId', 'customerName', 'phoneNumber', 'deliveryDate'];
 
     if (this.userType == 1 || this.userType == 0) {
-      this.flowType = 'POULTRY'
-    } else if (this.userType == 2){
-      this.flowType = 'FEEDING'
+      this.flowType = 'POULTRY';
+    } else if (this.userType == 2) {
+      this.flowType = 'FEEDING';
     }
-    const object = { type: this.flowType, deliveryBoyId: '', startDate: '', endDate: '', orderStatus: 'PLACED,USERACCEPTED,DRIVERASSIGNED,OUTFORDELIVERY,COMPLETED' }
-    this.authService.getSalesReport(object).subscribe(
-      (res: any) => {
-        this.getOrders = res.deliveryBoyOrderList.reverse();
-        // console.log("Fef",this.getOrders)
-        this.dataSource = new MatTableDataSource(this.getOrders);
-        this.dataSource.paginator = this.matPaginator;
-        this.dataSource.sort = this.matSort;
-      });
+    const object = {
+      type: this.flowType,
+      deliveryBoyId: '',
+      startDate: '',
+      endDate: '',
+      orderStatus: 'PLACED,USERACCEPTED,DRIVERASSIGNED,OUTFORDELIVERY,COMPLETED',
+    };
+    this.authService.getSalesReport(object).subscribe((res: any) => {
+      this.getOrders = res.deliveryBoyOrderList.reverse();
+      // console.log("Fef",this.getOrders)
+      this.dataSource = new MatTableDataSource(this.getOrders);
+      this.dataSource.paginator = this.matPaginator;
+      this.dataSource.sort = this.matSort;
+    });
 
     this.timeForm = this.fb.group({
-      timeInSeconds: []
+      timeInSeconds: [],
     });
   }
 
@@ -81,7 +89,7 @@ export class LuckyDrawComponent implements OnInit {
   }
 
   endEvent(event) {
-    this.endDate = event.value
+    this.endDate = event.value;
     this.filterOrders();
   }
 
@@ -90,31 +98,30 @@ export class LuckyDrawComponent implements OnInit {
     if (this.startDate && this.endDate) {
       const from = new Date(this.startDate);
       from.setHours(0, 0, 0, 0); // Normalize start date
-    
+
       const to = new Date(this.endDate);
       to.setHours(23, 59, 59, 999); // Normalize end date
-    
-      this.filteredOrders = this.getOrders.filter(order => {
-        let orderDateStr = order.newDeliveryDate ?? order.deliveryOrderDate;
-        
+
+      this.filteredOrders = this.getOrders.filter((order) => {
+        const orderDateStr = order.newDeliveryDate ?? order.deliveryOrderDate;
+
         if (!orderDateStr) return false; // Skip if no date
-    
+
         // Convert "DD/MM/YYYY" to "YYYY-MM-DD"
-        let [day, month, year] = orderDateStr.split('/');
-        let orderDate = new Date(`${year}-${month}-${day}`); 
-    
+        const [day, month, year] = orderDateStr.split('/');
+        const orderDate = new Date(`${year}-${month}-${day}`);
+
         orderDate.setHours(0, 0, 0, 0); // Normalize time
-    
+
         return orderDate >= from && orderDate <= to;
       });
-    
+
       // console.log("Filtered Orders:", this.filteredOrders);
-    
+
       this.dataSource = new MatTableDataSource(this.filteredOrders);
       this.dataSource.paginator = this.matPaginator;
       this.dataSource.sort = this.matSort;
     }
-    
   }
 
   startRandomizer() {
@@ -137,7 +144,7 @@ export class LuckyDrawComponent implements OnInit {
     }, 1000);
   }
 
-  restrictNumeric(event: KeyboardEvent){
+  restrictNumeric(event: KeyboardEvent) {
     const charCode = event.which ? event.which : event.keyCode;
     if (charCode < 48 || charCode > 57) {
       event.preventDefault();

@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -13,9 +13,9 @@ import { TranslateService } from '@ngx-translate/core';
 @Component({
   selector: 'app-delivery-orders',
   templateUrl: './delivery-orders.component.html',
-  styleUrls: ['./delivery-orders.component.scss']
+  styleUrls: ['./delivery-orders.component.scss'],
 })
-export class DeliveryOrdersComponent implements OnInit {
+export class DeliveryOrdersComponent implements OnInit, AfterViewInit {
   displayedColumns: string[];
   dataSource: MatTableDataSource<any>;
   getvalue = [];
@@ -40,9 +40,15 @@ export class DeliveryOrdersComponent implements OnInit {
   @ViewChild(MatPaginator) matPaginator: MatPaginator;
   @ViewChild(MatSort) matSort: MatSort;
 
-  constructor(private modalService: NgbModal, public fb: FormBuilder, public authService: AuthService,
-    private toastr: ToastrService, private router: Router, private spinner: NgxSpinnerService,
-    private translate: TranslateService,) { }
+  constructor(
+    private modalService: NgbModal,
+    public fb: FormBuilder,
+    public authService: AuthService,
+    private toastr: ToastrService,
+    private router: Router,
+    private spinner: NgxSpinnerService,
+    private translate: TranslateService,
+  ) {}
 
   ngOnInit(): void {
     this.callRolePermission();
@@ -55,78 +61,102 @@ export class DeliveryOrdersComponent implements OnInit {
     this.userType = sessionStorage.getItem('userType');
 
     if (this.showAccept == true) {
-      this.displayedColumns = ['checkbox', 'index', 'orderId', 'orderDetails', 'approve', 'orderStatus', 'drivers',
-        'zone', 'area', 'orderDate', 'deliveryDate', 'rowActionIcon'];
+      this.displayedColumns = [
+        'checkbox',
+        'index',
+        'orderId',
+        'orderDetails',
+        'approve',
+        'orderStatus',
+        'drivers',
+        'zone',
+        'area',
+        'orderDate',
+        'deliveryDate',
+        'rowActionIcon',
+      ];
     } else if (this.showAccept == false) {
-      this.displayedColumns = ['index', 'orderId', 'orderDetails', 'orderStatus', 'drivers',
-        'zone', 'area', 'orderDate', 'deliveryDate'];
+      this.displayedColumns = [
+        'index',
+        'orderId',
+        'orderDetails',
+        'orderStatus',
+        'drivers',
+        'zone',
+        'area',
+        'orderDate',
+        'deliveryDate',
+      ];
     }
 
     if (this.userType == 1) {
-      this.flowType = 'POULTRY'
+      this.flowType = 'POULTRY';
     } else {
-      this.flowType = 'FEEDING'
+      this.flowType = 'FEEDING';
     }
 
     if (this.superAdminRole == true) {
-      const object = { deliveryType: 1, orderStatus: 'PLACED,USERACCEPTED,DRIVERASSIGNED,OUTFORDELIVERY', type: 'POULTRY' }
-      this.authService.getOrdersWithStatus(object).subscribe(
-        (res: any) => {
-          res.data.forEach(element => {
-            element.zoneName = element.deliveryAddress?.zoneName,
-              element.area = element.deliveryAddress?.area,
-              element.driverName = element.deliveryBoyDetail?.userName
-          });
-          this.getvalue = res.data;
-          this.getvalue = res.data;
-          this.newOrders = res.data.filter(item => item.orderStatus == 'PLACED');
-          this.notAssignedOrders = res.data.filter(item => item.orderStatus == 'USERACCEPTED');
-          this.dataSource = new MatTableDataSource(this.getvalue);
-          this.dataSource.paginator = this.matPaginator;
-          this.dataSource.sort = this.matSort;
+      const object = {
+        deliveryType: 1,
+        orderStatus: 'PLACED,USERACCEPTED,DRIVERASSIGNED,OUTFORDELIVERY',
+        type: 'POULTRY',
+      };
+      this.authService.getOrdersWithStatus(object).subscribe((res: any) => {
+        res.data.forEach((element) => {
+          ((element.zoneName = element.deliveryAddress?.zoneName),
+            (element.area = element.deliveryAddress?.area),
+            (element.driverName = element.deliveryBoyDetail?.userName));
         });
+        this.getvalue = res.data;
+        this.getvalue = res.data;
+        this.newOrders = res.data.filter((item) => item.orderStatus == 'PLACED');
+        this.notAssignedOrders = res.data.filter((item) => item.orderStatus == 'USERACCEPTED');
+        this.dataSource = new MatTableDataSource(this.getvalue);
+        this.dataSource.paginator = this.matPaginator;
+        this.dataSource.sort = this.matSort;
+      });
     } else {
-      const object = { deliveryType: 1, orderStatus: 'PLACED,USERACCEPTED,DRIVERASSIGNED,OUTFORDELIVERY', type: this.flowType }
-      this.getTypeFilter(object)
+      const object = {
+        deliveryType: 1,
+        orderStatus: 'PLACED,USERACCEPTED,DRIVERASSIGNED,OUTFORDELIVERY',
+        type: this.flowType,
+      };
+      this.getTypeFilter(object);
     }
 
-    this.authService.getDriversActive(1).subscribe(
-      (res: any) => {
-        this.getDrivers = res.data.reverse();
-      }
-    );
+    this.authService.getDriversActive(1).subscribe((res: any) => {
+      this.getDrivers = res.data.reverse();
+    });
   }
 
   callRolePermission() {
     if (sessionStorage.getItem('roleName') !== 'superAdmin') {
-      let settingPermssion = JSON.parse(sessionStorage.getItem('permission'))
-      const orderPermission = settingPermssion?.find(ele => ele.area == 'orders')?.write == 1
+      const settingPermssion = JSON.parse(sessionStorage.getItem('permission'));
+      const orderPermission = settingPermssion?.find((ele) => ele.area == 'orders')?.write == 1;
       // console.log("fef",orderPermission)
-      this.showAccept = orderPermission
+      this.showAccept = orderPermission;
     }
   }
 
   getTypeFilter(value) {
-    const object = { deliveryType: value.deliveryType, orderStatus: value.orderStatus, type: value.type }
-    this.authService.getOrdersWithStatus(object).subscribe(
-      (res: any) => {
-        res.data.forEach(element => {
-          element.zoneName = element.deliveryAddress?.zoneName,
-            element.area = element.deliveryAddress?.area,
-            element.driverName = element.deliveryBoyDetail?.userName
-        });
-        this.getvalue = res.data;
-        this.newOrders = res.data.filter(item => item.orderStatus == 'PLACED');
-        this.notAssignedOrders = res.data.filter(item => item.orderStatus == 'USERACCEPTED');
-        this.dataSource = new MatTableDataSource(this.getvalue);
-        this.dataSource.paginator = this.matPaginator;
-        this.dataSource.sort = this.matSort;
-      }
-    );
+    const object = { deliveryType: value.deliveryType, orderStatus: value.orderStatus, type: value.type };
+    this.authService.getOrdersWithStatus(object).subscribe((res: any) => {
+      res.data.forEach((element) => {
+        ((element.zoneName = element.deliveryAddress?.zoneName),
+          (element.area = element.deliveryAddress?.area),
+          (element.driverName = element.deliveryBoyDetail?.userName));
+      });
+      this.getvalue = res.data;
+      this.newOrders = res.data.filter((item) => item.orderStatus == 'PLACED');
+      this.notAssignedOrders = res.data.filter((item) => item.orderStatus == 'USERACCEPTED');
+      this.dataSource = new MatTableDataSource(this.getvalue);
+      this.dataSource.paginator = this.matPaginator;
+      this.dataSource.sort = this.matSort;
+    });
   }
 
   ngAfterViewInit(): void {
-    this.matPaginator._intl.itemsPerPageLabel = this.translate.instant("itemsPerPage");
+    this.matPaginator._intl.itemsPerPageLabel = this.translate.instant('itemsPerPage');
   }
 
   applyFilter(event: Event) {
@@ -145,21 +175,20 @@ export class DeliveryOrdersComponent implements OnInit {
 
   approveOrder(id) {
     const object = {
-      "orderStatus": "USERACCEPTED"
-    }
-    this.authService.approveOrderSingle(id, object)
-      .subscribe((res: any) => {
-        if (res.success == true) {
-          this.toastr.success('Success ', res.massage);
-          this.ngOnInit();
-        } else {
-          this.toastr.error('Enter valid ', res.massage);
-        }
-      });
+      orderStatus: 'USERACCEPTED',
+    };
+    this.authService.approveOrderSingle(id, object).subscribe((res: any) => {
+      if (res.success == true) {
+        this.toastr.success('Success ', res.massage);
+        this.ngOnInit();
+      } else {
+        this.toastr.error('Enter valid ', res.massage);
+      }
+    });
   }
 
   onInputChange(id) {
-    let index = this.ordSelectId.indexOf(id);
+    const index = this.ordSelectId.indexOf(id);
     if (index > -1) {
       this.ordSelectId = this.removeItemOnce(this.ordSelectId, id);
       if (this.ordSelectId.length == 0) {
@@ -172,9 +201,7 @@ export class DeliveryOrdersComponent implements OnInit {
         this.ordSelectId.push(id);
       } else {
         this.currentStatus = this.getvalue.find((data) => data._id == id)?.orderStatus;
-        this.getvalue = this.getvalue.filter(
-          (data) => data.orderStatus == this.currentStatus
-        );
+        this.getvalue = this.getvalue.filter((data) => data.orderStatus == this.currentStatus);
         this.ordSelectId.push(id);
       }
     }
@@ -190,7 +217,7 @@ export class DeliveryOrdersComponent implements OnInit {
     this.isAllSelect = !this.isAllSelect;
     if (this.isAllSelect) {
       //selection
-      let totalA = [];
+      const totalA = [];
       await this.newOrders.map(async (element) => {
         await totalA.push(element.id);
       });
@@ -204,7 +231,7 @@ export class DeliveryOrdersComponent implements OnInit {
   }
 
   removeItemOnce(arr, value) {
-    var index = arr.indexOf(value);
+    const index = arr.indexOf(value);
     if (index > -1) {
       arr.splice(index, 1);
     }
@@ -212,7 +239,7 @@ export class DeliveryOrdersComponent implements OnInit {
   }
 
   onDriverInputChange(id) {
-    let index = this.ordDriverSelectId.indexOf(id);
+    const index = this.ordDriverSelectId.indexOf(id);
     if (index > -1) {
       this.ordDriverSelectId = this.removeItemOnce(this.ordDriverSelectId, id);
       if (this.ordDriverSelectId.length == 0) {
@@ -223,10 +250,8 @@ export class DeliveryOrdersComponent implements OnInit {
       if (this.ordDriverSelectId.length > 0) {
         this.ordDriverSelectId.push(id);
       } else {
-        var currentStatus = this.getvalue.find((data) => data._id == id)?.orderStatus;
-        this.getvalue = this.getvalue.filter(
-          (data) => data.orderStatus == currentStatus
-        );
+        const currentStatus = this.getvalue.find((data) => data._id == id)?.orderStatus;
+        this.getvalue = this.getvalue.filter((data) => data.orderStatus == currentStatus);
         this.ordDriverSelectId.push(id);
       }
     }
@@ -242,7 +267,7 @@ export class DeliveryOrdersComponent implements OnInit {
     this.isAllDriverSelect = !this.isAllDriverSelect;
     if (this.isAllDriverSelect) {
       //selection
-      let totalA = [];
+      const totalA = [];
       await this.notAssignedOrders.map(async (element) => {
         await totalA.push(element.id);
       });
@@ -257,19 +282,18 @@ export class DeliveryOrdersComponent implements OnInit {
   approveMulti() {
     const object = {
       id: JSON.stringify(this.ordSelectId),
-      orderStatus: "USERACCEPTED"
-    }
+      orderStatus: 'USERACCEPTED',
+    };
     // console.log("ddd",some)
-    this.authService.approveOrderMulti(object)
-      .subscribe((res: any) => {
-        if (res.success == true) {
-          this.toastr.success('Success ', res.massage);
-          this.ordSelectId = [];
-          this.ngOnInit();
-        } else {
-          this.toastr.error('Enter valid ', res.massage);
-        }
-      });
+    this.authService.approveOrderMulti(object).subscribe((res: any) => {
+      if (res.success == true) {
+        this.toastr.success('Success ', res.massage);
+        this.ordSelectId = [];
+        this.ngOnInit();
+      } else {
+        this.toastr.error('Enter valid ', res.massage);
+      }
+    });
   }
 
   assignMultiDriver() {
@@ -277,7 +301,7 @@ export class DeliveryOrdersComponent implements OnInit {
   }
 
   assignMultiDriverToOrder(id) {
-    let assignDriverId = id;
+    const assignDriverId = id;
     function formatDate(date: Date): string {
       const day = String(date.getDate()).padStart(2, '0');
       const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based, so add 1
@@ -291,22 +315,21 @@ export class DeliveryOrdersComponent implements OnInit {
     this.deliveryDate = formattedDate;
     const object = {
       id: JSON.stringify(this.ordDriverSelectId),
-      orderStatus: "DRIVERASSIGNED",
+      orderStatus: 'DRIVERASSIGNED',
       deliveryBoyId: Number(assignDriverId),
-      deliveryOrderDate: this.deliveryDate
-    }
+      deliveryOrderDate: this.deliveryDate,
+    };
     // console.log("ddd",object)
-    this.authService.approveOrderMulti(object)
-      .subscribe((res: any) => {
-        if (res.success == true) {
-          this.toastr.success('Success ', res.massage);
-          this.ordDriverSelectId = [];
-          this.multiDriverDropdown = false;
-          this.ngOnInit();
-        } else {
-          this.toastr.error('Enter valid ', res.massage);
-        }
-      });
+    this.authService.approveOrderMulti(object).subscribe((res: any) => {
+      if (res.success == true) {
+        this.toastr.success('Success ', res.massage);
+        this.ordDriverSelectId = [];
+        this.multiDriverDropdown = false;
+        this.ngOnInit();
+      } else {
+        this.toastr.error('Enter valid ', res.massage);
+      }
+    });
   }
 
   openModal(content, data) {
@@ -315,8 +338,8 @@ export class DeliveryOrdersComponent implements OnInit {
   }
 
   assignDriver(driverId, orderId) {
-    let assignDriverId = driverId;
-    let assignOrderId = orderId;
+    const assignDriverId = driverId;
+    const assignOrderId = orderId;
 
     function formatDate(date: Date): string {
       const day = String(date.getDate()).padStart(2, '0');
@@ -331,21 +354,20 @@ export class DeliveryOrdersComponent implements OnInit {
     this.deliveryDate = formattedDate;
 
     const object = {
-      orderStatus: "DRIVERASSIGNED",
+      orderStatus: 'DRIVERASSIGNED',
       deliveryBoyId: Number(assignDriverId),
-      deliveryOrderDate: this.deliveryDate
-    }
+      deliveryOrderDate: this.deliveryDate,
+    };
 
     // console.log("DFef", object)
-    this.authService.approveOrderSingle(assignOrderId, object)
-      .subscribe((res: any) => {
-        if (res.success == true) {
-          this.toastr.success('Success ', res.massage);
-          this.ngOnInit();
-        } else {
-          this.toastr.error('Enter valid ', res.massage);
-        }
-      });
+    this.authService.approveOrderSingle(assignOrderId, object).subscribe((res: any) => {
+      if (res.success == true) {
+        this.toastr.success('Success ', res.massage);
+        this.ngOnInit();
+      } else {
+        this.toastr.error('Enter valid ', res.massage);
+      }
+    });
   }
 
   editOrderType(data, editModal) {
@@ -355,37 +377,35 @@ export class DeliveryOrdersComponent implements OnInit {
   }
   onSubmitDeliveryType() {
     const object = {
-      "deliveryType": "PICKUP"
-    }
-    this.authService.approveOrderSingle(this.orderDeliverId, object)
-      .subscribe((res: any) => {
-        if (res.success == true) {
-          this.toastr.success('Success ', res.massage);
-          this.modalService.dismissAll();
-          this.ngOnInit();
-        } else {
-          this.toastr.error('Enter valid ', res.massage);
-        }
-      });
+      deliveryType: 'PICKUP',
+    };
+    this.authService.approveOrderSingle(this.orderDeliverId, object).subscribe((res: any) => {
+      if (res.success == true) {
+        this.toastr.success('Success ', res.massage);
+        this.modalService.dismissAll();
+        this.ngOnInit();
+      } else {
+        this.toastr.error('Enter valid ', res.massage);
+      }
+    });
   }
 
   cancelOrder(id) {
     const object = {
-      "orderStatus": "CANCELLED"
-    }
-    this.authService.approveOrderSingle(id, object)
-      .subscribe((res: any) => {
-        if (res.success == true) {
-          this.toastr.success('Success ', res.massage);
-          this.ngOnInit();
-        } else {
-          this.toastr.error('Enter valid ', res.massage);
-        }
-      });
+      orderStatus: 'CANCELLED',
+    };
+    this.authService.approveOrderSingle(id, object).subscribe((res: any) => {
+      if (res.success == true) {
+        this.toastr.success('Success ', res.massage);
+        this.ngOnInit();
+      } else {
+        this.toastr.error('Enter valid ', res.massage);
+      }
+    });
   }
 
   onChangeFilter(value) {
-    const object = { deliveryType: 1, orderStatus: 'PLACED,USERACCEPTED,DRIVERASSIGNED,OUTFORDELIVERY', type: value }
-    this.getTypeFilter(object)
+    const object = { deliveryType: 1, orderStatus: 'PLACED,USERACCEPTED,DRIVERASSIGNED,OUTFORDELIVERY', type: value };
+    this.getTypeFilter(object);
   }
 }

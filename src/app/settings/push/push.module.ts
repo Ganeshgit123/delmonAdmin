@@ -12,16 +12,14 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 
 @NgModule({
-  declarations: [
-    PushComponent
-  ],
+  declarations: [PushComponent],
   imports: [
     CommonModule,
     RouterModule.forChild([
       {
-        path: "",
-        component: PushComponent
-      }
+        path: '',
+        component: PushComponent,
+      },
     ]),
     NgMaterialModule,
     FormsModule,
@@ -31,7 +29,7 @@ import { MatInputModule } from '@angular/material/input';
     MatIconModule,
     MatFormFieldModule,
     MatInputModule,
-    MatAutocompleteModule
-  ]
+    MatAutocompleteModule,
+  ],
 })
-export class PushModule { }
+export class PushModule {}

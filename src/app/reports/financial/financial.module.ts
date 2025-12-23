@@ -7,20 +7,18 @@ import { TranslateModule } from '@ngx-translate/core';
 import { NgxSpinnerModule } from 'ngx-spinner';
 
 @NgModule({
-  declarations: [
-    FinancialComponent
-  ],
+  declarations: [FinancialComponent],
   imports: [
     CommonModule,
     RouterModule.forChild([
       {
-        path: "",
-        component: FinancialComponent
-      }
+        path: '',
+        component: FinancialComponent,
+      },
     ]),
     NgMaterialModule,
     TranslateModule,
-    NgxSpinnerModule
-  ]
+    NgxSpinnerModule,
+  ],
 })
-export class FinancialModule { }
+export class FinancialModule {}

@@ -4,8 +4,8 @@ import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
 import { MatTabsModule } from '@angular/material/tabs';
-import { MatFormFieldModule } from "@angular/material/form-field";
-import { MatInputModule } from "@angular/material/input";
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatMenuModule } from '@angular/material/menu';
@@ -29,13 +29,7 @@ const materialModules = [
 ];
 
 @NgModule({
-  imports: [
-    CommonModule,
-    ...materialModules
-  ],
-  exports: [
-    ...materialModules
-  ],
+  imports: [CommonModule, ...materialModules],
+  exports: [...materialModules],
 })
-
-export class NgMaterialModule { }
+export class NgMaterialModule {}

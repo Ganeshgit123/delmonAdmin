@@ -13,7 +13,7 @@ import { TranslateService } from '@ngx-translate/core';
 @Component({
   selector: 'app-spin-wheel-slices',
   templateUrl: './spin-wheel-slices.component.html',
-  styleUrls: ['./spin-wheel-slices.component.scss']
+  styleUrls: ['./spin-wheel-slices.component.scss'],
 })
 export class SpinWheelSlicesComponent implements OnInit {
   displayedColumns: string[];
@@ -29,9 +29,15 @@ export class SpinWheelSlicesComponent implements OnInit {
   @ViewChild(MatPaginator) matPaginator: MatPaginator;
   @ViewChild(MatSort) matSort: MatSort;
 
-  constructor(private modalService: NgbModal, public fb: FormBuilder, public authService: AuthService,
-    private toastr: ToastrService, private router: Router, private spinner: NgxSpinnerService,
-    private translate: TranslateService,) { }
+  constructor(
+    private modalService: NgbModal,
+    public fb: FormBuilder,
+    public authService: AuthService,
+    private toastr: ToastrService,
+    private router: Router,
+    private spinner: NgxSpinnerService,
+    private translate: TranslateService,
+  ) {}
 
   ngOnInit(): void {
     this.callRolePermission();
@@ -43,35 +49,34 @@ export class SpinWheelSlicesComponent implements OnInit {
 
     this.displayedColumns = ['index', 'type', 'title', 'rowActionToggle', 'rowActionIcon'];
 
-
-     this.authService.getSpinWheel().subscribe(
-      (res: any) => {
-        this.getvalue = res.data;
-        this.dataSource = new MatTableDataSource(this.getvalue);
-        this.dataSource.paginator = this.matPaginator;
-        this.dataSource.sort = this.matSort;
-      }
-    );
+    this.authService.getSpinWheel().subscribe((res: any) => {
+      this.getvalue = res.data;
+      this.dataSource = new MatTableDataSource(this.getvalue);
+      this.dataSource.paginator = this.matPaginator;
+      this.dataSource.sort = this.matSort;
+    });
 
     this.spinForm = this.fb.group({
       type: ['', [Validators.required]],
-      title: ['', [Validators.required]]
+      title: ['', [Validators.required]],
     });
   }
 
-  get f() { return this.spinForm.controls; }
+  get f() {
+    return this.spinForm.controls;
+  }
 
   callRolePermission() {
     if (sessionStorage.getItem('roleName') !== 'superAdmin') {
-      let settingPermssion = JSON.parse(sessionStorage.getItem('permission'))
-      const orderPermission = settingPermssion?.find(ele => ele.area == 'master')?.write == 1
+      const settingPermssion = JSON.parse(sessionStorage.getItem('permission'));
+      const orderPermission = settingPermssion?.find((ele) => ele.area == 'master')?.write == 1;
       // console.log("fef",orderPermission)
-      this.showAccept = orderPermission
+      this.showAccept = orderPermission;
     }
   }
 
   gAfterViewInit(): void {
-    this.matPaginator._intl.itemsPerPageLabel = this.translate.instant("itemsPerPage");
+    this.matPaginator._intl.itemsPerPageLabel = this.translate.instant('itemsPerPage');
   }
 
   applyFilter(event: Event) {
@@ -97,10 +102,9 @@ export class SpinWheelSlicesComponent implements OnInit {
 
     this.spinForm = this.fb.group({
       type: [data['type']],
-      title: [data['title']]
+      title: [data['title']],
     });
   }
-
 
   onSubmitData() {
     this.submitted = true;
@@ -109,54 +113,50 @@ export class SpinWheelSlicesComponent implements OnInit {
     }
 
     if (this.isEdit) {
-      this.spinWheelEditService(this.spinForm.value)
+      this.spinWheelEditService(this.spinForm.value);
       return;
     }
     this.submitted = false;
-    this.authService.addSpinWheel(this.spinForm.value)
-      .subscribe((res: any) => {
-        if (res.success == true) {
-          this.toastr.success('Success ', res.massage);
-          this.spinForm.reset();
-          this.modalService.dismissAll();
-          this.ngOnInit();
-        } else {
-          this.toastr.error('Enter valid ', res.massage);
-        }
-      });
+    this.authService.addSpinWheel(this.spinForm.value).subscribe((res: any) => {
+      if (res.success == true) {
+        this.toastr.success('Success ', res.massage);
+        this.spinForm.reset();
+        this.modalService.dismissAll();
+        this.ngOnInit();
+      } else {
+        this.toastr.error('Enter valid ', res.massage);
+      }
+    });
   }
 
   spinWheelEditService(data) {
-    this.authService.editSpinWheel(data, this.spinId)
-      .subscribe((res: any) => {
-        if (res.success == true) {
-          this.toastr.success('Success ', res.massage);
-          this.spinForm.reset();
-          this.modalService.dismissAll();
-          this.ngOnInit();
-        } else {
-          this.toastr.error('Enter valid ', res.massage);
-        }
-      });
+    this.authService.editSpinWheel(data, this.spinId).subscribe((res: any) => {
+      if (res.success == true) {
+        this.toastr.success('Success ', res.massage);
+        this.spinForm.reset();
+        this.modalService.dismissAll();
+        this.ngOnInit();
+      } else {
+        this.toastr.error('Enter valid ', res.massage);
+      }
+    });
   }
 
   changeStatus(value) {
     if (value.active === 1) {
-      var visible = 0
+      var visible = 0;
     } else {
-      var visible = 1
+      var visible = 1;
     }
-    const object = { active: visible }
+    const object = { active: visible };
 
-    this.authService.editSpinWheel(object, value.id)
-      .subscribe((res: any) => {
-        if (res.success == true) {
-          this.toastr.success('Success ', res.massage);
-          this.ngOnInit();
-        } else {
-          this.toastr.error('Enter valid ', res.massage);
-        }
-      });
+    this.authService.editSpinWheel(object, value.id).subscribe((res: any) => {
+      if (res.success == true) {
+        this.toastr.success('Success ', res.massage);
+        this.ngOnInit();
+      } else {
+        this.toastr.error('Enter valid ', res.massage);
+      }
+    });
   }
-
 }

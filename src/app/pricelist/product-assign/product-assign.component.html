@@ -1,36 +1,36 @@
 <div class="row">
   <div class="col-md-3">
     <mat-form-field appearance="standard">
-      <mat-label>{{"Search" | translate}}</mat-label>
-      <input matInput (keyup)="applyFilter($event)" placeholder="{{'Search' | translate}}" #input>
+      <mat-label>{{ 'Search' | translate }}</mat-label>
+      <input matInput (keyup)="applyFilter($event)" placeholder="{{ 'Search' | translate }}" #input />
     </mat-form-field>
   </div>
   @if (superAdminRole) {
     <div class="col-md-2 city_col">
       <select #type (change)="onChangeFlowTypeFilter(type.value)" class="form-control">
-        <option value="POULTRY">{{"Poultry" | translate}}</option>
-        <option value="FEEDING">{{"Feeding" | translate}}</option>
+        <option value="POULTRY">{{ 'Poultry' | translate }}</option>
+        <option value="FEEDING">{{ 'Feeding' | translate }}</option>
       </select>
     </div>
   }
   <div class="col-md-7">
     @if (showAccept) {
       <p class="exp_btn_righ">
-        <label for="resume" class="export_btn">{{"Import" | translate}}</label>
-        <input type="file" class="custom-file-input" id="resume" (change)="importXl($event)" accept=".xlsx">
-        <button (click)="exportToExcel()" class="export_btn ml-4">{{"Export" | translate}}</button>
+        <label for="resume" class="export_btn">{{ 'Import' | translate }}</label>
+        <input type="file" class="custom-file-input" id="resume" (change)="importXl($event)" accept=".xlsx" />
+        <button (click)="exportToExcel()" class="export_btn ml-4">{{ 'Export' | translate }}</button>
       </p>
     }
   </div>
 </div>
 <ngx-spinner bdColor="rgba(51,51,51,0.8)" size="medium" color="#fff" type="ball-scale-multiple">
-  <p style="font-size: 20px; color: white"> {{"Loading" | translate}}...</p>
+  <p style="font-size: 20px; color: white">{{ 'Loading' | translate }}...</p>
 </ngx-spinner>
 <table mat-table matTableExporter [dataSource]="dataSource" #exporter="matTableExporter" [hiddenColumns]="[4]">
   @for (col of columnsSchema; track col) {
     <ng-container [matColumnDef]="col.key">
       <th mat-header-cell *matHeaderCellDef>
-        {{ col.label | translate}}
+        {{ col.label | translate }}
       </th>
       <td mat-cell *matCellDef="let element">
         @if (!element.isEdit) {
@@ -41,7 +41,7 @@
                   @if (showAccept) {
                     <span>
                       <button mat-button class="simi_btn" (click)="element.isEdit = !element.isEdit">
-                        {{"Edit" | translate}}
+                        {{ 'Edit' | translate }}
                       </button>
                     </span>
                   }
@@ -51,34 +51,26 @@
                 <span>
                   @if (element.weight != null) {
                     <span>
-                      {{ element.name }} / {{ element.weight}}
+                      {{ element.name }} / {{ element.weight }}
                       @if (element.soldType == 1) {
-                        <span>
-                          / {{"Pieces" | translate}}
-                        </span>
+                        <span> / {{ 'Pieces' | translate }} </span>
                       }
                       @if (element.soldType == 2) {
-                        <span>
-                          / {{"Cartons" | translate}}
-                        </span>
+                        <span> / {{ 'Cartons' | translate }} </span>
                       }
                     </span>
                   }
-                  @if (element.weight == null && element.isBasket !==1) {
-                    <span>
-                      {{ element.name }} ({{"Main" | translate}})
-                    </span>
+                  @if (element.weight == null && element.isBasket !== 1) {
+                    <span> {{ element.name }} ({{ 'Main' | translate }}) </span>
                   }
                   @if (element.isBasket == 1) {
-                    <span>
-                      {{ element.name }} ({{"Baskets" | translate}})
-                    </span>
+                    <span> {{ element.name }} ({{ 'Baskets' | translate }}) </span>
                   }
                 </span>
               }
               @case ('number') {
                 <span>
-                  {{ element[col.key] | number : '1.0-3' }}
+                  {{ element[col.key] | number: '1.0-3' }}
                 </span>
               }
               <!-- <span *ngSwitchCase="'string'">
@@ -89,54 +81,46 @@
                 {{"Baskets" | translate}}
               </span>
             </span> -->
-            @default {
-              <span>
-                {{ element[col.key] }}
-              </span>
+              @default {
+                <span>
+                  {{ element[col.key] }}
+                </span>
+              }
             }
-          }
-        </div>
-      }
-      @if (element.isEdit) {
-        <div>
-          @switch (col.type) {
-            @case ('isEdit') {
-              <div>
-                <button class="simi_btn" mat-button (click)="updateList(element)">
-                  {{"Done" | translate}}
-                </button>
-              </div>
-            }
-            @case ('text') {
-              <div class="form-input">
-                @if (element.weight != null) {
-                  <span>
-                    {{ element.name }} / {{ element.weight}}
-                    @if (element.soldType == 1) {
-                      <span>
-                        / {{"Pieces" | translate}}
-                      </span>
-                    }
-                    @if (element.soldType == 2) {
-                      <span>
-                        / {{"Cartons" | translate}}
-                      </span>
-                    }
-                  </span>
-                }
-                @if (element.weight == null && element.isBasket !==1) {
-                  <span>
-                    {{ element.name }} ({{"Main" | translate}})
-                  </span>
-                }
-                @if (element.isBasket == 1) {
-                  <span>
-                    {{ element.name }} ({{"Baskets" | translate}})
-                  </span>
-                }
-              </div>
-            }
-            <!-- <div class="form-input" *ngSwitchCase="'string'">
+          </div>
+        }
+        @if (element.isEdit) {
+          <div>
+            @switch (col.type) {
+              @case ('isEdit') {
+                <div>
+                  <button class="simi_btn" mat-button (click)="updateList(element)">
+                    {{ 'Done' | translate }}
+                  </button>
+                </div>
+              }
+              @case ('text') {
+                <div class="form-input">
+                  @if (element.weight != null) {
+                    <span>
+                      {{ element.name }} / {{ element.weight }}
+                      @if (element.soldType == 1) {
+                        <span> / {{ 'Pieces' | translate }} </span>
+                      }
+                      @if (element.soldType == 2) {
+                        <span> / {{ 'Cartons' | translate }} </span>
+                      }
+                    </span>
+                  }
+                  @if (element.weight == null && element.isBasket !== 1) {
+                    <span> {{ element.name }} ({{ 'Main' | translate }}) </span>
+                  }
+                  @if (element.isBasket == 1) {
+                    <span> {{ element.name }} ({{ 'Baskets' | translate }}) </span>
+                  }
+                </div>
+              }
+              <!-- <div class="form-input" *ngSwitchCase="'string'">
             <span *ngIf="element.weight != null">
               {{ element.weight}}
             </span>
@@ -144,23 +128,27 @@
               {{"Baskets" | translate}}
             </span>
           </div> -->
-          @case ('number') {
-            <mat-form-field class="form-input">
-              <input type="number" matInput (ngModelChange)="element[col.key] = $event"
-                [ngModel]="element[col.key] | number : '1.0-3' "/>
-            </mat-form-field>
-          }
-          @default {
-            <mat-form-field class="form-input">
-              <input [type]="col.type" matInput [(ngModel)]="element[col.key]" />
-            </mat-form-field>
-          }
+              @case ('number') {
+                <mat-form-field class="form-input">
+                  <input
+                    type="number"
+                    matInput
+                    (ngModelChange)="element[col.key] = $event"
+                    [ngModel]="element[col.key] | number: '1.0-3'"
+                  />
+                </mat-form-field>
+              }
+              @default {
+                <mat-form-field class="form-input">
+                  <input [type]="col.type" matInput [(ngModel)]="element[col.key]" />
+                </mat-form-field>
+              }
+            }
+          </div>
         }
-      </div>
-    }
-  </td>
-</ng-container>
-}
-<tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-<tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </td>
+    </ng-container>
+  }
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
 </table>

@@ -10,12 +10,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AngularEditorModule } from '@kolkov/angular-editor';
 
 @NgModule({
-  declarations: [
-    ContentEditorComponent,
-    TermsComponent,
-    PrivacyComponent,
-    AboutusComponent
-  ],
+  declarations: [ContentEditorComponent, TermsComponent, PrivacyComponent, AboutusComponent],
   imports: [
     CommonModule,
     NgMaterialModule,
@@ -24,22 +19,22 @@ import { AngularEditorModule } from '@kolkov/angular-editor';
     AngularEditorModule,
     RouterModule.forChild([
       {
-        path: "",
-        component: ContentEditorComponent
+        path: '',
+        component: ContentEditorComponent,
       },
       {
-        path: "",
-        component: TermsComponent
+        path: '',
+        component: TermsComponent,
       },
       {
-        path: "",
-        component: PrivacyComponent
+        path: '',
+        component: PrivacyComponent,
       },
       {
-        path: "",
-        component: AboutusComponent
-      }
+        path: '',
+        component: AboutusComponent,
+      },
     ]),
-  ]
+  ],
 })
-export class ContentEditorModule { }
+export class ContentEditorModule {}

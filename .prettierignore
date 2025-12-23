@@ -1,0 +1,15 @@
+# Output and dependencies
+/dist
+/node_modules
+/coverage
+
+# Build artifacts
+/.angular
+
+# Misc
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Assets
+src/assets/

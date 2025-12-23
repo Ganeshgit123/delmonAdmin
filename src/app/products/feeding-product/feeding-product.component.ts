@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -14,9 +14,9 @@ import { TranslateService } from '@ngx-translate/core';
 @Component({
   selector: 'app-feeding-product',
   templateUrl: './feeding-product.component.html',
-  styleUrls: ['./feeding-product.component.scss']
+  styleUrls: ['./feeding-product.component.scss'],
 })
-export class FeedingProductComponent implements OnInit {
+export class FeedingProductComponent implements OnInit, AfterViewInit {
   displayedColumns: string[];
   dataSource: MatTableDataSource<any>;
   getvalue = [];
@@ -53,9 +53,15 @@ export class FeedingProductComponent implements OnInit {
   @ViewChild(MatPaginator) matPaginator: MatPaginator;
   @ViewChild(MatSort) matSort: MatSort;
 
-  constructor(private modalService: NgbModal, public fb: FormBuilder, public authService: AuthService,
-    private toastr: ToastrService, private router: Router, private spinner: NgxSpinnerService,
-    private translate: TranslateService,) { }
+  constructor(
+    private modalService: NgbModal,
+    public fb: FormBuilder,
+    public authService: AuthService,
+    private toastr: ToastrService,
+    private router: Router,
+    private spinner: NgxSpinnerService,
+    private translate: TranslateService,
+  ) {}
 
   ngOnInit(): void {
     this.callRolePermission();
@@ -66,34 +72,38 @@ export class FeedingProductComponent implements OnInit {
     }
 
     if (this.showAccept == true) {
-      this.displayedColumns = ['index', 'categoryId', 'enProductName', 'arProductName', 'image', 'rowActionIcon',
-        'addSimilar', 'mostWantedProduct', 'offers', 'newProduct', 'rowActionToggle'];
+      this.displayedColumns = [
+        'index',
+        'categoryId',
+        'enProductName',
+        'arProductName',
+        'image',
+        'rowActionIcon',
+        'addSimilar',
+        'mostWantedProduct',
+        'offers',
+        'newProduct',
+        'rowActionToggle',
+      ];
     } else if (this.showAccept == false) {
-      this.displayedColumns = ['index', 'categoryId', 'enProductName', 'arProductName', 'image',
-        'addSimilar'];
+      this.displayedColumns = ['index', 'categoryId', 'enProductName', 'arProductName', 'image', 'addSimilar'];
     }
 
-    this.authService.getProductsWithParentIdFeed('FEEDING').subscribe(
-      (res: any) => {
-        this.getvalue = res.data;
-        this.dataSource = new MatTableDataSource(this.getvalue);
-        this.dataSource.paginator = this.matPaginator;
-        this.dataSource.sort = this.matSort;
-      }
-    );
+    this.authService.getProductsWithParentIdFeed('FEEDING').subscribe((res: any) => {
+      this.getvalue = res.data;
+      this.dataSource = new MatTableDataSource(this.getvalue);
+      this.dataSource.paginator = this.matPaginator;
+      this.dataSource.sort = this.matSort;
+    });
 
-    this.authService.getCategoryUser('FEEDING').subscribe(
-      (res: any) => {
-        this.getCategoryUSer = res.data.filter(item => item.id !== 0);
-        // console.log("fe",this.getCategoryUSer)
-      }
-    );
+    this.authService.getCategoryUser('FEEDING').subscribe((res: any) => {
+      this.getCategoryUSer = res.data.filter((item) => item.id !== 0);
+      // console.log("fe",this.getCategoryUSer)
+    });
 
-    this.authService.getCategory('FEEDING').subscribe(
-      (res: any) => {
-        this.getCategory = res.data;
-      }
-    );
+    this.authService.getCategory('FEEDING').subscribe((res: any) => {
+      this.getCategory = res.data;
+    });
 
     this.productForm = this.fb.group({
       categoryId: [''],
@@ -107,19 +117,21 @@ export class FeedingProductComponent implements OnInit {
     });
   }
 
-  get f() { return this.productForm.controls; }
+  get f() {
+    return this.productForm.controls;
+  }
 
   callRolePermission() {
     if (sessionStorage.getItem('roleName') !== 'superAdmin') {
-      let settingPermssion = JSON.parse(sessionStorage.getItem('permission'))
-      const orderPermission = settingPermssion?.find(ele => ele.area == 'products')?.write == 1
+      const settingPermssion = JSON.parse(sessionStorage.getItem('permission'));
+      const orderPermission = settingPermssion?.find((ele) => ele.area == 'products')?.write == 1;
       // console.log("fef",orderPermission)
-      this.showAccept = orderPermission
+      this.showAccept = orderPermission;
     }
   }
 
   ngAfterViewInit(): void {
-    this.matPaginator._intl.itemsPerPageLabel = this.translate.instant("itemsPerPage");
+    this.matPaginator._intl.itemsPerPageLabel = this.translate.instant('itemsPerPage');
   }
 
   applyFilter(event: Event) {
@@ -132,51 +144,45 @@ export class FeedingProductComponent implements OnInit {
   }
 
   selectCategory(event) {
-    this.authService.getSubCategory(event).subscribe(
-      (res: any) => {
-        this.subCate = true;
-        this.getSubCategory = res.data;
-        this.subCategLength = this.getSubCategory.length;
-        if (this.subCategLength == 0) {
-          this.categId = event;
-        } else {
-          this.categId = null;
-        }
-        // console.log("ff",this.categId)
+    this.authService.getSubCategory(event).subscribe((res: any) => {
+      this.subCate = true;
+      this.getSubCategory = res.data;
+      this.subCategLength = this.getSubCategory.length;
+      if (this.subCategLength == 0) {
+        this.categId = event;
+      } else {
+        this.categId = null;
       }
-    );
+      // console.log("ff",this.categId)
+    });
   }
 
   selectSubCategory(event) {
-    this.authService.getSubCategory(event).subscribe(
-      (res: any) => {
-        this.subSubCate = true;
-        this.getSubSubCategory = res.data;
-        this.subSubCategLength = this.getSubSubCategory.length;
-        if (this.subSubCategLength == 0) {
-          this.categId = event;
-        } else {
-          this.categId = null;
-        }
-        // console.log("ssss",this.categId)
+    this.authService.getSubCategory(event).subscribe((res: any) => {
+      this.subSubCate = true;
+      this.getSubSubCategory = res.data;
+      this.subSubCategLength = this.getSubSubCategory.length;
+      if (this.subSubCategLength == 0) {
+        this.categId = event;
+      } else {
+        this.categId = null;
       }
-    );
+      // console.log("ssss",this.categId)
+    });
   }
 
   selectSubSubCategory(event) {
-    this.authService.getSubCategory(event).subscribe(
-      (res: any) => {
-        this.subSubSubCate = true;
-        this.getSubSubSubCategory = res.data;
-        this.subSubSubCategLength = this.getSubSubSubCategory.length;
-        if (this.subSubSubCategLength == 0) {
-          this.categId = event;
-        } else {
-          this.categId = null;
-        }
-        // console.log("bbbb",this.categId)
+    this.authService.getSubCategory(event).subscribe((res: any) => {
+      this.subSubSubCate = true;
+      this.getSubSubSubCategory = res.data;
+      this.subSubSubCategLength = this.getSubSubSubCategory.length;
+      if (this.subSubSubCategLength == 0) {
+        this.categId = event;
+      } else {
+        this.categId = null;
       }
-    );
+      // console.log("bbbb",this.categId)
+    });
   }
 
   selectLastCategory(event) {
@@ -225,19 +231,19 @@ export class FeedingProductComponent implements OnInit {
   uploadImageFile(event) {
     if (event.target.files && event.target.files[0]) {
       const file = event.target.files && event.target.files[0];
-      var reader = new FileReader();
+      const reader = new FileReader();
       reader.onload = (event: any) => {
         this.prodImg = event.target.result;
-      }
+      };
       reader.readAsDataURL(event.target.files[0]);
       this.fileImgUpload = file;
     }
   }
 
   removeImg() {
-    this.iconImg = "";
-    this.prodImg = "";
-    this.fileImgUpload = "";
+    this.iconImg = '';
+    this.prodImg = '';
+    this.fileImgUpload = '';
   }
 
   onSubmitData() {
@@ -252,7 +258,7 @@ export class FeedingProductComponent implements OnInit {
     if (this.fileImgUpload) {
       this.spinner.show();
       const postData = new FormData();
-      postData.append('image', this.fileImgUpload)
+      postData.append('image', this.fileImgUpload);
       this.authService.s3upload(postData).subscribe((res: any) => {
         if (res.error == false) {
           this.iconImg = res.files;
@@ -260,9 +266,9 @@ export class FeedingProductComponent implements OnInit {
           this.productForm.value.image = JSON.stringify(this.imgs3);
           this.onSubmitProductImage(this.productForm.value);
         }
-      })
+      });
     } else {
-      this.productForm.value.image = JSON.stringify([]);;
+      this.productForm.value.image = JSON.stringify([]);
       this.onSubmitProductImage(this.productForm.value);
     }
 
@@ -294,7 +300,7 @@ export class FeedingProductComponent implements OnInit {
 
   onSubmitProductImage(data) {
     this.submitted = false;
-    this.productForm.value.type = "FEEDING";
+    this.productForm.value.type = 'FEEDING';
     this.productForm.value.categoryId = this.categId;
     this.productForm.value.parentId = 0;
     this.productForm.value.soldType = 1;
@@ -302,22 +308,21 @@ export class FeedingProductComponent implements OnInit {
     this.productForm.value.cartonActive = 0;
     this.productForm.value.isBasket = 0;
     // console.log("submit", this.productForm.value)
-    this.authService.addProduct(data)
-      .subscribe((res: any) => {
-        if (res.error == false) {
-          this.toastr.success('Success ', res.message);
-          this.spinner.hide();
-          this.submitted = false;
-          this.iconImg = "";
-          this.prodImg = "";
-          this.fileImgUpload = "";
-          this.productForm.reset();
-          this.modalService.dismissAll();
-          this.ngOnInit();
-        } else {
-          this.toastr.error('Enter valid ', res.message);
-        }
-      });
+    this.authService.addProduct(data).subscribe((res: any) => {
+      if (res.error == false) {
+        this.toastr.success('Success ', res.message);
+        this.spinner.hide();
+        this.submitted = false;
+        this.iconImg = '';
+        this.prodImg = '';
+        this.fileImgUpload = '';
+        this.productForm.reset();
+        this.modalService.dismissAll();
+        this.ngOnInit();
+      } else {
+        this.toastr.error('Enter valid ', res.message);
+      }
+    });
   }
 
   editProduct(data, content) {
@@ -346,7 +351,7 @@ export class FeedingProductComponent implements OnInit {
       this.imgs3 = [];
       this.spinner.show();
       const postData = new FormData();
-      postData.append('image', this.fileImgUpload)
+      postData.append('image', this.fileImgUpload);
       this.authService.s3upload(postData).subscribe((res: any) => {
         if (res.error == false) {
           this.iconImg = res.files;
@@ -354,7 +359,7 @@ export class FeedingProductComponent implements OnInit {
           this.productForm.value.image = JSON.stringify(this.imgs3);
           this.editProductImage(this.productForm.value);
         }
-      })
+      });
     } else {
       this.productForm.value.image = JSON.stringify(this.iconImg);
       this.editProductImage(this.productForm.value);
@@ -388,151 +393,142 @@ export class FeedingProductComponent implements OnInit {
   }
 
   editProductImage(data) {
-    this.authService.editProduct(data, this.productId)
-      .subscribe((res: any) => {
-        if (res.error == false) {
-          this.toastr.success('Success ', res.message);
-          this.spinner.hide();
-          this.getRelatedProduct();
-          this.submitted = false;
-          this.iconImg = "";
-          this.prodImg = "";
-          this.fileImgUpload = "";
-          this.modalService.dismissAll();
-        } else {
-          this.toastr.error('Enter valid ', res.message);
-        }
-      });
+    this.authService.editProduct(data, this.productId).subscribe((res: any) => {
+      if (res.error == false) {
+        this.toastr.success('Success ', res.message);
+        this.spinner.hide();
+        this.getRelatedProduct();
+        this.submitted = false;
+        this.iconImg = '';
+        this.prodImg = '';
+        this.fileImgUpload = '';
+        this.modalService.dismissAll();
+      } else {
+        this.toastr.error('Enter valid ', res.message);
+      }
+    });
   }
 
   getRelatedProduct() {
-    this.authService.getProductsDetails('FEEDING', this.productId).subscribe(
-      (res: any) => {
-        const filteredData = res.data.filter(item => item.id !== this.productId);
-        const updatedData = filteredData.map(obj => ({
-          id: obj.id,
-          categoryId: this.productForm.value.categoryId,
-          enProductName: this.productForm.value.enProductName,
-          arProductName: this.productForm.value.arProductName,
-          description: this.productForm.value.description,
-          arDescription: this.productForm.value.arDescription,
-        }));
-        // console.log("afterUpdate", updatedData)
-        const object = { product: updatedData }
-        this.authService.editReletedProduct(object)
-          .subscribe((res: any) => {
-            if (res.error == false) {
-              this.productForm.reset();
-              this.ngOnInit();
-            }
-          });
-      })
+    this.authService.getProductsDetails('FEEDING', this.productId).subscribe((res: any) => {
+      const filteredData = res.data.filter((item) => item.id !== this.productId);
+      const updatedData = filteredData.map((obj) => ({
+        id: obj.id,
+        categoryId: this.productForm.value.categoryId,
+        enProductName: this.productForm.value.enProductName,
+        arProductName: this.productForm.value.arProductName,
+        description: this.productForm.value.description,
+        arDescription: this.productForm.value.arDescription,
+      }));
+      // console.log("afterUpdate", updatedData)
+      const object = { product: updatedData };
+      this.authService.editReletedProduct(object).subscribe((res: any) => {
+        if (res.error == false) {
+          this.productForm.reset();
+          this.ngOnInit();
+        }
+      });
+    });
   }
 
   changeStatus(value) {
     if (value.active === 1) {
-      var visible = 0
+      var visible = 0;
     } else {
-      var visible = 1
+      var visible = 1;
     }
-    const object = { active: visible }
+    const object = { active: visible };
 
-    this.authService.editProduct(object, value.id)
-      .subscribe((res: any) => {
-        if (res.error == false) {
-          this.toastr.success('Success ', res.message);
-          this.ngOnInit();
-        } else {
-          this.toastr.error('Enter valid ', res.message);
-        }
-      });
+    this.authService.editProduct(object, value.id).subscribe((res: any) => {
+      if (res.error == false) {
+        this.toastr.success('Success ', res.message);
+        this.ngOnInit();
+      } else {
+        this.toastr.error('Enter valid ', res.message);
+      }
+    });
   }
 
   deleteProduct(value) {
     Swal.fire({
-      title: this.translate.instant("AreYouSure"),
-      text: this.translate.instant("YouWontBeRevertThis"),
+      title: this.translate.instant('AreYouSure'),
+      text: this.translate.instant('YouWontBeRevertThis'),
       icon: 'warning',
       showCancelButton: true,
-      cancelButtonText: this.translate.instant("Cancel"),
+      cancelButtonText: this.translate.instant('Cancel'),
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
-      confirmButtonText: this.translate.instant("YesDeleteIt")
+      confirmButtonText: this.translate.instant('YesDeleteIt'),
     }).then((result) => {
       if (result.isConfirmed) {
-        Swal.fire({
-          title: this.translate.instant("Deleted"),
-          text: this.translate.instant("YourFileHasBeenDeleted"),
+        (Swal.fire({
+          title: this.translate.instant('Deleted'),
+          text: this.translate.instant('YourFileHasBeenDeleted'),
           icon: 'success',
-          confirmButtonText: this.translate.instant("Ok")
+          confirmButtonText: this.translate.instant('Ok'),
         }),
           this.authService.deleteProd(value).subscribe((res: any) => {
             if (res.error == false) {
               this.toastr.success('Success ', res.message);
-              this.ngOnInit()
+              this.ngOnInit();
             } else {
               this.toastr.error('Error', res.message);
             }
-          });
+          }));
       }
-    })
+    });
   }
-
 
   changeMostWantedProduct(value) {
     if (value.mostWantedProduct === 1) {
-      var visible = 0
+      var visible = 0;
     } else {
-      var visible = 1
+      var visible = 1;
     }
-    const object = { mostWantedProduct: visible }
+    const object = { mostWantedProduct: visible };
 
-    this.authService.editProduct(object, value.id)
-      .subscribe((res: any) => {
-        if (res.error == false) {
-          this.toastr.success('Success ', res.message);
-          this.ngOnInit();
-        } else {
-          this.toastr.error('Enter valid ', res.message);
-        }
-      });
+    this.authService.editProduct(object, value.id).subscribe((res: any) => {
+      if (res.error == false) {
+        this.toastr.success('Success ', res.message);
+        this.ngOnInit();
+      } else {
+        this.toastr.error('Enter valid ', res.message);
+      }
+    });
   }
 
   changeOffers(value) {
     if (value.offers === 1) {
-      var visible = 0
+      var visible = 0;
     } else {
-      var visible = 1
+      var visible = 1;
     }
-    const object = { offers: visible }
+    const object = { offers: visible };
 
-    this.authService.editProduct(object, value.id)
-      .subscribe((res: any) => {
-        if (res.error == false) {
-          this.toastr.success('Success ', res.message);
-          this.ngOnInit();
-        } else {
-          this.toastr.error('Enter valid ', res.message);
-        }
-      });
+    this.authService.editProduct(object, value.id).subscribe((res: any) => {
+      if (res.error == false) {
+        this.toastr.success('Success ', res.message);
+        this.ngOnInit();
+      } else {
+        this.toastr.error('Enter valid ', res.message);
+      }
+    });
   }
   changeNewProduct(value) {
     if (value.newProduct === 1) {
-      var visible = 0
+      var visible = 0;
     } else {
-      var visible = 1
+      var visible = 1;
     }
-    const object = { newProduct: visible }
+    const object = { newProduct: visible };
 
-    this.authService.editProduct(object, value.id)
-      .subscribe((res: any) => {
-        if (res.error == false) {
-          this.toastr.success('Success ', res.message);
-          this.ngOnInit();
-        } else {
-          this.toastr.error('Enter valid ', res.message);
-        }
-      });
+    this.authService.editProduct(object, value.id).subscribe((res: any) => {
+      if (res.error == false) {
+        this.toastr.success('Success ', res.message);
+        this.ngOnInit();
+      } else {
+        this.toastr.error('Enter valid ', res.message);
+      }
+    });
   }
-
 }

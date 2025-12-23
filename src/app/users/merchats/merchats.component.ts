@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/shared/auth.service';
 import { MatPaginator } from '@angular/material/paginator';
@@ -13,9 +13,9 @@ import { ExportType, MatTableExporterDirective } from '@csmart/mat-table-exporte
 @Component({
   selector: 'app-merchats',
   templateUrl: './merchats.component.html',
-  styleUrls: ['./merchats.component.scss']
+  styleUrls: ['./merchats.component.scss'],
 })
-export class MerchatsComponent implements OnInit {
+export class MerchatsComponent implements OnInit, AfterViewInit {
   displayedColumns: string[];
   dataSource: MatTableDataSource<any>;
   getUsers = [];
@@ -30,8 +30,14 @@ export class MerchatsComponent implements OnInit {
   @ViewChild(MatSort) matSort: MatSort;
   @ViewChild(MatTableExporterDirective, { static: true }) exporter: MatTableExporterDirective;
 
-  constructor(public authService: AuthService, private toastr: ToastrService, private router: Router,
-    private modalService: NgbModal, public fb: FormBuilder, private translate: TranslateService,) { }
+  constructor(
+    public authService: AuthService,
+    private toastr: ToastrService,
+    private router: Router,
+    private modalService: NgbModal,
+    public fb: FormBuilder,
+    private translate: TranslateService,
+  ) {}
 
   ngOnInit(): void {
     this.callRolePermission();
@@ -42,38 +48,47 @@ export class MerchatsComponent implements OnInit {
     }
 
     if (this.showAccept == true) {
-      this.displayedColumns = ['index', 'mobileNumber', 'crNumber', 'userName', 'email', 'merchantType', 'action', 'active'];
+      this.displayedColumns = [
+        'index',
+        'mobileNumber',
+        'crNumber',
+        'userName',
+        'email',
+        'merchantType',
+        'action',
+        'active',
+      ];
     } else if (this.showAccept == false) {
       this.displayedColumns = ['index', 'mobileNumber', 'crNumber', 'userName', 'email', 'merchantType'];
     }
 
-    this.authService.getMerchantUsers().subscribe(
-      (res: any) => {
-        this.getUsers = res.data;
-        this.dataSource = new MatTableDataSource(this.getUsers);
-        this.dataSource.paginator = this.matPaginator;
-        this.dataSource.sort = this.matSort;
-      }
-    );
+    this.authService.getMerchantUsers().subscribe((res: any) => {
+      this.getUsers = res.data;
+      this.dataSource = new MatTableDataSource(this.getUsers);
+      this.dataSource.paginator = this.matPaginator;
+      this.dataSource.sort = this.matSort;
+    });
 
     this.approveForm = this.fb.group({
       merchantType: ['', [Validators.required]],
     });
   }
 
-  get approveF() { return this.approveForm.controls; }
+  get approveF() {
+    return this.approveForm.controls;
+  }
 
   callRolePermission() {
     if (sessionStorage.getItem('roleName') !== 'superAdmin') {
-      let settingPermssion = JSON.parse(sessionStorage.getItem('permission'))
-      const orderPermission = settingPermssion?.find(ele => ele.area == 'users')?.write == 1
+      const settingPermssion = JSON.parse(sessionStorage.getItem('permission'));
+      const orderPermission = settingPermssion?.find((ele) => ele.area == 'users')?.write == 1;
       // console.log("fef",orderPermission)
-      this.showAccept = orderPermission
+      this.showAccept = orderPermission;
     }
   }
 
   ngAfterViewInit(): void {
-    this.matPaginator._intl.itemsPerPageLabel = this.translate.instant("itemsPerPage");
+    this.matPaginator._intl.itemsPerPageLabel = this.translate.instant('itemsPerPage');
   }
 
   applyFilter(event: Event) {
@@ -96,50 +111,47 @@ export class MerchatsComponent implements OnInit {
       return;
     }
     this.approveForm.value.isApprove = 1;
-    this.authService.approveMerchant(this.approveForm.value, this.userId)
-      .subscribe((res: any) => {
-        if (res.error == false) {
-          this.toastr.success('Success ', res.message);
-          this.approveForm.reset();
-          this.modalService.dismissAll();
-          this.ngOnInit();
-        } else {
-          this.toastr.warning('Enter valid ', res.message);
-        }
-      });
+    this.authService.approveMerchant(this.approveForm.value, this.userId).subscribe((res: any) => {
+      if (res.error == false) {
+        this.toastr.success('Success ', res.message);
+        this.approveForm.reset();
+        this.modalService.dismissAll();
+        this.ngOnInit();
+      } else {
+        this.toastr.warning('Enter valid ', res.message);
+      }
+    });
   }
 
   reject(id) {
     this.approveForm.value.isApprove = 2;
-    this.authService.approveMerchant(this.approveForm.value, id)
-      .subscribe((res: any) => {
-        if (res.error == false) {
-          this.toastr.success('Success ', res.message);
-          this.approveForm.reset();
-          this.modalService.dismissAll();
-          this.ngOnInit();
-        } else {
-          this.toastr.warning('Enter valid ', res.message);
-        }
-      });
+    this.authService.approveMerchant(this.approveForm.value, id).subscribe((res: any) => {
+      if (res.error == false) {
+        this.toastr.success('Success ', res.message);
+        this.approveForm.reset();
+        this.modalService.dismissAll();
+        this.ngOnInit();
+      } else {
+        this.toastr.warning('Enter valid ', res.message);
+      }
+    });
   }
 
   changeActiveStatus(value) {
     if (value.active === 1) {
-      var visible = 0
+      var visible = 0;
     } else {
-      var visible = 1
+      var visible = 1;
     }
-    const object = { active: visible }
-    this.authService.updateUserType(object, value.id)
-      .subscribe((res: any) => {
-        if (res.error == false) {
-          this.toastr.success('Success ', res.message);
-          this.ngOnInit();
-        } else {
-          this.toastr.error('Enter valid ', res.message);
-        }
-      });
+    const object = { active: visible };
+    this.authService.updateUserType(object, value.id).subscribe((res: any) => {
+      if (res.error == false) {
+        this.toastr.success('Success ', res.message);
+        this.ngOnInit();
+      } else {
+        this.toastr.error('Enter valid ', res.message);
+      }
+    });
   }
 
   exportIt() {
@@ -159,5 +171,4 @@ export class MerchatsComponent implements OnInit {
       fileName: `Merchants ${this.formattedDateTime}`,
     });
   }
-
 }

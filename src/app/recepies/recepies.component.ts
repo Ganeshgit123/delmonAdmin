@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -15,9 +15,9 @@ import { TranslateService } from '@ngx-translate/core';
 @Component({
   selector: 'app-recepies',
   templateUrl: './recepies.component.html',
-  styleUrls: ['./recepies.component.scss']
+  styleUrls: ['./recepies.component.scss'],
 })
-export class RecepiesComponent implements OnInit {
+export class RecepiesComponent implements OnInit, AfterViewInit {
   displayedColumns: string[];
   dataSource: MatTableDataSource<any>;
   getvalue = [];
@@ -42,16 +42,14 @@ export class RecepiesComponent implements OnInit {
     defaultFontSize: '',
     fonts: [
       { class: 'poppins', name: 'Poppins' },
-      { class: 'DroidKufi', name: 'DroidKufi' }
+      { class: 'DroidKufi', name: 'DroidKufi' },
     ],
     // uploadUrl: 'v1/image',
     // upload: (file: File) => { ... }
     // uploadWithCredentials: false,
     // sanitize: true,
     // toolbarPosition: 'top',
-    toolbarHiddenButtons: [
-      ['italic', 'insertImage', 'insertVideo', 'subscript', 'superscript',]
-    ]
+    toolbarHiddenButtons: [['italic', 'insertImage', 'insertVideo', 'subscript', 'superscript']],
   };
   getCategory = [];
   iconImg = null;
@@ -68,9 +66,15 @@ export class RecepiesComponent implements OnInit {
   @ViewChild(MatPaginator) matPaginator: MatPaginator;
   @ViewChild(MatSort) matSort: MatSort;
 
-  constructor(private modalService: NgbModal, public fb: FormBuilder, public authService: AuthService,
-    private toastr: ToastrService, private router: Router, private spinner: NgxSpinnerService,
-    private translate: TranslateService,) { }
+  constructor(
+    private modalService: NgbModal,
+    public fb: FormBuilder,
+    public authService: AuthService,
+    private toastr: ToastrService,
+    private router: Router,
+    private spinner: NgxSpinnerService,
+    private translate: TranslateService,
+  ) {}
 
   ngOnInit(): void {
     this.callRolePermission();
@@ -89,28 +93,21 @@ export class RecepiesComponent implements OnInit {
     }
 
     if (this.userType == 1 || this.userType == 0) {
-      this.authService.getCategory('POULTRY').subscribe(
-        (res: any) => {
-          this.getCategory = res.data;
-        });
+      this.authService.getCategory('POULTRY').subscribe((res: any) => {
+        this.getCategory = res.data;
+      });
     } else if (this.userType == 2 || this.userType == 0) {
-      this.authService.getCategory('FEEDING').subscribe(
-        (res: any) => {
-          this.getCategory = res.data;
-        });
+      this.authService.getCategory('FEEDING').subscribe((res: any) => {
+        this.getCategory = res.data;
+      });
     }
 
-
-    this.authService.getReceipes().subscribe(
-      (res: any) => {
-        this.getvalue = res.data.filter(category =>
-          this.getCategory.some(item => item.id === category.categoryId)
-        );
-        this.dataSource = new MatTableDataSource(this.getvalue);
-        this.dataSource.paginator = this.matPaginator;
-        this.dataSource.sort = this.matSort;
-      }
-    );
+    this.authService.getReceipes().subscribe((res: any) => {
+      this.getvalue = res.data.filter((category) => this.getCategory.some((item) => item.id === category.categoryId));
+      this.dataSource = new MatTableDataSource(this.getvalue);
+      this.dataSource.paginator = this.matPaginator;
+      this.dataSource.sort = this.matSort;
+    });
 
     this.receipeForm = this.fb.group({
       name: ['', [Validators.required]],
@@ -125,19 +122,21 @@ export class RecepiesComponent implements OnInit {
     });
   }
 
-  get f() { return this.receipeForm.controls; }
+  get f() {
+    return this.receipeForm.controls;
+  }
 
   callRolePermission() {
     if (sessionStorage.getItem('roleName') !== 'superAdmin') {
-      let settingPermssion = JSON.parse(sessionStorage.getItem('permission'))
-      const orderPermission = settingPermssion?.find(ele => ele.area == 'recipes')?.write == 1
+      const settingPermssion = JSON.parse(sessionStorage.getItem('permission'));
+      const orderPermission = settingPermssion?.find((ele) => ele.area == 'recipes')?.write == 1;
       // console.log("fef",orderPermission)
-      this.showAccept = orderPermission
+      this.showAccept = orderPermission;
     }
   }
 
   ngAfterViewInit(): void {
-    this.matPaginator._intl.itemsPerPageLabel = this.translate.instant("itemsPerPage");
+    this.matPaginator._intl.itemsPerPageLabel = this.translate.instant('itemsPerPage');
   }
 
   applyFilter(event: Event) {
@@ -168,13 +167,13 @@ export class RecepiesComponent implements OnInit {
 
   uploadVideoFile(event) {
     const file = event.target.files && event.target.files[0];
-    var valid = this.checkFileFormat(event.target.files[0]);
+    const valid = this.checkFileFormat(event.target.files[0]);
     if (!valid) {
-      var reader = new FileReader();
+      const reader = new FileReader();
       reader.onload = (event: any) => {
         this.videoUpp = event.target.result;
         // console.log("fef", this.videoUpp)
-      }
+      };
       reader.readAsDataURL(event.target.files[0]);
       this.fileVideoUpload = file;
     } else {
@@ -183,12 +182,17 @@ export class RecepiesComponent implements OnInit {
   }
 
   removeVideo() {
-    this.videoUpp = "";
-    this.fileVideoUpload = "";
+    this.videoUpp = '';
+    this.fileVideoUpload = '';
   }
 
   checkImageFormat(checkFile) {
-    if (checkFile.type == 'image/webp' || checkFile.type == 'image/png' || checkFile.type == 'image/jpeg' || checkFile.type == 'image/jpg') {
+    if (
+      checkFile.type == 'image/webp' ||
+      checkFile.type == 'image/png' ||
+      checkFile.type == 'image/jpeg' ||
+      checkFile.type == 'image/jpg'
+    ) {
       return false;
     } else {
       return true;
@@ -197,12 +201,12 @@ export class RecepiesComponent implements OnInit {
 
   uploadImageFile(event) {
     const file = event.target.files && event.target.files[0];
-    var valid = this.checkImageFormat(event.target.files[0]);
+    const valid = this.checkImageFormat(event.target.files[0]);
     if (!valid) {
-      var reader = new FileReader();
+      const reader = new FileReader();
       reader.onload = (event: any) => {
         this.iconImg = event.target.result;
-      }
+      };
       reader.readAsDataURL(event.target.files[0]);
       this.fileImgUpload = file;
     } else {
@@ -210,8 +214,8 @@ export class RecepiesComponent implements OnInit {
     }
   }
   removeImg() {
-    this.iconImg = "";
-    this.fileImgUpload = "";
+    this.iconImg = '';
+    this.fileImgUpload = '';
   }
 
   onSubmitData() {
@@ -221,20 +225,20 @@ export class RecepiesComponent implements OnInit {
     }
 
     if (this.isEdit) {
-      this.receipeEditService(this.receipeForm.value)
+      this.receipeEditService(this.receipeForm.value);
       return;
     }
 
     this.spinner.show();
     if (this.fileVideoUpload) {
-      var postData = new FormData();
+      const postData = new FormData();
       postData.append('image', this.fileVideoUpload);
       this.authService.s3upload(postData).subscribe((res: any) => {
         if (res.error == false) {
           this.videoUrl = res.files;
           this.receipeForm.value.videos = this.videoUrl;
 
-          var postData = new FormData();
+          const postData = new FormData();
           postData.append('image', this.fileImgUpload);
           this.authService.s3upload(postData).subscribe((res: any) => {
             if (res.error == false) {
@@ -242,19 +246,18 @@ export class RecepiesComponent implements OnInit {
               this.receipeForm.value.thumbnailImage = this.iconImgUrl;
 
               // console.log("fef", this.receipeForm.value)
-              this.authService.addReceipes(this.receipeForm.value)
-                .subscribe((res: any) => {
-                  if (res.error == false) {
-                    this.toastr.success('Success ', res.message);
-                    this.spinner.hide();
-                    this.iconImg = null;
-                    this.receipeForm.reset();
-                    this.modalService.dismissAll();
-                    this.ngOnInit();
-                  } else {
-                    this.toastr.error('Enter valid ', res.message);
-                  }
-                });
+              this.authService.addReceipes(this.receipeForm.value).subscribe((res: any) => {
+                if (res.error == false) {
+                  this.toastr.success('Success ', res.message);
+                  this.spinner.hide();
+                  this.iconImg = null;
+                  this.receipeForm.reset();
+                  this.modalService.dismissAll();
+                  this.ngOnInit();
+                } else {
+                  this.toastr.error('Enter valid ', res.message);
+                }
+              });
             }
           });
         }
@@ -293,7 +296,7 @@ export class RecepiesComponent implements OnInit {
           this.videoUrl = res.files;
           this.receipeForm.value.videos = this.videoUrl;
 
-          var postData = new FormData();
+          const postData = new FormData();
           postData.append('image', this.fileImgUpload);
           this.authService.s3upload(postData).subscribe((res: any) => {
             if (res.error == false) {
@@ -301,19 +304,18 @@ export class RecepiesComponent implements OnInit {
               this.receipeForm.value.thumbnailImage = this.iconImgUrl;
 
               // console.log("fef", this.receipeForm.value)
-              this.authService.editReceipes(this.receipeForm.value, this.receipeId)
-                .subscribe((res: any) => {
-                  if (res.error == false) {
-                    this.toastr.success('Success ', res.message);
-                    this.spinner.hide();
-                    this.iconImg = null;
-                    this.receipeForm.reset();
-                    this.modalService.dismissAll();
-                    this.ngOnInit();
-                  } else {
-                    this.toastr.error('Enter valid ', res.message);
-                  }
-                });
+              this.authService.editReceipes(this.receipeForm.value, this.receipeId).subscribe((res: any) => {
+                if (res.error == false) {
+                  this.toastr.success('Success ', res.message);
+                  this.spinner.hide();
+                  this.iconImg = null;
+                  this.receipeForm.reset();
+                  this.modalService.dismissAll();
+                  this.ngOnInit();
+                } else {
+                  this.toastr.error('Enter valid ', res.message);
+                }
+              });
             }
           });
         }
@@ -329,20 +331,19 @@ export class RecepiesComponent implements OnInit {
           data['thumbnailImage'] = this.iconImgUrl;
           data['videos'] = this.videoUpp;
           // console.log("1stImageUpload", data)
-          this.authService.editReceipes(data, this.receipeId)
-            .subscribe((res: any) => {
-              if (res.error == false) {
-                this.toastr.success('Success ', res.message);
-                this.iconImgUrl = null;
-                this.videoUpp = null;
-                this.receipeForm.reset();
-                this.modalService.dismissAll();
-                this.ngOnInit();
-                this.spinner.hide();
-              } else {
-                this.toastr.error('Enter valid ', res.message);
-              }
-            });
+          this.authService.editReceipes(data, this.receipeId).subscribe((res: any) => {
+            if (res.error == false) {
+              this.toastr.success('Success ', res.message);
+              this.iconImgUrl = null;
+              this.videoUpp = null;
+              this.receipeForm.reset();
+              this.modalService.dismissAll();
+              this.ngOnInit();
+              this.spinner.hide();
+            } else {
+              this.toastr.error('Enter valid ', res.message);
+            }
+          });
         }
       });
     } else if (this.fileVideoUpload) {
@@ -356,20 +357,19 @@ export class RecepiesComponent implements OnInit {
           data['videos'] = this.videoUrl;
           data['thumbnailImage'] = this.iconImg;
           // console.log("1stImageUpload", data)
-          this.authService.editReceipes(data, this.receipeId)
-            .subscribe((res: any) => {
-              if (res.error == false) {
-                this.toastr.success('Success ', res.message);
-                this.iconImg = null;
-                this.videoUrl = null;
-                this.receipeForm.reset();
-                this.modalService.dismissAll();
-                this.ngOnInit();
-                this.spinner.hide();
-              } else {
-                this.toastr.error('Enter valid ', res.message);
-              }
-            });
+          this.authService.editReceipes(data, this.receipeId).subscribe((res: any) => {
+            if (res.error == false) {
+              this.toastr.success('Success ', res.message);
+              this.iconImg = null;
+              this.videoUrl = null;
+              this.receipeForm.reset();
+              this.modalService.dismissAll();
+              this.ngOnInit();
+              this.spinner.hide();
+            } else {
+              this.toastr.error('Enter valid ', res.message);
+            }
+          });
         }
       });
     } else {
@@ -377,70 +377,67 @@ export class RecepiesComponent implements OnInit {
       data['videos'] = this.videoUpp;
       data['thumbnailImage'] = this.iconImg;
       // console.log("1stImageUpload", data)
-      this.authService.editReceipes(data, this.receipeId)
-        .subscribe((res: any) => {
-          if (res.error == false) {
-            this.toastr.success('Success ', res.message);
-            this.iconImg = null;
-            this.videoUpp = null;
-            this.receipeForm.reset();
-            this.modalService.dismissAll();
-            this.ngOnInit();
-            this.spinner.hide();
-          } else {
-            this.toastr.error('Enter valid ', res.message);
-          }
-        });
+      this.authService.editReceipes(data, this.receipeId).subscribe((res: any) => {
+        if (res.error == false) {
+          this.toastr.success('Success ', res.message);
+          this.iconImg = null;
+          this.videoUpp = null;
+          this.receipeForm.reset();
+          this.modalService.dismissAll();
+          this.ngOnInit();
+          this.spinner.hide();
+        } else {
+          this.toastr.error('Enter valid ', res.message);
+        }
+      });
     }
   }
 
   changeStatus(value) {
     if (value.active === 1) {
-      var visible = 0
+      var visible = 0;
     } else {
-      var visible = 1
+      var visible = 1;
     }
-    const object = { active: visible }
+    const object = { active: visible };
 
-    this.authService.editReceipes(object, value.id)
-      .subscribe((res: any) => {
-        if (res.error == false) {
-          this.toastr.success('Success ', res.message);
-          this.ngOnInit();
-        } else {
-          this.toastr.error('Enter valid ', res.message);
-        }
-      });
+    this.authService.editReceipes(object, value.id).subscribe((res: any) => {
+      if (res.error == false) {
+        this.toastr.success('Success ', res.message);
+        this.ngOnInit();
+      } else {
+        this.toastr.error('Enter valid ', res.message);
+      }
+    });
   }
 
   deleteReceipe(value) {
     Swal.fire({
-      title: this.translate.instant("AreYouSure"),
-      text: this.translate.instant("YouWontBeRevertThis"),
+      title: this.translate.instant('AreYouSure'),
+      text: this.translate.instant('YouWontBeRevertThis'),
       icon: 'warning',
       showCancelButton: true,
-      cancelButtonText: this.translate.instant("Cancel"),
+      cancelButtonText: this.translate.instant('Cancel'),
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
-      confirmButtonText: this.translate.instant("YesDeleteIt")
+      confirmButtonText: this.translate.instant('YesDeleteIt'),
     }).then((result) => {
       if (result.isConfirmed) {
-        Swal.fire({
-          title: this.translate.instant("Deleted"),
-          text: this.translate.instant("YourFileHasBeenDeleted"),
+        (Swal.fire({
+          title: this.translate.instant('Deleted'),
+          text: this.translate.instant('YourFileHasBeenDeleted'),
           icon: 'success',
-          confirmButtonText: this.translate.instant("Ok")
+          confirmButtonText: this.translate.instant('Ok'),
         }),
           this.authService.deleteReceipes(value).subscribe((res: any) => {
             if (res.error == false) {
               this.toastr.success('Success ', res.message);
-              this.ngOnInit()
+              this.ngOnInit();
             } else {
               this.toastr.error('Error', res.message);
             }
-          });
+          }));
       }
-    })
+    });
   }
 }
-

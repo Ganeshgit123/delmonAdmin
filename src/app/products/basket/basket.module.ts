@@ -6,27 +6,24 @@ import { NgMaterialModule } from '../../ng-material.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgxSpinnerModule } from 'ngx-spinner';
 import { TranslateModule } from '@ngx-translate/core';
-import { MatSelectModule } from "@angular/material/select";
-
+import { MatSelectModule } from '@angular/material/select';
 
 @NgModule({
-  declarations: [
-    BasketComponent
-  ],
+  declarations: [BasketComponent],
   imports: [
     CommonModule,
     MatSelectModule,
     RouterModule.forChild([
       {
-        path:"",
-        component: BasketComponent
-      }
+        path: '',
+        component: BasketComponent,
+      },
     ]),
     NgMaterialModule,
     TranslateModule,
-    FormsModule, 
+    FormsModule,
     ReactiveFormsModule,
     NgxSpinnerModule,
-  ]
+  ],
 })
-export class BasketModule { }
+export class BasketModule {}

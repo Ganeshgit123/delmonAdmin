@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -14,9 +14,9 @@ import { TranslateService } from '@ngx-translate/core';
 @Component({
   selector: 'app-basket',
   templateUrl: './basket.component.html',
-  styleUrls: ['./basket.component.scss']
+  styleUrls: ['./basket.component.scss'],
 })
-export class BasketComponent implements OnInit {
+export class BasketComponent implements OnInit, AfterViewInit {
   displayedColumns: string[];
   dataSource: MatTableDataSource<any>;
   getvalue = [];
@@ -45,9 +45,15 @@ export class BasketComponent implements OnInit {
   @ViewChild(MatPaginator) matPaginator: MatPaginator;
   @ViewChild(MatSort) matSort: MatSort;
 
-  constructor(private modalService: NgbModal, public fb: FormBuilder, public authService: AuthService,
-    private toastr: ToastrService, private router: Router, private spinner: NgxSpinnerService,
-    private translate: TranslateService,) { }
+  constructor(
+    private modalService: NgbModal,
+    public fb: FormBuilder,
+    public authService: AuthService,
+    private toastr: ToastrService,
+    private router: Router,
+    private spinner: NgxSpinnerService,
+    private translate: TranslateService,
+  ) {}
 
   ngOnInit(): void {
     this.callRolePermission();
@@ -57,14 +63,12 @@ export class BasketComponent implements OnInit {
       this.superAdminRole = false;
     }
 
-    this.authService.getBaskets('POULTRY').subscribe(
-      (res: any) => {
-        this.getvalue = res.data;
-        this.dataSource = new MatTableDataSource(this.getvalue);
-        this.dataSource.paginator = this.matPaginator;
-        this.dataSource.sort = this.matSort;
-      }
-    );
+    this.authService.getBaskets('POULTRY').subscribe((res: any) => {
+      this.getvalue = res.data;
+      this.dataSource = new MatTableDataSource(this.getvalue);
+      this.dataSource.paginator = this.matPaginator;
+      this.dataSource.sort = this.matSort;
+    });
 
     this.basketForm = this.fb.group({
       enProductName: ['', [Validators.required]],
@@ -89,19 +93,21 @@ export class BasketComponent implements OnInit {
     }
   }
 
-  get f() { return this.basketForm.controls; }
+  get f() {
+    return this.basketForm.controls;
+  }
 
   callRolePermission() {
     if (sessionStorage.getItem('roleName') !== 'superAdmin') {
-      let settingPermssion = JSON.parse(sessionStorage.getItem('permission'))
-      const orderPermission = settingPermssion?.find(ele => ele.area == 'products')?.write == 1
+      const settingPermssion = JSON.parse(sessionStorage.getItem('permission'));
+      const orderPermission = settingPermssion?.find((ele) => ele.area == 'products')?.write == 1;
       // console.log("fef",orderPermission)
-      this.showAccept = orderPermission
+      this.showAccept = orderPermission;
     }
   }
 
   ngAfterViewInit(): void {
-    this.matPaginator._intl.itemsPerPageLabel = this.translate.instant("itemsPerPage");
+    this.matPaginator._intl.itemsPerPageLabel = this.translate.instant('itemsPerPage');
   }
 
   applyFilter(event: Event) {
@@ -174,19 +180,19 @@ export class BasketComponent implements OnInit {
   uploadImageFile(event) {
     if (event.target.files && event.target.files[0]) {
       const file = event.target.files && event.target.files[0];
-      var reader = new FileReader();
+      const reader = new FileReader();
       reader.onload = (event: any) => {
         this.prodImg = event.target.result;
-      }
+      };
       reader.readAsDataURL(event.target.files[0]);
       this.fileImgUpload = file;
     }
   }
 
   removeProdImg() {
-    this.iconImg = "";
-    this.prodImg = "";
-    this.fileImgUpload = "";
+    this.iconImg = '';
+    this.prodImg = '';
+    this.fileImgUpload = '';
   }
 
   onBasketSave() {
@@ -201,7 +207,7 @@ export class BasketComponent implements OnInit {
     if (this.fileImgUpload) {
       this.spinner.show();
       const postData = new FormData();
-      postData.append('image', this.fileImgUpload)
+      postData.append('image', this.fileImgUpload);
       this.authService.s3upload(postData).subscribe((res: any) => {
         if (res.error == false) {
           this.iconImg = res.files;
@@ -209,9 +215,9 @@ export class BasketComponent implements OnInit {
           this.basketForm.value.image = JSON.stringify(this.imgs3);
           this.onSubmitBasketImage(this.basketForm.value);
         }
-      })
+      });
     } else {
-      this.basketForm.value.image = JSON.stringify([]);;
+      this.basketForm.value.image = JSON.stringify([]);
       this.onSubmitBasketImage(this.basketForm.value);
     }
 
@@ -243,7 +249,7 @@ export class BasketComponent implements OnInit {
 
   onSubmitBasketImage(data) {
     this.submitted = false;
-    this.basketForm.value.type = "POULTRY";
+    this.basketForm.value.type = 'POULTRY';
     this.basketForm.value.price = null;
     this.basketForm.value.isBasket = 1;
     this.basketForm.value.soldType = 3;
@@ -251,23 +257,22 @@ export class BasketComponent implements OnInit {
     this.basketForm.value.description = 'null';
     this.basketForm.value.arDescription = 'null';
     // console.log("submit", this.productForm.value)
-    this.authService.addNewBasket(data)
-      .subscribe((res: any) => {
-        if (res.error == false) {
-          this.toastr.success('Success ', res.message);
-          this.spinner.hide();
-          this.submitted = false;
-          this.basketForm.reset();
-          this.filteredProd = [];
-          this.iconImg = "";
-          this.prodImg = "";
-          this.fileImgUpload = "";
-          this.modalService.dismissAll();
-          this.ngOnInit();
-        } else {
-          this.toastr.error('Enter valid ', res.message);
-        }
-      });
+    this.authService.addNewBasket(data).subscribe((res: any) => {
+      if (res.error == false) {
+        this.toastr.success('Success ', res.message);
+        this.spinner.hide();
+        this.submitted = false;
+        this.basketForm.reset();
+        this.filteredProd = [];
+        this.iconImg = '';
+        this.prodImg = '';
+        this.fileImgUpload = '';
+        this.modalService.dismissAll();
+        this.ngOnInit();
+      } else {
+        this.toastr.error('Enter valid ', res.message);
+      }
+    });
   }
 
   editBasket(data, content) {
@@ -298,7 +303,7 @@ export class BasketComponent implements OnInit {
       this.imgs3 = [];
       this.spinner.show();
       const postData = new FormData();
-      postData.append('image', this.fileImgUpload)
+      postData.append('image', this.fileImgUpload);
       this.authService.s3upload(postData).subscribe((res: any) => {
         if (res.error == false) {
           this.iconImg = res.files;
@@ -306,7 +311,7 @@ export class BasketComponent implements OnInit {
           this.basketForm.value.image = JSON.stringify(this.imgs3);
           this.editBasketImage(this.basketForm.value);
         }
-      })
+      });
     } else {
       this.basketForm.value.image = JSON.stringify(this.iconImg);
       this.editBasketImage(this.basketForm.value);
@@ -341,72 +346,69 @@ export class BasketComponent implements OnInit {
   }
 
   editBasketImage(data) {
-
-    this.authService.editBakset(data, this.baskedId)
-      .subscribe((res: any) => {
-        if (res.error == false) {
-          this.toastr.success('Success ', res.message);
-          this.spinner.hide();
-          this.submitted = false;
-          this.basketForm.reset();
-          this.iconImg = "";
-          this.fileImgUpload = "";
-          this.prodImg = "";
-          this.modalService.dismissAll();
-          this.ngOnInit();
-        } else {
-          this.toastr.error('Enter valid ', res.message);
-        }
-      });
+    this.authService.editBakset(data, this.baskedId).subscribe((res: any) => {
+      if (res.error == false) {
+        this.toastr.success('Success ', res.message);
+        this.spinner.hide();
+        this.submitted = false;
+        this.basketForm.reset();
+        this.iconImg = '';
+        this.fileImgUpload = '';
+        this.prodImg = '';
+        this.modalService.dismissAll();
+        this.ngOnInit();
+      } else {
+        this.toastr.error('Enter valid ', res.message);
+      }
+    });
   }
 
   changeStatus(value) {
     if (value.active === 1) {
-      var visible = 0
+      var visible = 0;
     } else {
-      var visible = 1
+      var visible = 1;
     }
-    const object = { active: visible }
+    const object = { active: visible };
 
-    this.authService.editProduct(object, value.id)
-      .subscribe((res: any) => {
-        if (res.error == false) {
-          this.toastr.success('Success ', res.message);
-          this.ngOnInit();
-        } else {
-          this.toastr.error('Enter valid ', res.message);
-        }
-      });
+    this.authService.editProduct(object, value.id).subscribe((res: any) => {
+      if (res.error == false) {
+        this.toastr.success('Success ', res.message);
+        this.ngOnInit();
+      } else {
+        this.toastr.error('Enter valid ', res.message);
+      }
+    });
   }
 
   deleteProduct(value) {
     Swal.fire({
-      title: this.translate.instant("AreYouSure"),
-      text: this.translate.instant("YouWontBeRevertThis"),
+      title: this.translate.instant('AreYouSure'),
+      text: this.translate.instant('YouWontBeRevertThis'),
       icon: 'warning',
       showCancelButton: true,
-      cancelButtonText: this.translate.instant("Cancel"),
+      cancelButtonText: this.translate.instant('Cancel'),
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
-      confirmButtonText: this.translate.instant("YesDeleteIt")
+      confirmButtonText: this.translate.instant('YesDeleteIt'),
     }).then((result) => {
       if (result.isConfirmed) {
-        Swal.fire({
-          title: this.translate.instant("Deleted"),
-          text: this.translate.instant("YourFileHasBeenDeleted"),
+        (Swal.fire({
+          title: this.translate.instant('Deleted'),
+          text: this.translate.instant('YourFileHasBeenDeleted'),
           icon: 'success',
-          confirmButtonText: this.translate.instant("Ok")
+          confirmButtonText: this.translate.instant('Ok'),
         }),
           this.authService.deleteProd(value).subscribe((res: any) => {
             if (res.error == false) {
               this.toastr.success('Success ', res.message);
-              this.ngOnInit()
+              this.ngOnInit();
             } else {
               this.toastr.error('Error', res.message);
             }
-          });
+          }));
       }
-    })
+    });
   }
 
   addProductsEle(data, content) {
@@ -414,20 +416,16 @@ export class BasketComponent implements OnInit {
     this.filteredProd = [];
     this.modalService.open(content, { centered: true, size: 'xl' });
     this.baskedId = data['id'];
-    var prod = data['basketProductList'];
-    this.authService.getProductsWithoutParentId1('POULTRY').subscribe(
-      (res: any) => {
-        this.getProducts = res.data;
-        this.selectedProvince = this.getProducts;
-        // console.log("ttt", prod)
-        var filll = [];
-        filll = this.getProducts
-          .filter((object1) => prod.some((object2) => object1.id === object2)) // requires unique id
+    const prod = data['basketProductList'];
+    this.authService.getProductsWithoutParentId1('POULTRY').subscribe((res: any) => {
+      this.getProducts = res.data;
+      this.selectedProvince = this.getProducts;
+      // console.log("ttt", prod)
+      let filll = [];
+      filll = this.getProducts.filter((object1) => prod.some((object2) => object1.id === object2)); // requires unique id
 
-        this.filteredProd = filll;
-      }
-    );
-
+      this.filteredProd = filll;
+    });
   }
 
   sentProdutId(id) {
@@ -444,45 +442,41 @@ export class BasketComponent implements OnInit {
   }
 
   provinceSearch(value: string) {
-    let filter = value.toLowerCase();
-    return this.getProducts.filter(option =>
-      option.enProductName.toLowerCase().startsWith(filter)
-    );
+    const filter = value.toLowerCase();
+    return this.getProducts.filter((option) => option.enProductName.toLowerCase().startsWith(filter));
   }
 
   removeImg(id) {
-    const findIndex = this.filteredProd.findIndex(a => a.id === id)
+    const findIndex = this.filteredProd.findIndex((a) => a.id === id);
 
-    findIndex !== -1 && this.filteredProd.splice(findIndex, 1)
+    findIndex !== -1 && this.filteredProd.splice(findIndex, 1);
   }
 
   basketProductSubmit() {
-    const uniqueAddresses = Array.from(new Set(this.filteredProd.map(a => a.id)))
-      .map(id => {
-        return this.filteredProd.find(a => a.id === id)
-      });
-    var lastArray = [];
-    uniqueAddresses.forEach(element => {
-      lastArray.push(element.id)
+    const uniqueAddresses = Array.from(new Set(this.filteredProd.map((a) => a.id))).map((id) => {
+      return this.filteredProd.find((a) => a.id === id);
+    });
+    let lastArray = [];
+    uniqueAddresses.forEach((element) => {
+      lastArray.push(element.id);
     });
 
     this.basketProdForm.value.basketProductList = JSON.stringify(lastArray);
 
-    this.authService.editBakset(this.basketProdForm.value, this.baskedId)
-      .subscribe((res: any) => {
-        if (res.error == false) {
-          this.toastr.success('Success ', res.message);
-          this.basketProdForm.reset();
-          lastArray = [];
-          this.filteredProd = [];
-          this.iconImg = "";
-          this.fileImgUpload = "";
-          this.prodImg = "";
-          this.modalService.dismissAll();
-          this.ngOnInit();
-        } else {
-          this.toastr.error('Enter valid ', res.message);
-        }
-      });
+    this.authService.editBakset(this.basketProdForm.value, this.baskedId).subscribe((res: any) => {
+      if (res.error == false) {
+        this.toastr.success('Success ', res.message);
+        this.basketProdForm.reset();
+        lastArray = [];
+        this.filteredProd = [];
+        this.iconImg = '';
+        this.fileImgUpload = '';
+        this.prodImg = '';
+        this.modalService.dismissAll();
+        this.ngOnInit();
+      } else {
+        this.toastr.error('Enter valid ', res.message);
+      }
+    });
   }
 }

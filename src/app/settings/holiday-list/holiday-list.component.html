@@ -1,6 +1,6 @@
 <div class="d-flex justify-content-between align-items-center flex-wrap grid-margin">
   <div>
-    <h2 class="mb-3 mb-md-0">{{"Holiday List" | translate}}</h2>
+    <h2 class="mb-3 mb-md-0">{{ 'Holiday List' | translate }}</h2>
   </div>
 </div>
 
@@ -10,12 +10,13 @@
       <div class="mb-2">
         <input type="date" [formControlName]="i" class="form-control" [min]="today" />
         @if (dates.length > 1) {
-          <button type="button" class="btn btn-own-cancel mt-1" (click)="removeDate(i)"
-          >{{"Remove" | translate}}</button>
+          <button type="button" class="btn btn-own-cancel mt-1" (click)="removeDate(i)">
+            {{ 'Remove' | translate }}
+          </button>
         }
       </div>
     }
   </div>
-  <button type="button" (click)="addDate()" class="btn btn-own">{{"AddDate" | translate}}</button>
-  <button type="submit" class="btn btn-own">{{"Submit" | translate}}</button>
+  <button type="button" (click)="addDate()" class="btn btn-own">{{ 'AddDate' | translate }}</button>
+  <button type="submit" class="btn btn-own">{{ 'Submit' | translate }}</button>
 </form>

@@ -1,107 +1,118 @@
 <div class="d-flex justify-content-between align-items-center flex-wrap grid-margin">
   <div>
-    <h2 class="mb-3 mb-md-0">{{"Employees" | translate}}</h2>
+    <h2 class="mb-3 mb-md-0">{{ 'Employees' | translate }}</h2>
   </div>
 </div>
 
 <div class="row">
   <div class="col-md-6">
     <mat-form-field appearance="standard">
-      <mat-label>{{"Search" | translate}}</mat-label>
-      <input matInput (keyup)="applyFilter($event)" placeholder="{{'Search' | translate}}" #input>
+      <mat-label>{{ 'Search' | translate }}</mat-label>
+      <input matInput (keyup)="applyFilter($event)" placeholder="{{ 'Search' | translate }}" #input />
     </mat-form-field>
   </div>
   <div class="col-md-4"></div>
   @if (showAccept) {
     <div class="col-md-2 text-center">
-      <p class="exp_btn_righ"><button (click)="exportIt()" class="export_btn">{{"Export" | translate}}</button></p>
+      <p class="exp_btn_righ">
+        <button (click)="exportIt()" class="export_btn">{{ 'Export' | translate }}</button>
+      </p>
     </div>
   }
 </div>
 
 <div class="mat-elevation-z8">
-  <table class="table" mat-table matTableExporter #exporter="matTableExporter" [dataSource]="dataSource" matSort
-    [hiddenColumns]="[9,10,11,12]" matSort #sort1="matSort">
-
+  <table
+    class="table"
+    mat-table
+    matTableExporter
+    #exporter="matTableExporter"
+    [dataSource]="dataSource"
+    matSort
+    [hiddenColumns]="[9, 10, 11, 12]"
+    matSort
+    #sort1="matSort"
+  >
     <ng-container matColumnDef="index">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>{{"S.No" | translate}}</th>
-      <td mat-cell *matCellDef="let element; let i = index;"> {{paginator1.pageSize * paginator1.pageIndex + i
-      + 1}} </td>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'S.No' | translate }}</th>
+      <td mat-cell *matCellDef="let element; let i = index">
+        {{ paginator1.pageSize * paginator1.pageIndex + i + 1 }}
+      </td>
     </ng-container>
 
     <ng-container matColumnDef="mobileNumber">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"Mobile Number" | translate}}</th>
-      <td mat-cell *matCellDef="let element">{{element.countryCode}} {{element.mobileNumber}} </td>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'Mobile Number' | translate }}</th>
+      <td mat-cell *matCellDef="let element">{{ element.countryCode }} {{ element.mobileNumber }}</td>
     </ng-container>
 
     <ng-container matColumnDef="employeeNumber">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"Employee Number" | translate}}</th>
-      <td mat-cell *matCellDef="let element">{{element.employeeNumber}}</td>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'Employee Number' | translate }}</th>
+      <td mat-cell *matCellDef="let element">{{ element.employeeNumber }}</td>
     </ng-container>
 
     <ng-container matColumnDef="userName">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"User Name" | translate}}</th>
-      <td mat-cell *matCellDef="let element"> {{element.userName}} </td>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'User Name' | translate }}</th>
+      <td mat-cell *matCellDef="let element">{{ element.userName }}</td>
     </ng-container>
 
     <ng-container matColumnDef="email">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"Email Id" | translate}}</th>
-      <td mat-cell *matCellDef="let element"> {{element.email}} </td>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'Email Id' | translate }}</th>
+      <td mat-cell *matCellDef="let element">{{ element.email }}</td>
     </ng-container>
 
     <ng-container matColumnDef="walletAmount">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"WalletAmt" | translate}}</th>
-      <td mat-cell *matCellDef="let element" class="text-center"> {{element.walletAmount}} </td>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'WalletAmt' | translate }}</th>
+      <td mat-cell *matCellDef="let element" class="text-center">{{ element.walletAmount }}</td>
     </ng-container>
 
     <ng-container matColumnDef="cartonDiscount">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"cartonDiscount" | translate}}</th>
-      <td mat-cell *matCellDef="let element" class="text-center"> {{element.cartonDiscount}} </td>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'cartonDiscount' | translate }}</th>
+      <td mat-cell *matCellDef="let element" class="text-center">{{ element.cartonDiscount }}</td>
     </ng-container>
 
     <ng-container matColumnDef="dailyLimit">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"TodayCartonLimit" | translate}}</th>
-      <td mat-cell *matCellDef="let element" class="text-center"> {{element.maxCartonDiscountPerDay}} </td>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'TodayCartonLimit' | translate }}</th>
+      <td mat-cell *matCellDef="let element" class="text-center">{{ element.maxCartonDiscountPerDay }}</td>
     </ng-container>
 
     <ng-container matColumnDef="created_date">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"RegisterDate" | translate}}</th>
-      <td mat-cell *matCellDef="let element" class="text-center"> {{element.createdAt | date:'dd/MM/yyyy'}} </td>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'RegisterDate' | translate }}</th>
+      <td mat-cell *matCellDef="let element" class="text-center">{{ element.createdAt | date: 'dd/MM/yyyy' }}</td>
     </ng-container>
 
     <ng-container matColumnDef="status">
-      <th mat-header-cell *matHeaderCellDef> {{"Status" | translate}} </th>
+      <th mat-header-cell *matHeaderCellDef>{{ 'Status' | translate }}</th>
       <td mat-cell *matCellDef="let element" class="text-center">
         @if (element.isApprove == 1) {
-          <p style="color: green;">{{"Approved" | translate}}</p>
+          <p style="color: green">{{ 'Approved' | translate }}</p>
         }
         @if (element.isApprove == 2) {
-          <p style="color: red;">{{"Rejected" | translate}}</p>
+          <p style="color: red">{{ 'Rejected' | translate }}</p>
         }
         @if (element.isApprove == 0) {
           <button mat-button class="view_btn" (click)="approve(element.id)">
-            {{"approoo" | translate}}
+            {{ 'approoo' | translate }}
           </button>
         }
         @if (element.isApprove == 0) {
           <button mat-button class="red_btn" (click)="reject(element.id)">
-            {{"Reject" | translate}}
+            {{ 'Reject' | translate }}
           </button>
         }
       </td>
     </ng-container>
 
     <ng-container matColumnDef="active">
-      <th mat-header-cell *matHeaderCellDef> {{"Active" | translate}} </th>
+      <th mat-header-cell *matHeaderCellDef>{{ 'Active' | translate }}</th>
       <td mat-cell *matCellDef="let element" class="text-center">
         @if (element.isApprove !== 2) {
           <button (change)="changeActiveStatus(element)" class="tog_btn">
             <label class="switch">
               @if (element.active !== 1) {
-                <input unchecked type="checkbox">
+                <input unchecked type="checkbox" />
               }
               @if (element.active == 1) {
-                <input checked type="checkbox">
+                <input checked type="checkbox" />
               }
               <span class="slider"></span>
             </label>
@@ -109,116 +120,126 @@
         }
         @if (element.isApprove == 2) {
           <button mat-button class="view_btn" (click)="approve(element.id)">
-            {{"approoo" | translate}}
+            {{ 'approoo' | translate }}
           </button>
         }
       </td>
     </ng-container>
 
     <ng-container matColumnDef="action">
-      <th mat-header-cell *matHeaderCellDef> {{"Action" | translate}} </th>
+      <th mat-header-cell *matHeaderCellDef>{{ 'Action' | translate }}</th>
       <td mat-cell *matCellDef="let element" class="text-center">
         @if (element.isApprove !== 2) {
-          <button mat-button class="edit_btn" (click)="editUserType(element.id,userModal)"
-            >
-            <img src="assets/images/edit_icon.svg" onmouseover="this.src='assets/images/edit_hover_icon.svg'"
-              onmouseout="this.src='assets/images/edit_icon.svg'">
-            </button>
-          }
+          <button mat-button class="edit_btn" (click)="editUserType(element.id, userModal)">
+            <img
+              src="assets/images/edit_icon.svg"
+              onmouseover="this.src = 'assets/images/edit_hover_icon.svg'"
+              onmouseout="this.src = 'assets/images/edit_icon.svg'"
+            />
+          </button>
+        }
 
-          <ng-template #userModal role="document" let-modal="close">
-            <div class="modal-header">
-              <h5 class="modal-title">{{"ChangeUserTypeUser" | translate}}</h5>
-              <button type="button" class="close" aria-label="Close" (click)="modal('Cross click')">
-                <span aria-checked="true">&times;</span>
+        <ng-template #userModal role="document" let-modal="close">
+          <div class="modal-header">
+            <h5 class="modal-title">{{ 'ChangeUserTypeUser' | translate }}</h5>
+            <button type="button" class="close" aria-label="Close" (click)="modal('Cross click')">
+              <span aria-checked="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body p-3">
+            <div class="text-right">
+              <button type="submit" class="btn btn-own" (click)="onSubmitEmployeeData()">
+                {{ 'Change' | translate }}
+              </button>
+              <button type="button" class="btn btn-own-cancel ml-1" (click)="modal('close click')">
+                {{ 'Cancel' | translate }}
               </button>
             </div>
-            <div class="modal-body p-3">
+          </div>
+        </ng-template>
+      </td>
+    </ng-container>
 
-              <div class="text-right">
-                <button type="submit" class="btn btn-own" (click)="onSubmitEmployeeData()">{{"Change" |
-                translate}}</button>
-                <button type="button" class="btn btn-own-cancel ml-1"
-                  (click)="modal('close click')">{{"Cancel" |
-                translate}}</button>
-              </div>
-            </div>
-          </ng-template>
-        </td>
-      </ng-container>
+    <ng-container matColumnDef="walletHistory">
+      <th mat-header-cell *matHeaderCellDef>{{ 'walletHistory' | translate }}</th>
+      <td mat-cell *matCellDef="let element" class="text-center">
+        @if (element.isApprove !== 2) {
+          <button (click)="historyClick(element.id, content)" class="simi_btn">{{ 'view' | translate }}</button>
+        }
+      </td>
+    </ng-container>
 
-      <ng-container matColumnDef="walletHistory">
-        <th mat-header-cell *matHeaderCellDef> {{"walletHistory" | translate}} </th>
-        <td mat-cell *matCellDef="let element" class="text-center">
-          @if (element.isApprove !== 2) {
-            <button (click)="historyClick(element.id,content)" class="simi_btn"
-            >{{"view" | translate}}</button>
-          }
-        </td>
-      </ng-container>
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
 
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    <tr class="mat-row" *matNoDataRow>
+      <td class="mat-cell text-center" colspan="6">{{ 'No data found' | translate }}</td>
+    </tr>
+  </table>
+  <mat-paginator #paginator1 [pageSizeOptions]="[10, 20, 25]" showFirstLastButtons></mat-paginator>
+</div>
 
-      <tr class="mat-row" *matNoDataRow>
-        <td class="mat-cell text-center" colspan="6">{{"No data found" | translate}}</td>
-      </tr>
-    </table>
-    <mat-paginator #paginator1 [pageSizeOptions]="[10, 20, 25]" showFirstLastButtons></mat-paginator>
+<ng-template #content role="document" let-modal="close">
+  <div class="modal-header">
+    <h5 class="modal-title">{{ 'walletHistory' | translate }}</h5>
+    <button type="button" class="close" aria-label="Close" (click)="modal('Cross click')">
+      <span>&times;</span>
+    </button>
   </div>
-
-  <ng-template #content role="document" let-modal="close">
-    <div class="modal-header">
-      <h5 class="modal-title">{{"walletHistory" | translate}}</h5>
-      <button type="button" class="close" aria-label="Close" (click)="modal('Cross click')">
-        <span>&times;</span>
-      </button>
-    </div>
-    <div class="modal-body p-3">
-      @if (showAccept) {
-        <span>
-          @if (getHistory.length > 0) {
-            <p class="exp_btn_righ"><button (click)="historyExportIt(historyExporter)"
-            class="export_btn mb-4">{{"Export" | translate}}</button></p>
-          }
-        </span>
-      }
-      <div class="mat-elevation-z8">
-        <table class="table" mat-table matTableExporter #historyExporter="matTableExporter"
-          [dataSource]="historyDataSource" matSort #sort2="matSort">
-
+  <div class="modal-body p-3">
+    @if (showAccept) {
+      <span>
+        @if (getHistory.length > 0) {
+          <p class="exp_btn_righ">
+            <button (click)="historyExportIt(historyExporter)" class="export_btn mb-4">
+              {{ 'Export' | translate }}
+            </button>
+          </p>
+        }
+      </span>
+    }
+    <div class="mat-elevation-z8">
+      <table
+        class="table"
+        mat-table
+        matTableExporter
+        #historyExporter="matTableExporter"
+        [dataSource]="historyDataSource"
+        matSort
+        #sort2="matSort"
+      >
         <ng-container matColumnDef="index">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>{{"S.No" | translate}}</th>
-          <td mat-cell *matCellDef="let element; let i = index;"> {{paginator2.pageSize *
-            paginator2.pageIndex + i
-          + 1}} </td>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'S.No' | translate }}</th>
+          <td mat-cell *matCellDef="let element; let i = index">
+            {{ paginator2.pageSize * paginator2.pageIndex + i + 1 }}
+          </td>
         </ng-container>
 
         <ng-container matColumnDef="paymentType">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"paymentType" | translate}}</th>
-          <td mat-cell *matCellDef="let element">{{element.paymentType}} </td>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'paymentType' | translate }}</th>
+          <td mat-cell *matCellDef="let element">{{ element.paymentType }}</td>
         </ng-container>
 
         <ng-container matColumnDef="orderId">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"OrderId" | translate}}</th>
-          <td mat-cell *matCellDef="let element">{{element.orderId}} </td>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'OrderId' | translate }}</th>
+          <td mat-cell *matCellDef="let element">{{ element.orderId }}</td>
         </ng-container>
 
         <ng-container matColumnDef="amount">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"Amount" | translate}}</th>
-          <td mat-cell *matCellDef="let element">{{element.amount}}</td>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'Amount' | translate }}</th>
+          <td mat-cell *matCellDef="let element">{{ element.amount }}</td>
         </ng-container>
 
         <ng-container matColumnDef="type">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"Status" | translate}}</th>
-          <td mat-cell *matCellDef="let element"> {{element.type}} </td>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'Status' | translate }}</th>
+          <td mat-cell *matCellDef="let element">{{ element.type }}</td>
         </ng-container>
 
         <tr mat-header-row *matHeaderRowDef="historyDisplayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: historyDisplayedColumns;"></tr>
+        <tr mat-row *matRowDef="let row; columns: historyDisplayedColumns"></tr>
 
         <tr class="mat-row" *matNoDataRow>
-          <td class="mat-cell text-center" colspan="6">{{"No data found" | translate}}</td>
+          <td class="mat-cell text-center" colspan="6">{{ 'No data found' | translate }}</td>
         </tr>
       </table>
       <mat-paginator #paginator2 [pageSizeOptions]="[10, 20, 25]" showFirstLastButtons></mat-paginator>

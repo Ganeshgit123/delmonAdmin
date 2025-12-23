@@ -9,47 +9,46 @@ import { Subscription } from 'rxjs';
  * Page load animation
  */
 @Directive({
-	selector: '[contentAnimate]'
+  selector: '[contentAnimate]',
 })
 export class ContentAnimateDirective implements OnInit, OnDestroy {
-  
-	// Public properties
-	player: AnimationPlayer;
-	// Private properties
-	private events: Subscription;
+  // Public properties
+  player: AnimationPlayer;
+  // Private properties
+  private events: Subscription;
 
-	constructor(
-		private el: ElementRef,
-		private router: Router,
-		private animationBuilder: AnimationBuilder) {
-	}
+  constructor(
+    private el: ElementRef,
+    private router: Router,
+    private animationBuilder: AnimationBuilder,
+  ) {}
 
-	ngOnInit(): void {
-		// animate the content
-		this.initAnimate();
-		// animate page load
-		this.events = this.router.events.subscribe(event => {
-			if (event instanceof NavigationEnd) {
-				this.player.play();
-			}
-		});
-	}
+  ngOnInit(): void {
+    // animate the content
+    this.initAnimate();
+    // animate page load
+    this.events = this.router.events.subscribe((event) => {
+      if (event instanceof NavigationEnd) {
+        this.player.play();
+      }
+    });
+  }
 
-	ngOnDestroy(): void {
-		this.events.unsubscribe();
-		this.player.destroy();
-	}
+  ngOnDestroy(): void {
+    this.events.unsubscribe();
+    this.player.destroy();
+  }
 
-	/**
-	 * Animate page load
-	 */
-	initAnimate() {
-		this.player = this.animationBuilder
-			.build([
-				style({opacity: 0, transform: 'translateY(15px)'}),
-				animate(500, style({opacity: 1, transform: 'translateY(0)'})),
-				style({transform: 'none'}),
-			])
-			.create(this.el.nativeElement);
-	}
+  /**
+   * Animate page load
+   */
+  initAnimate() {
+    this.player = this.animationBuilder
+      .build([
+        style({ opacity: 0, transform: 'translateY(15px)' }),
+        animate(500, style({ opacity: 1, transform: 'translateY(0)' })),
+        style({ transform: 'none' }),
+      ])
+      .create(this.el.nativeElement);
+  }
 }

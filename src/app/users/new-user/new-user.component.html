@@ -1,27 +1,27 @@
 <div class="d-flex justify-content-between align-items-center flex-wrap grid-margin">
   <div>
-    <h2 class="mb-3 mb-md-0">{{"Create New User" | translate}}</h2>
+    <h2 class="mb-3 mb-md-0">{{ 'Create New User' | translate }}</h2>
   </div>
 </div>
 <div class="row top_margin">
   <div class="col-md-4">
     <div class="text-center add_popup_btn">
       <a href="javascript:void(0);" class="btn btn-own mb-2" (click)="addNormalUser(content)">
-        {{"CreateNormalUser" | translate}}
+        {{ 'CreateNormalUser' | translate }}
       </a>
     </div>
   </div>
   <div class="col-md-4">
     <div class="text-center add_popup_btn">
       <a href="javascript:void(0);" class="btn btn-own mb-2" (click)="addEmployee(employeeContent)">
-        {{"CreateEmployee" | translate}}
+        {{ 'CreateEmployee' | translate }}
       </a>
     </div>
   </div>
   <div class="col-md-4">
     <div class="text-center add_popup_btn">
       <a href="javascript:void(0);" class="btn btn-own mb-2" (click)="addMerchant(merchantContent)">
-        {{"CreateMerchant" | translate}}
+        {{ 'CreateMerchant' | translate }}
       </a>
     </div>
   </div>
@@ -29,7 +29,7 @@
 
 <ng-template #content role="document" let-modal="close">
   <div class="modal-header">
-    <h5 class="modal-title">{{"CreateNormalUser" | translate}}</h5>
+    <h5 class="modal-title">{{ 'CreateNormalUser' | translate }}</h5>
     <button type="button" class="close" aria-label="Close" (click)="modal('Cross click')">
       <span aria-checked="true">&times;</span>
     </button>
@@ -39,24 +39,29 @@
       <div class="row">
         <div class="col-md-12">
           <div class="form-group">
-            <p class="text-center"><label for="name">{{"PhoneNumber" | translate}}</label></p>
+            <p class="text-center">
+              <label for="name">{{ 'PhoneNumber' | translate }}</label>
+            </p>
             <div class="row">
               <div class="col-md-3">
-                <input type="text" class="form-control" value="+973" readonly>
+                <input type="text" class="form-control" value="+973" readonly />
               </div>
               <div class="col-md-9">
-                <input type="number" class="form-control" placeholder="{{'PhoneNumber' |translate}}"
-                  formControlName="mobileNumber" onKeyPress="if(this.value.length==8) return false;"
-                  [ngClass]="{ 'is-invalid': submitted && f['mobileNumber'].errors }">
+                <input
+                  type="number"
+                  class="form-control"
+                  placeholder="{{ 'PhoneNumber' | translate }}"
+                  formControlName="mobileNumber"
+                  onKeyPress="if(this.value.length==8) return false;"
+                  [ngClass]="{ 'is-invalid': submitted && f['mobileNumber'].errors }"
+                />
                 @if (submitted && f['mobileNumber'].errors) {
                   <div class="invalid-feedback">
                     @if (f['mobileNumber'].errors['required']) {
-                      <div>{{"MobileisRequired" |
-                      translate}}</div>
+                      <div>{{ 'MobileisRequired' | translate }}</div>
                     }
                     @if (f['mobileNumber'].errors['pattern']) {
-                      <div>{{"EightDigitsAllowed" |
-                      translate}}</div>
+                      <div>{{ 'EightDigitsAllowed' | translate }}</div>
                     }
                   </div>
                 }
@@ -67,17 +72,17 @@
       </div>
     </form>
     <div class="text-right">
-      <button type="submit" class="btn btn-own" (click)="onSubmitData()">{{"Save" | translate}}</button>
-      <button type="button" class="btn btn-own-cancel ml-1" (click)="modal('close click')">{{"Cancel" |
-      translate}}</button>
+      <button type="submit" class="btn btn-own" (click)="onSubmitData()">{{ 'Save' | translate }}</button>
+      <button type="button" class="btn btn-own-cancel ml-1" (click)="modal('close click')">
+        {{ 'Cancel' | translate }}
+      </button>
     </div>
   </div>
 </ng-template>
 
-
 <ng-template #employeeContent role="document" let-modal="close">
   <div class="modal-header">
-    <h5 class="modal-title">{{"CreateEmployee" | translate}}</h5>
+    <h5 class="modal-title">{{ 'CreateEmployee' | translate }}</h5>
     <button type="button" class="close" aria-label="Close" (click)="modal('Cross click')">
       <span aria-checked="true">&times;</span>
     </button>
@@ -87,24 +92,29 @@
       <div class="row">
         <div class="col-md-12">
           <div class="form-group">
-            <p class="text-center"><label for="name">{{"PhoneNumber" | translate}}</label></p>
+            <p class="text-center">
+              <label for="name">{{ 'PhoneNumber' | translate }}</label>
+            </p>
             <div class="row">
               <div class="col-md-3">
-                <input type="text" class="form-control" value="+973" readonly>
+                <input type="text" class="form-control" value="+973" readonly />
               </div>
               <div class="col-md-9">
-                <input type="number" class="form-control" placeholder="{{'PhoneNumber' |translate}}"
-                  formControlName="mobileNumber" onKeyPress="if(this.value.length==8) return false;"
-                  [ngClass]="{ 'is-invalid': submitted && empf.mobileNumber.errors }">
+                <input
+                  type="number"
+                  class="form-control"
+                  placeholder="{{ 'PhoneNumber' | translate }}"
+                  formControlName="mobileNumber"
+                  onKeyPress="if(this.value.length==8) return false;"
+                  [ngClass]="{ 'is-invalid': submitted && empf.mobileNumber.errors }"
+                />
                 @if (submitted && empf['mobileNumber'].errors) {
                   <div class="invalid-feedback">
                     @if (empf['mobileNumber'].errors['required']) {
-                      <div>{{"MobileisRequired" |
-                      translate}}</div>
+                      <div>{{ 'MobileisRequired' | translate }}</div>
                     }
                     @if (empf['mobileNumber'].errors['pattern']) {
-                      <div>{{"EightDigitsAllowed" |
-                      translate}}</div>
+                      <div>{{ 'EightDigitsAllowed' | translate }}</div>
                     }
                   </div>
                 }
@@ -112,13 +122,20 @@
             </div>
           </div>
           <div class="form-group">
-            <p class="text-center"><label for="name">{{"employeeNumber" | translate}}</label></p>
-            <input type="text" class="form-control" formControlName="employeeNumber" placeholder='{{"EnterEmployeeNumber" | translate}}'
-              [ngClass]="{ 'is-invalid': submitted && empf.employeeNumber.errors }">
+            <p class="text-center">
+              <label for="name">{{ 'employeeNumber' | translate }}</label>
+            </p>
+            <input
+              type="text"
+              class="form-control"
+              formControlName="employeeNumber"
+              placeholder="{{ 'EnterEmployeeNumber' | translate }}"
+              [ngClass]="{ 'is-invalid': submitted && empf.employeeNumber.errors }"
+            />
             @if (submitted && empf['employeeNumber'].errors) {
               <div class="invalid-feedback">
                 @if (empf['employeeNumber'].errors['required']) {
-                  <div>{{"EmployeeNumberisRequired" | translate}}</div>
+                  <div>{{ 'EmployeeNumberisRequired' | translate }}</div>
                 }
               </div>
             }
@@ -127,16 +144,17 @@
       </div>
     </form>
     <div class="text-right">
-      <button type="submit" class="btn btn-own" (click)="onSubmitEmployeeData()">{{"Save" | translate}}</button>
-      <button type="button" class="btn btn-own-cancel ml-1" (click)="modal('close click')">{{"Cancel" |
-      translate}}</button>
+      <button type="submit" class="btn btn-own" (click)="onSubmitEmployeeData()">{{ 'Save' | translate }}</button>
+      <button type="button" class="btn btn-own-cancel ml-1" (click)="modal('close click')">
+        {{ 'Cancel' | translate }}
+      </button>
     </div>
   </div>
 </ng-template>
 
 <ng-template #merchantContent role="document" let-modal="close">
   <div class="modal-header">
-    <h5 class="modal-title">{{"CreateMerchant" | translate}}</h5>
+    <h5 class="modal-title">{{ 'CreateMerchant' | translate }}</h5>
     <button type="button" class="close" aria-label="Close" (click)="modal('Cross click')">
       <span aria-checked="true">&times;</span>
     </button>
@@ -146,24 +164,29 @@
       <div class="row">
         <div class="col-md-12">
           <div class="form-group">
-            <p class="text-center"><label for="name">{{"PhoneNumber" | translate}}</label></p>
+            <p class="text-center">
+              <label for="name">{{ 'PhoneNumber' | translate }}</label>
+            </p>
             <div class="row">
               <div class="col-md-3">
-                <input type="text" class="form-control" value="+973" readonly>
+                <input type="text" class="form-control" value="+973" readonly />
               </div>
               <div class="col-md-9">
-                <input type="number" class="form-control" placeholder="{{'PhoneNumber' |translate}}"
-                  formControlName="mobileNumber" onKeyPress="if(this.value.length==8) return false;"
-                  [ngClass]="{ 'is-invalid': submitted && merchantf.mobileNumber.errors }">
+                <input
+                  type="number"
+                  class="form-control"
+                  placeholder="{{ 'PhoneNumber' | translate }}"
+                  formControlName="mobileNumber"
+                  onKeyPress="if(this.value.length==8) return false;"
+                  [ngClass]="{ 'is-invalid': submitted && merchantf.mobileNumber.errors }"
+                />
                 @if (submitted && merchantf['mobileNumber'].errors) {
                   <div class="invalid-feedback">
                     @if (merchantf['mobileNumber'].errors['required']) {
-                      <div>{{"MobileisRequired" |
-                      translate}}</div>
+                      <div>{{ 'MobileisRequired' | translate }}</div>
                     }
                     @if (merchantf['mobileNumber'].errors['pattern']) {
-                      <div>{{"EightDigitsAllowed" |
-                      translate}}</div>
+                      <div>{{ 'EightDigitsAllowed' | translate }}</div>
                     }
                   </div>
                 }
@@ -171,13 +194,20 @@
             </div>
           </div>
           <div class="form-group">
-            <p class="text-center"><label for="name">{{"crNumber" | translate}}</label></p>
-            <input type="text" class="form-control" formControlName="crNumber" placeholder='{{"EnterCRNumber" | translate}}'
-              [ngClass]="{ 'is-invalid': submitted && merchantf.crNumber.errors }">
+            <p class="text-center">
+              <label for="name">{{ 'crNumber' | translate }}</label>
+            </p>
+            <input
+              type="text"
+              class="form-control"
+              formControlName="crNumber"
+              placeholder="{{ 'EnterCRNumber' | translate }}"
+              [ngClass]="{ 'is-invalid': submitted && merchantf.crNumber.errors }"
+            />
             @if (submitted && merchantf['crNumber'].errors) {
               <div class="invalid-feedback">
                 @if (merchantf['crNumber'].errors['required']) {
-                  <div>{{"CRNumberRequired" | translate}}</div>
+                  <div>{{ 'CRNumberRequired' | translate }}</div>
                 }
               </div>
             }
@@ -186,9 +216,10 @@
       </div>
     </form>
     <div class="text-right">
-      <button type="submit" class="btn btn-own" (click)="onSubmitMerchantData()">{{"Save" | translate}}</button>
-      <button type="button" class="btn btn-own-cancel ml-1" (click)="modal('close click')">{{"Cancel" |
-      translate}}</button>
+      <button type="submit" class="btn btn-own" (click)="onSubmitMerchantData()">{{ 'Save' | translate }}</button>
+      <button type="button" class="btn btn-own-cancel ml-1" (click)="modal('close click')">
+        {{ 'Cancel' | translate }}
+      </button>
     </div>
   </div>
 </ng-template>

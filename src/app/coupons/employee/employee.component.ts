@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -13,9 +13,9 @@ import Swal from 'sweetalert2';
 @Component({
   selector: 'app-employee',
   templateUrl: './employee.component.html',
-  styleUrls: ['./employee.component.scss']
+  styleUrls: ['./employee.component.scss'],
 })
-export class EmployeeComponent implements OnInit {
+export class EmployeeComponent implements OnInit, AfterViewInit {
   displayedColumns: string[];
   dataSource: MatTableDataSource<any>;
   getvalue = [];
@@ -29,8 +29,14 @@ export class EmployeeComponent implements OnInit {
   @ViewChild(MatPaginator) matPaginator: MatPaginator;
   @ViewChild(MatSort) matSort: MatSort;
 
-  constructor(private modalService: NgbModal, public fb: FormBuilder, public authService: AuthService,
-    private toastr: ToastrService, private router: Router, private translate: TranslateService,) { }
+  constructor(
+    private modalService: NgbModal,
+    public fb: FormBuilder,
+    public authService: AuthService,
+    private toastr: ToastrService,
+    private router: Router,
+    private translate: TranslateService,
+  ) {}
 
   ngOnInit(): void {
     this.callRolePermission();
@@ -40,18 +46,37 @@ export class EmployeeComponent implements OnInit {
       this.superAdminRole = false;
     }
 
-    this.authService.getCoupon('EMPLOYEE').subscribe(
-      (res: any) => {
-        this.getvalue = res.data.reverse();
-        this.dataSource = new MatTableDataSource(this.getvalue);
-        this.dataSource.paginator = this.matPaginator;
-        this.dataSource.sort = this.matSort;
-      });
+    this.authService.getCoupon('EMPLOYEE').subscribe((res: any) => {
+      this.getvalue = res.data.reverse();
+      this.dataSource = new MatTableDataSource(this.getvalue);
+      this.dataSource.paginator = this.matPaginator;
+      this.dataSource.sort = this.matSort;
+    });
 
     if (this.showAccept == true) {
-      this.displayedColumns = ['index', 'enCouponName', 'couponCode', 'discountPercentage', 'maximumDiscount', 'title', 'enDescription', 'expiryDate', 'rowActionToggle', 'rowActionIcon'];
+      this.displayedColumns = [
+        'index',
+        'enCouponName',
+        'couponCode',
+        'discountPercentage',
+        'maximumDiscount',
+        'title',
+        'enDescription',
+        'expiryDate',
+        'rowActionToggle',
+        'rowActionIcon',
+      ];
     } else if (this.showAccept == false) {
-      this.displayedColumns = ['index', 'enCouponName', 'couponCode', 'discountPercentage', 'maximumDiscount', 'title', 'enDescription', 'expiryDate'];
+      this.displayedColumns = [
+        'index',
+        'enCouponName',
+        'couponCode',
+        'discountPercentage',
+        'maximumDiscount',
+        'title',
+        'enDescription',
+        'expiryDate',
+      ];
     }
 
     this.couponForm = this.fb.group({
@@ -67,19 +92,21 @@ export class EmployeeComponent implements OnInit {
     });
   }
 
-  get f() { return this.couponForm.controls; }
+  get f() {
+    return this.couponForm.controls;
+  }
 
   callRolePermission() {
     if (sessionStorage.getItem('roleName') !== 'superAdmin') {
-      let settingPermssion = JSON.parse(sessionStorage.getItem('permission'))
-      const orderPermission = settingPermssion?.find(ele => ele.area == 'coupons')?.write == 1
+      const settingPermssion = JSON.parse(sessionStorage.getItem('permission'));
+      const orderPermission = settingPermssion?.find((ele) => ele.area == 'coupons')?.write == 1;
       // console.log("fef",orderPermission)
-      this.showAccept = orderPermission
+      this.showAccept = orderPermission;
     }
   }
 
   ngAfterViewInit(): void {
-    this.matPaginator._intl.itemsPerPageLabel = this.translate.instant("itemsPerPage");
+    this.matPaginator._intl.itemsPerPageLabel = this.translate.instant('itemsPerPage');
   }
 
   applyFilter(event: Event) {
@@ -140,74 +167,71 @@ export class EmployeeComponent implements OnInit {
     }
 
     if (this.isEdit) {
-      this.couponEditService(this.couponForm.value)
+      this.couponEditService(this.couponForm.value);
       return;
     }
     this.submitted = false;
     this.couponForm.value.type = 'EMPLOYEE';
-    this.authService.addCoupon(this.couponForm.value)
-      .subscribe((res: any) => {
-        if (res.success == true) {
-          this.toastr.success('Success ', res.massage);
-          this.couponForm.reset();
-          this.modalService.dismissAll();
-          this.ngOnInit();
-        } else {
-          this.toastr.error('Enter valid ', res.massage);
-        }
-      });
+    this.authService.addCoupon(this.couponForm.value).subscribe((res: any) => {
+      if (res.success == true) {
+        this.toastr.success('Success ', res.massage);
+        this.couponForm.reset();
+        this.modalService.dismissAll();
+        this.ngOnInit();
+      } else {
+        this.toastr.error('Enter valid ', res.massage);
+      }
+    });
   }
 
   couponEditService(data) {
-    this.authService.editCoupon(data, this.couponId)
-      .subscribe((res: any) => {
-        if (res.success == true) {
-          this.toastr.success('Success ', res.massage);
-          this.couponForm.reset();
-          this.modalService.dismissAll();
-          this.ngOnInit();
-        } else {
-          this.toastr.error('Enter valid ', res.massage);
-        }
-      });
+    this.authService.editCoupon(data, this.couponId).subscribe((res: any) => {
+      if (res.success == true) {
+        this.toastr.success('Success ', res.massage);
+        this.couponForm.reset();
+        this.modalService.dismissAll();
+        this.ngOnInit();
+      } else {
+        this.toastr.error('Enter valid ', res.massage);
+      }
+    });
   }
 
   changeStatus(value) {
     if (value.active === 1) {
-      var visible = 0
+      var visible = 0;
     } else {
-      var visible = 1
+      var visible = 1;
     }
-    const object = { active: visible }
+    const object = { active: visible };
 
-    this.authService.editCoupon(object, value.id)
-      .subscribe((res: any) => {
-        if (res.success == true) {
-          this.toastr.success('Success ', res.massage);
-          this.ngOnInit();
-        } else {
-          this.toastr.error('Enter valid ', res.massage);
-        }
-      });
+    this.authService.editCoupon(object, value.id).subscribe((res: any) => {
+      if (res.success == true) {
+        this.toastr.success('Success ', res.massage);
+        this.ngOnInit();
+      } else {
+        this.toastr.error('Enter valid ', res.massage);
+      }
+    });
   }
 
   deleteCoupon(value) {
     Swal.fire({
-      title: this.translate.instant("AreYouSure"),
-      text: this.translate.instant("YouWontBeRevertThis"),
+      title: this.translate.instant('AreYouSure'),
+      text: this.translate.instant('YouWontBeRevertThis'),
       icon: 'warning',
       showCancelButton: true,
-      cancelButtonText: this.translate.instant("Cancel"),
+      cancelButtonText: this.translate.instant('Cancel'),
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
-      confirmButtonText: this.translate.instant("YesDeleteIt")
+      confirmButtonText: this.translate.instant('YesDeleteIt'),
     }).then((result) => {
       if (result.isConfirmed) {
-        Swal.fire({
-          title: this.translate.instant("Deleted"),
-          text: this.translate.instant("YourFileHasBeenDeleted"),
+        (Swal.fire({
+          title: this.translate.instant('Deleted'),
+          text: this.translate.instant('YourFileHasBeenDeleted'),
           icon: 'success',
-          confirmButtonText: this.translate.instant("Ok")
+          confirmButtonText: this.translate.instant('Ok'),
         }),
           this.authService.deleteCoupons(value).subscribe((res: any) => {
             if (res.success == true) {
@@ -216,10 +240,8 @@ export class EmployeeComponent implements OnInit {
             } else {
               this.toastr.error('Enter valid ', res.massage);
             }
-          });
+          }));
       }
-    })
+    });
   }
 }
-
-

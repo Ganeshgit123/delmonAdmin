@@ -6,7 +6,7 @@ import { AppRoutingModule } from './app-routing.module';
 
 import { LayoutModule } from './layout/layout.module';
 import { AuthGuard } from './core/guard/auth.guard';
-import { AuthInterceptor } from "./shared/auth.interceptor";
+import { AuthInterceptor } from './shared/auth.interceptor';
 
 // AppComponent is now standalone and bootstrapped via bootstrapApplication
 
@@ -16,11 +16,7 @@ import { MatTableModule } from '@angular/material/table';
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 
-import {
-  HttpClientModule,
-  HttpClient,
-  HTTP_INTERCEPTORS,
-} from "@angular/common/http";
+import { HttpClientModule, HttpClient, HTTP_INTERCEPTORS } from '@angular/common/http';
 
 export function createTranslateLoader(http: HttpClient): any {
   return new TranslateHttpLoader(http, 'assets/i18n/', '.json');
@@ -41,8 +37,8 @@ export function createTranslateLoader(http: HttpClient): any {
       loader: {
         provide: TranslateLoader,
         useFactory: createTranslateLoader,
-        deps: [HttpClient]
-      }
+        deps: [HttpClient],
+      },
     }),
   ],
   providers: [
@@ -60,13 +56,13 @@ export function createTranslateLoader(http: HttpClient): any {
           xml: () => import('highlight.js/lib/languages/xml'),
           typescript: () => import('highlight.js/lib/languages/typescript'),
           scss: () => import('highlight.js/lib/languages/scss'),
-        }
-      }
-    }
+        },
+      },
+    },
   ],
   // No bootstrap here; standalone bootstrap is used in main.ts
 })
-export class AppModule { }
+export class AppModule {}
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http);
 }

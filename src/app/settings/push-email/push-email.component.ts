@@ -8,14 +8,13 @@ import { map, startWith } from 'rxjs/operators';
 @Component({
   selector: 'app-push-email',
   templateUrl: './push-email.component.html',
-  styleUrls: ['./push-email.component.scss']
+  styleUrls: ['./push-email.component.scss'],
 })
 export class PushEmailComponent implements OnInit {
-
   emailForm: FormGroup;
 
   userCtrl = new FormControl('');
-  filteredUsers: Observable<any[]> = new Observable();
+  filteredUsers = new Observable<any[]>();
 
   allUsers: any[] = [];
   selectedUsers: any[] = [];
@@ -25,52 +24,44 @@ export class PushEmailComponent implements OnInit {
   superAdminRole = false;
   userGroups = [
     { id: 'USER', name: 'Customers' },
-    { id: 'EMPLOYEE', name: 'Employees' }
+    { id: 'EMPLOYEE', name: 'Employees' },
   ];
-
 
   constructor(
     public fb: FormBuilder,
     public authService: AuthService,
-    private toastr: ToastrService
-  ) { }
+    private toastr: ToastrService,
+  ) {}
 
   ngOnInit(): void {
-
     this.emailForm = this.fb.group({
       subject: ['', Validators.required],
       body: ['', Validators.required],
       recipientType: ['', Validators.required],
       groupId: [''],
-      userId: [[]]
+      userId: [[]],
     });
 
     // Load & map API users
     this.authService.getNormalUsers().subscribe((res: any) => {
-      this.allUsers = res.data
-        .map(u => ({
-          id: u.id,
-          text: u.mobileNumber
-        }));
+      this.allUsers = res.data.map((u) => ({
+        id: u.id,
+        text: u.mobileNumber,
+      }));
     });
 
     // Autocomplete filter
     this.filteredUsers = this.userCtrl.valueChanges.pipe(
       startWith(''),
-      map(value => this.filterUsers(value))
+      map((value) => this.filterUsers(value)),
     );
   }
 
   // Normalize autocomplete input
   private filterUsers(value: any) {
-    const filterValue =
-      typeof value === 'string'
-        ? value.toLowerCase()
-        : value?.text?.toLowerCase() || '';
+    const filterValue = typeof value === 'string' ? value.toLowerCase() : value?.text?.toLowerCase() || '';
 
-    return this.allUsers.filter(option =>
-      option.text.toLowerCase().includes(filterValue)
-    );
+    return this.allUsers.filter((option) => option.text.toLowerCase().includes(filterValue));
   }
 
   // For autocomplete display
@@ -80,15 +71,15 @@ export class PushEmailComponent implements OnInit {
 
   // When selecting autocomplete option
   selectUser(option: any) {
-    if (this.selectedUsers.some(u => u.id === option.id)) {
-      this.toastr.warning("User already added");
+    if (this.selectedUsers.some((u) => u.id === option.id)) {
+      this.toastr.warning('User already added');
       this.userCtrl.setValue('');
       return;
     }
 
     this.selectedUsers.push({
       id: option.id,
-      text: option.text
+      text: option.text,
     });
 
     this.userCtrl.setValue('');
@@ -114,18 +105,18 @@ export class PushEmailComponent implements OnInit {
     if (!value) return;
 
     if (!/^[0-9]+$/.test(value)) {
-      this.toastr.error("Only numbers allowed");
+      this.toastr.error('Only numbers allowed');
       return;
     }
 
-    if (this.selectedUsers.some(u => u.text === value)) {
-      this.toastr.warning("User already added");
+    if (this.selectedUsers.some((u) => u.text === value)) {
+      this.toastr.warning('User already added');
       return;
     }
 
     this.selectedUsers.push({
-      id: value,      // fallback id = number
-      text: value
+      id: value, // fallback id = number
+      text: value,
     });
 
     this.userCtrl.setValue('');
@@ -133,9 +124,7 @@ export class PushEmailComponent implements OnInit {
 
   // Helper to get filtered list synchronously
   private filteredUsersSource(value: string) {
-    return this.allUsers.filter(u =>
-      u.text.toLowerCase().includes((value || '').toLowerCase())
-    );
+    return this.allUsers.filter((u) => u.text.toLowerCase().includes((value || '').toLowerCase()));
   }
 
   // Block non-numeric keys
@@ -148,7 +137,9 @@ export class PushEmailComponent implements OnInit {
     this.selectedUsers.splice(index, 1);
   }
 
-  get fEmail() { return this.emailForm.controls; }
+  get fEmail() {
+    return this.emailForm.controls;
+  }
 
   sendEmailNotification() {
     this.submittedEmail = true;
@@ -170,11 +161,11 @@ export class PushEmailComponent implements OnInit {
     const payload: any = {
       subject: this.emailForm.value.subject,
       body: this.emailForm.value.body,
-      recipientType
+      recipientType,
     };
 
     if (recipientType === 'single') {
-      payload.userId = this.selectedUsers.map(u => u.id);
+      payload.userId = this.selectedUsers.map((u) => u.id);
     } else {
       payload.groupId = this.emailForm.value.groupId;
     }
@@ -182,15 +173,17 @@ export class PushEmailComponent implements OnInit {
     this.authService.pushEMails(payload).subscribe(
       (res: any) => {
         if (res.success) {
-          this.toastr.success("Email Sent Successfully");
+          this.toastr.success('Email Sent Successfully');
           this.emailForm.reset();
           this.selectedUsers = [];
           this.submittedEmail = false;
         } else {
           this.toastr.error(res.massage || 'Failed to send SMS', '', { timeOut: 2000 });
         }
-      }, (err) => {
+      },
+      (err) => {
         this.toastr.error('Failed to send SMS', '', { timeOut: 2000 });
-      });
+      },
+    );
   }
 }

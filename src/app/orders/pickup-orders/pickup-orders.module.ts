@@ -6,23 +6,20 @@ import { NgMaterialModule } from '../../ng-material.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 
-
 @NgModule({
-  declarations: [
-    PickupOrdersComponent
-  ],
+  declarations: [PickupOrdersComponent],
   imports: [
     CommonModule,
     RouterModule.forChild([
       {
-        path:"",
-        component: PickupOrdersComponent
-      }
+        path: '',
+        component: PickupOrdersComponent,
+      },
     ]),
     NgMaterialModule,
     TranslateModule,
-    FormsModule, 
+    FormsModule,
     ReactiveFormsModule,
-  ]
+  ],
 })
-export class PickupOrdersModule { }
+export class PickupOrdersModule {}

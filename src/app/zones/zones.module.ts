@@ -6,23 +6,20 @@ import { NgMaterialModule } from '../ng-material.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 
-
 @NgModule({
-  declarations: [
-    ZonesComponent
-    ],
+  declarations: [ZonesComponent],
   imports: [
     CommonModule,
     RouterModule.forChild([
       {
-        path:"",
-        component: ZonesComponent
-      }
+        path: '',
+        component: ZonesComponent,
+      },
     ]),
     NgMaterialModule,
     TranslateModule,
-    FormsModule, 
+    FormsModule,
     ReactiveFormsModule,
-  ]
+  ],
 })
-export class ZonesModule { }
+export class ZonesModule {}

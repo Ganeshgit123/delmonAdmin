@@ -8,9 +8,8 @@ describe('HolidayListComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ HolidayListComponent ]
-    })
-    .compileComponents();
+      declarations: [HolidayListComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

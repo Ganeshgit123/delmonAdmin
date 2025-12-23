@@ -1,14 +1,14 @@
 .simi_btn {
-    background: transparent;
-    border: 2px solid var(--main-color);
-    color: var(--main-color);
-    font-size: 12px;
-    font-weight: 600;
-    padding: 5px;
-    border-radius: 10px;
-  }
-  
-  .simi_btn:hover {
-    background: var(--main-color);
-    color: var(--white-color);
-  }
+  background: transparent;
+  border: 2px solid var(--main-color);
+  color: var(--main-color);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px;
+  border-radius: 10px;
+}
+
+.simi_btn:hover {
+  background: var(--main-color);
+  color: var(--white-color);
+}

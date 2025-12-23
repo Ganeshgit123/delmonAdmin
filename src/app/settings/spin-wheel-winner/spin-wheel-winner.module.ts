@@ -6,19 +6,17 @@ import { NgMaterialModule } from '../../ng-material.module';
 import { TranslateModule } from '@ngx-translate/core';
 
 @NgModule({
-  declarations: [
-    SpinWheelWinnerComponent
-  ],
+  declarations: [SpinWheelWinnerComponent],
   imports: [
     CommonModule,
     RouterModule.forChild([
       {
-        path: "",
-        component: SpinWheelWinnerComponent
-      }
+        path: '',
+        component: SpinWheelWinnerComponent,
+      },
     ]),
     NgMaterialModule,
-    TranslateModule
-  ]
+    TranslateModule,
+  ],
 })
-export class SpinWheelWinnerModule { }
+export class SpinWheelWinnerModule {}

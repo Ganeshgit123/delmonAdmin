@@ -7,21 +7,19 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 
 @NgModule({
-  declarations: [
-    UnavailableComponent
-  ],
+  declarations: [UnavailableComponent],
   imports: [
     CommonModule,
     RouterModule.forChild([
       {
-        path:"",
-        component: UnavailableComponent
-      }
+        path: '',
+        component: UnavailableComponent,
+      },
     ]),
     NgMaterialModule,
     TranslateModule,
-    FormsModule, 
+    FormsModule,
     ReactiveFormsModule,
-  ]
+  ],
 })
-export class UnavailableModule { }
+export class UnavailableModule {}

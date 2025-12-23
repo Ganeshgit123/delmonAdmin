@@ -7,21 +7,19 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 
 @NgModule({
-  declarations: [
-    MasterSettingComponent
-  ],
+  declarations: [MasterSettingComponent],
   imports: [
     CommonModule,
     RouterModule.forChild([
       {
-        path:"",
-        component: MasterSettingComponent
-      }
+        path: '',
+        component: MasterSettingComponent,
+      },
     ]),
     NgMaterialModule,
-    FormsModule, 
+    FormsModule,
     ReactiveFormsModule,
     TranslateModule,
-  ]
+  ],
 })
-export class MasterSettingModule { }
+export class MasterSettingModule {}

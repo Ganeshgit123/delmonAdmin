@@ -3,15 +3,13 @@ import feather from 'feather-icons';
 
 @Directive({
   selector: '[appFeatherIcon]',
-  standalone: true
+  standalone: true,
 })
 export class FeatherIconDirective implements AfterViewInit {
-
-  constructor() { }
+  constructor() {}
 
   ngAfterViewInit() {
     // feather icon
     feather.replace();
   }
-
 }

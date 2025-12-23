@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -12,9 +12,9 @@ import { TranslateService } from '@ngx-translate/core';
 @Component({
   selector: 'app-area',
   templateUrl: './area.component.html',
-  styleUrls: ['./area.component.scss']
+  styleUrls: ['./area.component.scss'],
 })
-export class AreaComponent implements OnInit {
+export class AreaComponent implements OnInit, AfterViewInit {
   displayedColumns: string[];
   dataSource: MatTableDataSource<any>;
   getvalue = [];
@@ -29,9 +29,15 @@ export class AreaComponent implements OnInit {
   @ViewChild(MatPaginator) matPaginator: MatPaginator;
   @ViewChild(MatSort) matSort: MatSort;
 
-  constructor(private modalService: NgbModal, public fb: FormBuilder, public authService: AuthService,
-    private toastr: ToastrService, private router: Router, private route: ActivatedRoute,
-    private translate: TranslateService,) { }
+  constructor(
+    private modalService: NgbModal,
+    public fb: FormBuilder,
+    public authService: AuthService,
+    private toastr: ToastrService,
+    private router: Router,
+    private route: ActivatedRoute,
+    private translate: TranslateService,
+  ) {}
 
   ngOnInit(): void {
     this.callRolePermission();
@@ -51,14 +57,12 @@ export class AreaComponent implements OnInit {
       this.displayedColumns = ['index', 'areaName', 'arAreaName', 'rowActionIcon'];
     }
 
-    this.authService.getAreas(this.zoneId).subscribe(
-      (res: any) => {
-        this.getvalue = res.data;
-        this.dataSource = new MatTableDataSource(this.getvalue);
-        this.dataSource.paginator = this.matPaginator;
-        this.dataSource.sort = this.matSort;
-      }
-    );
+    this.authService.getAreas(this.zoneId).subscribe((res: any) => {
+      this.getvalue = res.data;
+      this.dataSource = new MatTableDataSource(this.getvalue);
+      this.dataSource.paginator = this.matPaginator;
+      this.dataSource.sort = this.matSort;
+    });
 
     this.areaForm = this.fb.group({
       areaName: ['', [Validators.required]],
@@ -67,19 +71,21 @@ export class AreaComponent implements OnInit {
     });
   }
 
-  get f() { return this.areaForm.controls; }
+  get f() {
+    return this.areaForm.controls;
+  }
 
   callRolePermission() {
     if (sessionStorage.getItem('roleName') !== 'superAdmin') {
-      let settingPermssion = JSON.parse(sessionStorage.getItem('permission'))
-      const orderPermission = settingPermssion?.find(ele => ele.area == 'zones')?.write == 1
+      const settingPermssion = JSON.parse(sessionStorage.getItem('permission'));
+      const orderPermission = settingPermssion?.find((ele) => ele.area == 'zones')?.write == 1;
       // console.log("fef",orderPermission)
-      this.showAccept = orderPermission
+      this.showAccept = orderPermission;
     }
   }
 
   ngAfterViewInit(): void {
-    this.matPaginator._intl.itemsPerPageLabel = this.translate.instant("itemsPerPage");
+    this.matPaginator._intl.itemsPerPageLabel = this.translate.instant('itemsPerPage');
   }
 
   applyFilter(event: Event) {
@@ -104,22 +110,21 @@ export class AreaComponent implements OnInit {
     }
 
     if (this.isEdit) {
-      this.areaEditService(this.areaForm.value)
+      this.areaEditService(this.areaForm.value);
       return;
     }
     this.submitted = false;
     this.areaForm.value.zoneId = this.zoneId;
-    this.authService.addAreas(this.areaForm.value)
-      .subscribe((res: any) => {
-        if (res.error == false) {
-          this.toastr.success('Success ', res.message);
-          this.areaForm.reset();
-          this.modalService.dismissAll();
-          this.ngOnInit();
-        } else {
-          this.toastr.error('Enter valid ', res.message);
-        }
-      });
+    this.authService.addAreas(this.areaForm.value).subscribe((res: any) => {
+      if (res.error == false) {
+        this.toastr.success('Success ', res.message);
+        this.areaForm.reset();
+        this.modalService.dismissAll();
+        this.ngOnInit();
+      } else {
+        this.toastr.error('Enter valid ', res.message);
+      }
+    });
   }
 
   editArea(data, content) {
@@ -135,40 +140,37 @@ export class AreaComponent implements OnInit {
   }
 
   areaEditService(data) {
-    this.authService.editAreasd(data, this.areaId)
-      .subscribe((res: any) => {
-        if (res.error == false) {
-          this.toastr.success('Success ', res.message);
-          this.areaForm.reset();
-          this.modalService.dismissAll();
-          this.ngOnInit();
-        } else {
-          this.toastr.error('Enter valid ', res.message);
-        }
-      });
+    this.authService.editAreasd(data, this.areaId).subscribe((res: any) => {
+      if (res.error == false) {
+        this.toastr.success('Success ', res.message);
+        this.areaForm.reset();
+        this.modalService.dismissAll();
+        this.ngOnInit();
+      } else {
+        this.toastr.error('Enter valid ', res.message);
+      }
+    });
   }
 
   changeStatus(value) {
     if (value.active === 1) {
-      var visible = 0
+      var visible = 0;
     } else {
-      var visible = 1
+      var visible = 1;
     }
-    const object = { active: visible }
+    const object = { active: visible };
 
-    this.authService.editAreasd(object, value.id)
-      .subscribe((res: any) => {
-        if (res.error == false) {
-          this.toastr.success('Success ', res.message);
-          this.ngOnInit();
-        } else {
-          this.toastr.error('Enter valid ', res.message);
-        }
-      });
+    this.authService.editAreasd(object, value.id).subscribe((res: any) => {
+      if (res.error == false) {
+        this.toastr.success('Success ', res.message);
+        this.ngOnInit();
+      } else {
+        this.toastr.error('Enter valid ', res.message);
+      }
+    });
   }
 
   areaWithPin(id) {
-    this.router.navigate([`/pin/${id}`])
+    this.router.navigate([`/pin/${id}`]);
   }
-
 }

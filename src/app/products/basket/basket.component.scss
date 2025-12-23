@@ -1,91 +1,91 @@
-.badge_icon{
-    width: 50px;
-    height: 50px;
+.badge_icon {
+  width: 50px;
+  height: 50px;
 }
 .upload-img {
-    width: 100%;
-    height: 100px;
-    object-fit: contain;
-    margin: 10px 0 10px 0;
+  width: 100%;
+  height: 100px;
+  object-fit: contain;
+  margin: 10px 0 10px 0;
 }
-.box_area{
-    background: var(--white-color);
-    box-shadow: 2px 3px 5px 0px rgb(0 0 0 / 20%);
-    border-radius: 6px;
-    cursor: move;
-    margin-bottom: 30px;
+.box_area {
+  background: var(--white-color);
+  box-shadow: 2px 3px 5px 0px rgb(0 0 0 / 20%);
+  border-radius: 6px;
+  cursor: move;
+  margin-bottom: 30px;
 }
 
-.main_head{
-    width: 100%;
-    background: var(--white-color);
-    border-radius: 6px;
-    padding: 10px 20px;
-    pointer-events: none;
-    border: none;
-    font-size: var(--para-size);
-    position: relative;
-    top: -10px;
-    box-shadow: 2px 3px 5px 0px rgb(0 0 0 / 20%)
+.main_head {
+  width: 100%;
+  background: var(--white-color);
+  border-radius: 6px;
+  padding: 10px 20px;
+  pointer-events: none;
+  border: none;
+  font-size: var(--para-size);
+  position: relative;
+  top: -10px;
+  box-shadow: 2px 3px 5px 0px rgb(0 0 0 / 20%);
 }
-.remove{
-    border-radius: 50%;
-    position: relative;
-    top: 3px;
-    left: 9rem;
-    font-size: 16px;
-    text-align: center;
-    padding: 0px 8px 2px 8px;
-    background: #fff;
-    border: 1px solid #b6b8b9;
-    cursor: pointer;
-    transition: color .2s;
-    color: red;
+.remove {
+  border-radius: 50%;
+  position: relative;
+  top: 3px;
+  left: 9rem;
+  font-size: 16px;
+  text-align: center;
+  padding: 0px 8px 2px 8px;
+  background: #fff;
+  border: 1px solid #b6b8b9;
+  cursor: pointer;
+  transition: color 0.2s;
+  color: red;
 }
 .upload-btn-wrapper {
-    position: relative;
-    overflow: hidden;
-    display: inline-block;
-    width: 100%;
-  }
-  .errr_msg{
-    color: red;
-    font-size: var(--para-size);
-    font-weight: 500;
-    text-align: center;
-  }
-  .pic_btn {
-    height: 45px;
-    border: 2px solid var(--border-color);
-    font-size: var(--para-size);
-    font-weight: 500;
-    background: var(--white-color);
-    border-radius: 6px;
-    width: 100%;
-  }
-  .upload-btn-wrapper input[type=file] {
-    position: absolute;
-    left: 0;
-    top: 0;
-    opacity: 0;
-    width: 100%;
-    height: 45px;
-    cursor: pointer;
-  }
-.add_edit_btn{
-    background: var(--main-color);
-    padding: 8px 15px;
-    color: var(--white-color);
-    border: none;
-    border-radius: 8px;
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+  width: 100%;
 }
-.add_edit_btn:hover{
-    border: 2px solid var(--main-color);
-    background: transparent;
-    color: var(--main-color);
-    font-weight: 600;
+.errr_msg {
+  color: red;
+  font-size: var(--para-size);
+  font-weight: 500;
+  text-align: center;
 }
-.simi_btn{
+.pic_btn {
+  height: 45px;
+  border: 2px solid var(--border-color);
+  font-size: var(--para-size);
+  font-weight: 500;
+  background: var(--white-color);
+  border-radius: 6px;
+  width: 100%;
+}
+.upload-btn-wrapper input[type='file'] {
+  position: absolute;
+  left: 0;
+  top: 0;
+  opacity: 0;
+  width: 100%;
+  height: 45px;
+  cursor: pointer;
+}
+.add_edit_btn {
+  background: var(--main-color);
+  padding: 8px 15px;
+  color: var(--white-color);
+  border: none;
+  border-radius: 8px;
+}
+.add_edit_btn:hover {
+  border: 2px solid var(--main-color);
+  background: transparent;
+  color: var(--main-color);
+  font-weight: 600;
+}
+.simi_btn {
   background: transparent;
   border: 2px solid var(--main-color);
   color: var(--main-color);
@@ -94,19 +94,19 @@
   padding: 5px;
   border-radius: 10px;
 }
-.simi_btn:hover{
+.simi_btn:hover {
   background: var(--main-color);
   color: var(--white-color);
 }
-.del_icon{
+.del_icon {
   margin-top: 1rem;
   color: var(--main-color);
 }
-.del_icon:hover{
+.del_icon:hover {
   cursor: pointer;
   color: var(--black-color);
 }
-.example-input{
+.example-input {
   padding-left: 20px;
   height: 45px;
 }

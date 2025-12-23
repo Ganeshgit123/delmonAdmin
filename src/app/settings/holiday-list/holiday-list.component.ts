@@ -6,15 +6,19 @@ import { ToastrService } from 'ngx-toastr';
 @Component({
   selector: 'app-holiday-list',
   templateUrl: './holiday-list.component.html',
-  styleUrls: ['./holiday-list.component.scss']
+  styleUrls: ['./holiday-list.component.scss'],
 })
 export class HolidayListComponent implements OnInit {
   holidayForm: FormGroup;
   today = new Date().toISOString().split('T')[0]; // yyyy-mm-dd
 
-  constructor(private fb: FormBuilder, public authService: AuthService, private toastr: ToastrService) {
+  constructor(
+    private fb: FormBuilder,
+    public authService: AuthService,
+    private toastr: ToastrService,
+  ) {
     this.holidayForm = this.fb.group({
-      dates: this.fb.array([]) // initialize empty
+      dates: this.fb.array([]), // initialize empty
     });
   }
 
@@ -33,7 +37,7 @@ export class HolidayListComponent implements OnInit {
         if (enValue && enValue !== 'null') {
           try {
             const dateStrings: string[] = JSON.parse(enValue);
-            dateStrings.forEach(dateStr => {
+            dateStrings.forEach((dateStr) => {
               const [dd, mm, yyyy] = dateStr.split('/');
               const formatted = `${yyyy}-${mm}-${dd}`;
               this.dates.push(this.fb.control(formatted, Validators.required));
@@ -49,10 +53,9 @@ export class HolidayListComponent implements OnInit {
       (error) => {
         console.error('Error loading holidays', error);
         this.dates.push(this.fb.control('', Validators.required));
-      }
+      },
     );
   }
-
 
   get dates(): FormArray {
     return this.holidayForm.get('dates') as FormArray;
@@ -66,9 +69,8 @@ export class HolidayListComponent implements OnInit {
     this.dates.removeAt(index);
   }
 
-
   submit() {
-    this.dates.controls.forEach(control => control.markAsTouched());
+    this.dates.controls.forEach((control) => control.markAsTouched());
 
     if (this.holidayForm.invalid) {
       this.toastr.error('Please fill all dates correctly', 'Validation Error');
@@ -85,18 +87,16 @@ export class HolidayListComponent implements OnInit {
       enValue: JSON.stringify(formattedDates),
       arValue: 'null',
       latitude: null,
-      longitude: null
+      longitude: null,
     };
 
-    this.authService.updateSetting(payload, 26)
-      .subscribe((res: any) => {
-        if (res.success == true) {
-          this.toastr.success('Success ', 'Updated Successfully');
-          this.ngOnInit();
-        } else {
-          this.toastr.error('Enter valid ', 'Error');
-        }
-      });
+    this.authService.updateSetting(payload, 26).subscribe((res: any) => {
+      if (res.success == true) {
+        this.toastr.success('Success ', 'Updated Successfully');
+        this.ngOnInit();
+      } else {
+        this.toastr.error('Enter valid ', 'Error');
+      }
+    });
   }
-
 }

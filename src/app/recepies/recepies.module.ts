@@ -8,25 +8,22 @@ import { NgxSpinnerModule } from 'ngx-spinner';
 import { TranslateModule } from '@ngx-translate/core';
 import { AngularEditorModule } from '@kolkov/angular-editor';
 
-
 @NgModule({
-  declarations: [
-    RecepiesComponent
-  ],
+  declarations: [RecepiesComponent],
   imports: [
     CommonModule,
     AngularEditorModule,
     RouterModule.forChild([
       {
-        path:"",
-        component: RecepiesComponent
-      }
+        path: '',
+        component: RecepiesComponent,
+      },
     ]),
     NgMaterialModule,
-    FormsModule, 
+    FormsModule,
     ReactiveFormsModule,
     NgxSpinnerModule,
     TranslateModule,
-  ]
+  ],
 })
-export class RecepiesModule { }
+export class RecepiesModule {}

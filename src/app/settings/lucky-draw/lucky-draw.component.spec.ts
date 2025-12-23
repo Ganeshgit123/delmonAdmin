@@ -8,9 +8,8 @@ describe('LuckyDrawComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ LuckyDrawComponent ]
-    })
-    .compileComponents();
+      declarations: [LuckyDrawComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

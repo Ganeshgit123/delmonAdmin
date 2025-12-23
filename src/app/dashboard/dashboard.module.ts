@@ -2,24 +2,22 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DashboardComponent } from './dashboard.component';
 import { RouterModule } from '@angular/router';
-import {TranslateModule} from '@ngx-translate/core';
-import { NgApexchartsModule } from "ng-apexcharts";
-
+import { TranslateModule } from '@ngx-translate/core';
+import { NgApexchartsModule } from 'ng-apexcharts';
 
 @NgModule({
-  declarations: [
-    DashboardComponent
-  ],
+  declarations: [],
   imports: [
     CommonModule,
     NgApexchartsModule,
     RouterModule.forChild([
       {
-        path:"",
-        component:DashboardComponent
-      }
+        path: '',
+        component: DashboardComponent,
+      },
     ]),
-    TranslateModule.forChild()
-  ]
+    TranslateModule.forChild(),
+    DashboardComponent,
+  ],
 })
-export class DashboardModule { }
+export class DashboardModule {}

@@ -1,22 +1,22 @@
 <div class="d-flex justify-content-between align-items-center flex-wrap grid-margin">
   <div>
-    <h2 class="mb-3 mb-md-0">{{"Zones" | translate}}</h2>
+    <h2 class="mb-3 mb-md-0">{{ 'Zones' | translate }}</h2>
   </div>
 </div>
 
 <div class="row">
   <div class="col-md-3">
     <mat-form-field appearance="standard">
-      <mat-label>{{"Search" | translate}}</mat-label>
-      <input matInput (keyup)="applyFilter($event)" placeholder="{{'Search' | translate}}" #input>
+      <mat-label>{{ 'Search' | translate }}</mat-label>
+      <input matInput (keyup)="applyFilter($event)" placeholder="{{ 'Search' | translate }}" #input />
     </mat-form-field>
   </div>
   <div class="col-md-5"></div>
   @if (showAccept) {
     <div class="col-md-4">
-      <div style="text-align:end;" class="add_popup_btn">
+      <div style="text-align: end" class="add_popup_btn">
         <a href="javascript:void(0);" class="btn btn-own mb-2" (click)="openModal(content)">
-          {{"Add Zones" | translate}}
+          {{ 'Add Zones' | translate }}
         </a>
       </div>
     </div>
@@ -26,10 +26,10 @@
 <ng-template #content role="document" let-modal="close">
   <div class="modal-header">
     @if (!isEdit) {
-      <h5 class="modal-title">{{"Add Zone" | translate}}</h5>
+      <h5 class="modal-title">{{ 'Add Zone' | translate }}</h5>
     }
     @if (isEdit) {
-      <h5 class="modal-title">{{"Edit Zone" | translate}}</h5>
+      <h5 class="modal-title">{{ 'Edit Zone' | translate }}</h5>
     }
     <button type="button" class="close" aria-label="Close" (click)="modal('Cross click')">
       <span aria-checked="true">&times;</span>
@@ -38,88 +38,103 @@
   <div class="modal-body p-3">
     <form [formGroup]="zoneForm">
       <div class="form-group">
-        <label for="name">{{"ZoneName" | translate}}</label>
-        <input type="text" class="form-control" placeholder="{{'Enter name' |translate}}" formControlName="name"
-          [ngClass]="{ 'is-invalid': submitted && f.name.errors }">
+        <label for="name">{{ 'ZoneName' | translate }}</label>
+        <input
+          type="text"
+          class="form-control"
+          placeholder="{{ 'Enter name' | translate }}"
+          formControlName="name"
+          [ngClass]="{ 'is-invalid': submitted && f.name.errors }"
+        />
         @if (submitted && f.name.errors) {
           <div class="invalid-feedback">
             @if (f.name.errors.required) {
-              <div>{{"Name is required" | translate}}</div>
+              <div>{{ 'Name is required' | translate }}</div>
             }
           </div>
         }
       </div>
       <div class="form-group">
-        <label for="name">{{"ZoneNameAr" | translate}}</label>
-        <input type="text" class="form-control" placeholder="{{'Enter name' |translate}}"
-          formControlName="arName" [ngClass]="{ 'is-invalid': submitted && f.arName.errors }">
+        <label for="name">{{ 'ZoneNameAr' | translate }}</label>
+        <input
+          type="text"
+          class="form-control"
+          placeholder="{{ 'Enter name' | translate }}"
+          formControlName="arName"
+          [ngClass]="{ 'is-invalid': submitted && f.arName.errors }"
+        />
         @if (submitted && f.arName.errors) {
           <div class="invalid-feedback">
             @if (f.arName.errors.required) {
-              <div>{{"Name is required" | translate}}</div>
+              <div>{{ 'Name is required' | translate }}</div>
             }
           </div>
         }
       </div>
       <div class="form-group">
-        <label for="name">{{"Delivery Charge" | translate}}</label>
-        <input type="number" class="form-control" placeholder="{{'Enter Delivery Charge' |translate}}"
-          formControlName="deliveryCharge" [ngClass]="{ 'is-invalid': submitted && f.deliveryCharge.errors }">
+        <label for="name">{{ 'Delivery Charge' | translate }}</label>
+        <input
+          type="number"
+          class="form-control"
+          placeholder="{{ 'Enter Delivery Charge' | translate }}"
+          formControlName="deliveryCharge"
+          [ngClass]="{ 'is-invalid': submitted && f.deliveryCharge.errors }"
+        />
         @if (submitted && f.deliveryCharge.errors) {
           <div class="invalid-feedback">
             @if (f.deliveryCharge.errors.required) {
-              <div>{{"Delivery Charge is required" | translate}}</div>
+              <div>{{ 'Delivery Charge is required' | translate }}</div>
             }
             @if (f['deliveryCharge'].errors['pattern']) {
-              <div>{{"After Decimal three digits only allowed" |
-              translate}}</div>
+              <div>{{ 'After Decimal three digits only allowed' | translate }}</div>
             }
           </div>
         }
       </div>
     </form>
     <div class="text-right">
-      <button type="submit" class="btn btn-own" (click)="onSubmitData()">{{"Save" | translate}}</button>
-      <button type="button" class="btn btn-own-cancel ml-1" (click)="modal('close click')">{{"Cancel" |
-      translate}}</button>
+      <button type="submit" class="btn btn-own" (click)="onSubmitData()">{{ 'Save' | translate }}</button>
+      <button type="button" class="btn btn-own-cancel ml-1" (click)="modal('close click')">
+        {{ 'Cancel' | translate }}
+      </button>
     </div>
   </div>
 </ng-template>
 
 <div class="mat-elevation-z8">
   <table class="table" mat-table [dataSource]="dataSource" matSort>
-
     <ng-container matColumnDef="index">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>{{"S.No" | translate}}</th>
-      <td mat-cell *matCellDef="let element; let i = index;"> {{matPaginator.pageSize * matPaginator.pageIndex + i
-      + 1}} </td>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'S.No' | translate }}</th>
+      <td mat-cell *matCellDef="let element; let i = index">
+        {{ matPaginator.pageSize * matPaginator.pageIndex + i + 1 }}
+      </td>
     </ng-container>
 
     <ng-container matColumnDef="name">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"ZoneName" | translate}} </th>
-      <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'ZoneName' | translate }}</th>
+      <td mat-cell *matCellDef="let element">{{ element.name }}</td>
     </ng-container>
 
     <ng-container matColumnDef="arName">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"ZoneNameAr" | translate}} </th>
-      <td mat-cell *matCellDef="let element"> {{element.arName}} </td>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'ZoneNameAr' | translate }}</th>
+      <td mat-cell *matCellDef="let element">{{ element.arName }}</td>
     </ng-container>
 
     <ng-container matColumnDef="deliveryCharge">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"Delivery Charge" | translate}} </th>
-      <td mat-cell *matCellDef="let element"> {{element.deliveryCharge | number : '1.0-3'}} </td>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'Delivery Charge' | translate }}</th>
+      <td mat-cell *matCellDef="let element">{{ element.deliveryCharge | number: '1.0-3' }}</td>
     </ng-container>
 
     <ng-container matColumnDef="rowActionToggle">
-      <th mat-header-cell *matHeaderCellDef>{{"Status" | translate}}</th>
+      <th mat-header-cell *matHeaderCellDef>{{ 'Status' | translate }}</th>
       <td mat-cell *matCellDef="let element" class="text-center">
         <button (change)="changeStatus(element)" class="tog_btn">
           <label class="switch">
             @if (element.active !== 1) {
-              <input unchecked type="checkbox">
+              <input unchecked type="checkbox" />
             }
             @if (element.active == 1) {
-              <input checked type="checkbox">
+              <input checked type="checkbox" />
             }
             <span class="slider"></span>
           </label>
@@ -128,35 +143,36 @@
     </ng-container>
 
     <ng-container matColumnDef="rowActionIcon">
-      <th mat-header-cell *matHeaderCellDef>{{"Action" | translate}}</th>
+      <th mat-header-cell *matHeaderCellDef>{{ 'Action' | translate }}</th>
       <td mat-cell *matCellDef="let element" class="text-center">
         <button mat-button (click)="zoneWithArea(element.id)" class="simi_btn">
           @if (showAccept) {
-            <span>{{"Add Area to this Zone" | translate}}</span>
+            <span>{{ 'Add Area to this Zone' | translate }}</span>
           }
           @if (!showAccept) {
-            <span>{{"AreaZone" | translate}}</span>
+            <span>{{ 'AreaZone' | translate }}</span>
           }
         </button>
         @if (showAccept) {
           <span>
-            <button mat-button (click)="editZone(element,content)" class="edit_btn">
-              <img src="assets/images/edit_icon.svg"
-                onmouseover="this.src='assets/images/edit_hover_icon.svg'"
-                onmouseout="this.src='assets/images/edit_icon.svg'">
-              </button>
-            </span>
-          }
-        </td>
-      </ng-container>
+            <button mat-button (click)="editZone(element, content)" class="edit_btn">
+              <img
+                src="assets/images/edit_icon.svg"
+                onmouseover="this.src = 'assets/images/edit_hover_icon.svg'"
+                onmouseout="this.src = 'assets/images/edit_icon.svg'"
+              />
+            </button>
+          </span>
+        }
+      </td>
+    </ng-container>
 
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
 
-      <tr class="mat-row" *matNoDataRow>
-        <td class="mat-cell text-center" colspan="6">{{"No data found" | translate}}</td>
-      </tr>
-    </table>
-    <mat-paginator [pageSizeOptions]="[10, 20, 25]" showFirstLastButtons></mat-paginator>
-
-  </div>
+    <tr class="mat-row" *matNoDataRow>
+      <td class="mat-cell text-center" colspan="6">{{ 'No data found' | translate }}</td>
+    </tr>
+  </table>
+  <mat-paginator [pageSizeOptions]="[10, 20, 25]" showFirstLastButtons></mat-paginator>
+</div>

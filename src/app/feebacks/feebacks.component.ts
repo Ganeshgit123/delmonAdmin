@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { AuthService } from 'src/app/shared/auth.service';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -8,9 +8,9 @@ import { TranslateService } from '@ngx-translate/core';
 @Component({
   selector: 'app-feebacks',
   templateUrl: './feebacks.component.html',
-  styleUrls: ['./feebacks.component.scss']
+  styleUrls: ['./feebacks.component.scss'],
 })
-export class FeebacksComponent implements OnInit {
+export class FeebacksComponent implements OnInit, AfterViewInit {
   displayedColumns: string[];
   dataSource: MatTableDataSource<any>;
   getvalue = [];
@@ -18,23 +18,24 @@ export class FeebacksComponent implements OnInit {
   @ViewChild(MatPaginator) matPaginator: MatPaginator;
   @ViewChild(MatSort) matSort: MatSort;
 
-  constructor(public authService: AuthService, private translate: TranslateService,) { }
+  constructor(
+    public authService: AuthService,
+    private translate: TranslateService,
+  ) {}
 
   ngOnInit(): void {
     this.displayedColumns = ['index', 'userName', 'email', 'mobileNumber', 'comment'];
 
-    this.authService.getFeedbacks().subscribe(
-      (res: any) => {
-        this.getvalue = res.data;
-        this.dataSource = new MatTableDataSource(this.getvalue);
-        this.dataSource.paginator = this.matPaginator;
-        this.dataSource.sort = this.matSort;
-      }
-    );
+    this.authService.getFeedbacks().subscribe((res: any) => {
+      this.getvalue = res.data;
+      this.dataSource = new MatTableDataSource(this.getvalue);
+      this.dataSource.paginator = this.matPaginator;
+      this.dataSource.sort = this.matSort;
+    });
   }
 
   ngAfterViewInit(): void {
-    this.matPaginator._intl.itemsPerPageLabel = this.translate.instant("itemsPerPage");
+    this.matPaginator._intl.itemsPerPageLabel = this.translate.instant('itemsPerPage');
   }
 
   applyFilter(event: Event) {

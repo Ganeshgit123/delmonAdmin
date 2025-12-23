@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/shared/auth.service';
 import { MatPaginator } from '@angular/material/paginator';
@@ -14,9 +14,9 @@ import { ExportType, MatTableExporterDirective } from '@csmart/mat-table-exporte
 @Component({
   selector: 'app-normal-user',
   templateUrl: './normal-user.component.html',
-  styleUrls: ['./normal-user.component.scss']
+  styleUrls: ['./normal-user.component.scss'],
 })
-export class NormalUserComponent implements OnInit {
+export class NormalUserComponent implements OnInit, AfterViewInit {
   displayedColumns: string[];
   historyDisplayedColumns: string[];
   dataSource: MatTableDataSource<any>;
@@ -36,9 +36,15 @@ export class NormalUserComponent implements OnInit {
   @ViewChild('sort2') sort2!: MatSort;
   @ViewChild(MatTableExporterDirective, { static: true }) exporter: MatTableExporterDirective;
 
-  constructor(public authService: AuthService, private toastr: ToastrService, private router: Router,
-    private translate: TranslateService, private spinner: NgxSpinnerService, private modalService: NgbModal,
-    public fb: FormBuilder) { }
+  constructor(
+    public authService: AuthService,
+    private toastr: ToastrService,
+    private router: Router,
+    private translate: TranslateService,
+    private spinner: NgxSpinnerService,
+    private modalService: NgbModal,
+    public fb: FormBuilder,
+  ) {}
 
   ngOnInit(): void {
     this.callRolePermission();
@@ -49,43 +55,65 @@ export class NormalUserComponent implements OnInit {
     }
 
     if (this.showAccept == true) {
-      this.displayedColumns = ['index', 'mobileNumber', 'userName', 'email', 'walletAmount', 'loyaltyPoint', 'dailyLimit', 'created_date', 'edit', 'active', 'walletHistory'];
+      this.displayedColumns = [
+        'index',
+        'mobileNumber',
+        'userName',
+        'email',
+        'walletAmount',
+        'loyaltyPoint',
+        'dailyLimit',
+        'created_date',
+        'edit',
+        'active',
+        'walletHistory',
+      ];
       this.historyDisplayedColumns = ['index', 'paymentType', 'orderId', 'amount', 'type'];
     } else if (this.showAccept == false) {
-      this.displayedColumns = ['index', 'mobileNumber', 'userName', 'email', 'walletAmount', 'loyaltyPoint', 'dailyLimit', 'created_date', 'walletHistory'];
+      this.displayedColumns = [
+        'index',
+        'mobileNumber',
+        'userName',
+        'email',
+        'walletAmount',
+        'loyaltyPoint',
+        'dailyLimit',
+        'created_date',
+        'walletHistory',
+      ];
       this.historyDisplayedColumns = ['index', 'paymentType', 'orderId', 'amount', 'type'];
     }
 
     this.spinner.show();
-    this.authService.getNormalUsers().subscribe(
-      (res: any) => {
-        this.getUsers = res.data;
-        this.spinner.hide();
-        this.dataSource = new MatTableDataSource(this.getUsers);
-        this.dataSource.paginator = this.paginator1;
-        this.dataSource.sort = this.sort1;
-      }
-    );
+    this.authService.getNormalUsers().subscribe((res: any) => {
+      this.getUsers = res.data;
+      this.spinner.hide();
+      this.dataSource = new MatTableDataSource(this.getUsers);
+      this.dataSource.paginator = this.paginator1;
+      this.dataSource.sort = this.sort1;
+    });
 
     this.employeeForm = this.fb.group({
       employeeNumber: ['', [Validators.required]],
-      userType: [""],
+      userType: [''],
     });
   }
 
-  get empf() { return this.employeeForm.controls; }
+  get empf() {
+    return this.employeeForm.controls;
+  }
 
   callRolePermission() {
     if (sessionStorage.getItem('roleName') !== 'superAdmin') {
-      let settingPermssion = JSON.parse(sessionStorage.getItem('permission'))
-      const orderPermission = settingPermssion?.find(ele => ele.area == 'users')?.write == 1
+      const settingPermssion = JSON.parse(sessionStorage.getItem('permission'));
+      const orderPermission = settingPermssion?.find((ele) => ele.area == 'users')?.write == 1;
       // console.log("fef",orderPermission)
-      this.showAccept = orderPermission
+      this.showAccept = orderPermission;
     }
   }
 
   ngAfterViewInit(): void {
-    this.paginator1._intl.itemsPerPageLabel = this.translate.instant("itemsPerPage");
+    this.paginator1._intl.itemsPerPageLabel = this.translate.instant('itemsPerPage');
   }
 
   applyFilter(event: Event) {
@@ -108,38 +136,36 @@ export class NormalUserComponent implements OnInit {
       return false;
     }
     this.submitted = false;
-    this.employeeForm.value.userType = 'EMPLOYEE'
+    this.employeeForm.value.userType = 'EMPLOYEE';
     // console.log("Fef",this.employeeForm.value)
-    this.authService.updateUserType(this.employeeForm.value, this.userId)
-      .subscribe((res: any) => {
-        if (res.error == false) {
-          this.toastr.success('Success ', res.message);
-          this.spinner.hide();
-          this.employeeForm.reset();
-          this.modalService.dismissAll();
-          this.router.navigate(['/employees']);
-        } else {
-          this.toastr.error('Enter valid ', res.message);
-        }
-      });
+    this.authService.updateUserType(this.employeeForm.value, this.userId).subscribe((res: any) => {
+      if (res.error == false) {
+        this.toastr.success('Success ', res.message);
+        this.spinner.hide();
+        this.employeeForm.reset();
+        this.modalService.dismissAll();
+        this.router.navigate(['/employees']);
+      } else {
+        this.toastr.error('Enter valid ', res.message);
+      }
+    });
   }
 
   changeActiveStatus(value) {
     if (value.active === 1) {
-      var visible = 0
+      var visible = 0;
     } else {
-      var visible = 1
+      var visible = 1;
     }
-    const object = { active: visible }
-    this.authService.updateUserType(object, value.id)
-      .subscribe((res: any) => {
-        if (res.error == false) {
-          this.toastr.success('Success ', res.message);
-          this.ngOnInit();
-        } else {
-          this.toastr.error('Enter valid ', res.message);
-        }
-      });
+    const object = { active: visible };
+    this.authService.updateUserType(object, value.id).subscribe((res: any) => {
+      if (res.error == false) {
+        this.toastr.success('Success ', res.message);
+        this.ngOnInit();
+      } else {
+        this.toastr.error('Enter valid ', res.message);
+      }
+    });
   }
 
   exportIt() {
@@ -170,7 +196,7 @@ export class NormalUserComponent implements OnInit {
         this.historyDataSource.sort = this.sort2;
       },
       error: (error) => {
-        console.error("API Error:", error);
+        console.error('API Error:', error);
       },
     });
   }
@@ -192,5 +218,4 @@ export class NormalUserComponent implements OnInit {
       fileName: `WalletHistory ${this.formattedDateTime}`,
     });
   }
-
 }

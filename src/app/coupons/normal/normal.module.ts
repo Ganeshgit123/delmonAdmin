@@ -12,14 +12,14 @@ import { TranslateModule } from '@ngx-translate/core';
     CommonModule,
     NgMaterialModule,
     TranslateModule,
-    FormsModule, 
+    FormsModule,
     ReactiveFormsModule,
     RouterModule.forChild([
       {
-        path: "",
-        component: NormalComponent
+        path: '',
+        component: NormalComponent,
       },
-    ])
-  ]
+    ]),
+  ],
 })
-export class NormalModule { }
+export class NormalModule {}

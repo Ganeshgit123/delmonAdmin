@@ -10,7 +10,7 @@ import { TranslateService } from '@ngx-translate/core';
 @Component({
   selector: 'app-spin-wheel-winner',
   templateUrl: './spin-wheel-winner.component.html',
-  styleUrls: ['./spin-wheel-winner.component.scss']
+  styleUrls: ['./spin-wheel-winner.component.scss'],
 })
 export class SpinWheelWinnerComponent implements OnInit {
   displayedColumns: string[];
@@ -18,22 +18,23 @@ export class SpinWheelWinnerComponent implements OnInit {
   getvalue = [];
 
   @ViewChild(MatPaginator) matPaginator: MatPaginator;
-    @ViewChild(MatSort) matSort: MatSort;
-  
-    constructor(private modalService: NgbModal, public authService: AuthService,
-      private router: Router, private translate: TranslateService,) { }
+  @ViewChild(MatSort) matSort: MatSort;
+
+  constructor(
+    private modalService: NgbModal,
+    public authService: AuthService,
+    private router: Router,
+    private translate: TranslateService,
+  ) {}
 
   ngOnInit(): void {
     this.displayedColumns = ['index', 'userId', 'type', 'title'];
 
-    this.authService.getSpinWheelWinner().subscribe(
-      (res: any) => {
-        this.getvalue = res.data;
-        this.dataSource = new MatTableDataSource(this.getvalue);
-        this.dataSource.paginator = this.matPaginator;
-        this.dataSource.sort = this.matSort;
-      }
-    );
+    this.authService.getSpinWheelWinner().subscribe((res: any) => {
+      this.getvalue = res.data;
+      this.dataSource = new MatTableDataSource(this.getvalue);
+      this.dataSource.paginator = this.matPaginator;
+      this.dataSource.sort = this.matSort;
+    });
   }
-
 }

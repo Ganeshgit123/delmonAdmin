@@ -5,21 +5,18 @@ import { RouterModule } from '@angular/router';
 import { NgMaterialModule } from '../../ng-material.module';
 import { TranslateModule } from '@ngx-translate/core';
 
-
 @NgModule({
-  declarations: [
-    TotalOrdersComponent
-  ],
+  declarations: [TotalOrdersComponent],
   imports: [
     CommonModule,
     RouterModule.forChild([
       {
-        path:"",
-        component: TotalOrdersComponent
-      }
+        path: '',
+        component: TotalOrdersComponent,
+      },
     ]),
     NgMaterialModule,
     TranslateModule,
-  ]
+  ],
 })
-export class TotalOrdersModule { }
+export class TotalOrdersModule {}

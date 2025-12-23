@@ -1,5 +1,3 @@
 import { MenuItem } from './menu.model';
 
-export const MENU: MenuItem[] = [
-  
-];
+export const MENU: MenuItem[] = [];

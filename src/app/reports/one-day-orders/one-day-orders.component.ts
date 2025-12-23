@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/shared/auth.service';
 import { MatPaginator } from '@angular/material/paginator';
@@ -10,9 +10,9 @@ import { ExportType, MatTableExporterDirective, MatTableExporterModule } from '@
 @Component({
   selector: 'app-one-day-orders',
   templateUrl: './one-day-orders.component.html',
-  styleUrls: ['./one-day-orders.component.scss']
+  styleUrls: ['./one-day-orders.component.scss'],
 })
-export class OneDayOrdersComponent implements OnInit {
+export class OneDayOrdersComponent implements OnInit, AfterViewInit {
   displayedColumns: string[];
   dataSource: MatTableDataSource<any>;
   getOrders = [];
@@ -31,7 +31,11 @@ export class OneDayOrdersComponent implements OnInit {
   @ViewChild(MatSort) matSort: MatSort;
   @ViewChild(MatTableExporterDirective, { static: true }) exporter: MatTableExporterDirective;
 
-  constructor(public authService: AuthService, private router: Router, private translate: TranslateService,) { }
+  constructor(
+    public authService: AuthService,
+    private router: Router,
+    private translate: TranslateService,
+  ) {}
 
   ngOnInit(): void {
     this.dir = localStorage.getItem('dir') || 'ltr';
@@ -44,55 +48,72 @@ export class OneDayOrdersComponent implements OnInit {
 
     this.userType = sessionStorage.getItem('userType');
 
-    this.displayedColumns = ['index', 'orderId', 'customerName', 'phoneNumber', 'userType', 'driverName', 'customerAddress', 'prodDetails',
-      'orderDetails', 'deliveryCost', 'discount', 'total', 'paymentType', 'sonicNo', 'orderStatus',
-      'orderDate', 'deliveryDate'];
+    this.displayedColumns = [
+      'index',
+      'orderId',
+      'customerName',
+      'phoneNumber',
+      'userType',
+      'driverName',
+      'customerAddress',
+      'prodDetails',
+      'orderDetails',
+      'deliveryCost',
+      'discount',
+      'total',
+      'paymentType',
+      'sonicNo',
+      'orderStatus',
+      'orderDate',
+      'deliveryDate',
+    ];
 
     if (this.userType == 1 || this.userType == 0) {
-      this.flowType = 'POULTRY'
+      this.flowType = 'POULTRY';
     } else if (this.userType == 2) {
-      this.flowType = 'FEEDING'
+      this.flowType = 'FEEDING';
     }
 
-    const object = { type: this.flowType, deliveryBoyId: '', startDate: '', endDate: '', orderStatus: 'DRIVERASSIGNED,OUTFORDELIVERY' }
-    this.authService.getSalesReport(object).subscribe(
-      (res: any) => {
-        this.getOrders = res.deliveryBoyOrderList.reverse();
-        // console.log("Fef",this.getOrders)
-        this.dataSource = new MatTableDataSource(this.getOrders);
-        this.dataSource.paginator = this.matPaginator;
-        this.dataSource.sort = this.matSort;
-      });
+    const object = {
+      type: this.flowType,
+      deliveryBoyId: '',
+      startDate: '',
+      endDate: '',
+      orderStatus: 'DRIVERASSIGNED,OUTFORDELIVERY',
+    };
+    this.authService.getSalesReport(object).subscribe((res: any) => {
+      this.getOrders = res.deliveryBoyOrderList.reverse();
+      // console.log("Fef",this.getOrders)
+      this.dataSource = new MatTableDataSource(this.getOrders);
+      this.dataSource.paginator = this.matPaginator;
+      this.dataSource.sort = this.matSort;
+    });
 
-    this.authService.getDriversActive(1).subscribe(
-      (res: any) => {
-        this.getDrivers = res.data.reverse();
-      }
-    );
+    this.authService.getDriversActive(1).subscribe((res: any) => {
+      this.getDrivers = res.data.reverse();
+    });
   }
 
   callRolePermission() {
     if (sessionStorage.getItem('roleName') !== 'superAdmin') {
-      let settingPermssion = JSON.parse(sessionStorage.getItem('permission'))
-      const orderPermission = settingPermssion?.find(ele => ele.area == 'one-day-orders')?.write == 1
+      const settingPermssion = JSON.parse(sessionStorage.getItem('permission'));
+      const orderPermission = settingPermssion?.find((ele) => ele.area == 'one-day-orders')?.write == 1;
       // console.log("fef",orderPermission)
-      this.showAccept = orderPermission
+      this.showAccept = orderPermission;
     }
   }
 
   ngAfterViewInit(): void {
-    this.matPaginator._intl.itemsPerPageLabel = this.translate.instant("itemsPerPage");
+    this.matPaginator._intl.itemsPerPageLabel = this.translate.instant('itemsPerPage');
   }
 
   getDateQuery(object) {
-    this.authService.getSalesReport(object).subscribe(
-      (res: any) => {
-        this.getOrders = res.deliveryBoyOrderList.reverse();
-        this.dataSource = new MatTableDataSource(this.getOrders);
-        this.dataSource.paginator = this.matPaginator;
-        this.dataSource.sort = this.matSort;
-      }
-    );
+    this.authService.getSalesReport(object).subscribe((res: any) => {
+      this.getOrders = res.deliveryBoyOrderList.reverse();
+      this.dataSource = new MatTableDataSource(this.getOrders);
+      this.dataSource.paginator = this.matPaginator;
+      this.dataSource.sort = this.matSort;
+    });
   }
 
   applyFilter(event: Event) {
@@ -105,55 +126,84 @@ export class OneDayOrdersComponent implements OnInit {
   }
 
   startEvent(event) {
-    var stDate = event.value
-    var date = new Date(stDate);
+    const stDate = event.value;
+    const date = new Date(stDate);
 
     const year: number = date.getFullYear();
     const month: number = date.getMonth() + 1; // Note: Months are zero-indexed, so add 1
     const day: number = date.getDate();
 
-    const startFomatDate: string = `${day.toString().padStart(2, '0')}/${month.toString().padStart(2, '0')}/${year}`;
+    const startFomatDate = `${day.toString().padStart(2, '0')}/${month.toString().padStart(2, '0')}/${year}`;
 
     this.startDate = startFomatDate;
 
-    const object = { type: this.flowType, deliveryBoyId: this.driverId, startDate: this.startDate, endDate: this.endDate, orderStatus: 'DRIVERASSIGNED,OUTFORDELIVERY' }
-    this.getDateQuery(object)
+    const object = {
+      type: this.flowType,
+      deliveryBoyId: this.driverId,
+      startDate: this.startDate,
+      endDate: this.endDate,
+      orderStatus: 'DRIVERASSIGNED,OUTFORDELIVERY',
+    };
+    this.getDateQuery(object);
   }
 
   endEvent(event) {
-    var stDate = event.value
-    var date = new Date(stDate);
+    const stDate = event.value;
+    const date = new Date(stDate);
 
     const year: number = date.getFullYear();
     const month: number = date.getMonth() + 1; // Note: Months are zero-indexed, so add 1
     const day: number = date.getDate();
 
-    const endFomatDate: string = `${day.toString().padStart(2, '0')}/${month.toString().padStart(2, '0')}/${year}`;
+    const endFomatDate = `${day.toString().padStart(2, '0')}/${month.toString().padStart(2, '0')}/${year}`;
 
     this.endDate = endFomatDate;
 
-    const object = { type: this.flowType, deliveryBoyId: this.driverId, startDate: this.startDate, endDate: this.endDate, orderStatus: 'DRIVERASSIGNED,OUTFORDELIVERY' }
-    this.getDateQuery(object)
+    const object = {
+      type: this.flowType,
+      deliveryBoyId: this.driverId,
+      startDate: this.startDate,
+      endDate: this.endDate,
+      orderStatus: 'DRIVERASSIGNED,OUTFORDELIVERY',
+    };
+    this.getDateQuery(object);
   }
 
   onChangeFilter(value) {
     // console.log("se", value)
-    if (value == "all") {
-      const object = { type: this.flowType, deliveryBoyId: '', startDate: this.startDate, endDate: this.endDate, orderStatus: 'DRIVERASSIGNED,OUTFORDELIVERY' }
-      this.getDateQuery(object)
+    if (value == 'all') {
+      const object = {
+        type: this.flowType,
+        deliveryBoyId: '',
+        startDate: this.startDate,
+        endDate: this.endDate,
+        orderStatus: 'DRIVERASSIGNED,OUTFORDELIVERY',
+      };
+      this.getDateQuery(object);
     } else {
       this.driverId = Number(value);
-      const object = { type: this.flowType, deliveryBoyId: this.driverId, startDate: this.startDate, endDate: this.endDate, orderStatus: 'DRIVERASSIGNED,OUTFORDELIVERY' }
-      this.getDateQuery(object)
+      const object = {
+        type: this.flowType,
+        deliveryBoyId: this.driverId,
+        startDate: this.startDate,
+        endDate: this.endDate,
+        orderStatus: 'DRIVERASSIGNED,OUTFORDELIVERY',
+      };
+      this.getDateQuery(object);
     }
   }
 
   onChangeFlowTypeFilter(value) {
     this.flowType = value;
-    const object = { type: this.flowType, deliveryBoyId: this.driverId, startDate: this.startDate, endDate: this.endDate, orderStatus: 'DRIVERASSIGNED,OUTFORDELIVERY' }
-    this.getDateQuery(object)
+    const object = {
+      type: this.flowType,
+      deliveryBoyId: this.driverId,
+      startDate: this.startDate,
+      endDate: this.endDate,
+      orderStatus: 'DRIVERASSIGNED,OUTFORDELIVERY',
+    };
+    this.getDateQuery(object);
   }
-
 
   exportIt() {
     const currentDateAndTime: Date = new Date();

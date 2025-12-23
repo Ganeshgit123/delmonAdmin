@@ -7,21 +7,19 @@ import { NgMaterialModule } from '../../ng-material.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
-  declarations: [
-    LuckyDrawComponent
-  ],
+  declarations: [LuckyDrawComponent],
   imports: [
     CommonModule,
     RouterModule.forChild([
       {
-        path: "",
-        component: LuckyDrawComponent
-      }
+        path: '',
+        component: LuckyDrawComponent,
+      },
     ]),
     TranslateModule,
     NgMaterialModule,
-    FormsModule, 
+    FormsModule,
     ReactiveFormsModule,
-  ]
+  ],
 })
-export class LuckyDrawModule { }
+export class LuckyDrawModule {}

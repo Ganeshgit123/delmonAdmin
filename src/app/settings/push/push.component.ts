@@ -8,7 +8,7 @@ import { map, Observable, startWith } from 'rxjs';
 @Component({
   selector: 'app-push',
   templateUrl: './push.component.html',
-  styleUrls: ['./push.component.scss']
+  styleUrls: ['./push.component.scss'],
 })
 export class PushComponent implements OnInit {
   fcmForm: FormGroup;
@@ -21,7 +21,7 @@ export class PushComponent implements OnInit {
   superAdminRole = false;
   userGroups = [
     { id: 'USER', name: 'Customers' },
-    { id: 'EMPLOYEE', name: 'Employees' }
+    { id: 'EMPLOYEE', name: 'Employees' },
   ];
 
   // added submitted flags
@@ -29,12 +29,16 @@ export class PushComponent implements OnInit {
   submittedSms = false;
 
   userCtrl = new FormControl('');
-  filteredUsers: Observable<any[]> = new Observable();
+  filteredUsers = new Observable<any[]>();
 
   allUsers: any[] = [];
   selectedUsers: any[] = [];
 
-  constructor(public fb: FormBuilder, public authService: AuthService, private toastr: ToastrService) { }
+  constructor(
+    public fb: FormBuilder,
+    public authService: AuthService,
+    private toastr: ToastrService,
+  ) {}
 
   ngOnInit(): void {
     this.callRolePermission();
@@ -48,7 +52,7 @@ export class PushComponent implements OnInit {
       message: ['', [Validators.required]],
       userId: [[]],
       recipientType: ['', Validators.required], // <- added required validator
-      groupId: ['']
+      groupId: [''],
     });
 
     this.smsForm = this.fb.group({
@@ -56,48 +60,46 @@ export class PushComponent implements OnInit {
       message: ['', [Validators.required]],
       userId: [[]],
       recipientType: ['', Validators.required], // <- added required validator
-      groupId: ['']
+      groupId: [''],
     });
 
     // Load & map API users
     this.authService.getNormalUsers().subscribe((res: any) => {
-      this.allUsers = res.data
-        .map(u => ({
-          id: u.id,
-          text: u.mobileNumber
-        }));
+      this.allUsers = res.data.map((u) => ({
+        id: u.id,
+        text: u.mobileNumber,
+      }));
     });
 
     // Autocomplete filter
     this.filteredUsers = this.userCtrl.valueChanges.pipe(
       startWith(''),
-      map(value => this.filterUsers(value))
+      map((value) => this.filterUsers(value)),
     );
   }
 
   callRolePermission() {
     if (sessionStorage.getItem('roleName') !== 'superAdmin') {
-      let settingPermssion = JSON.parse(sessionStorage.getItem('permission'))
-      const orderPermission = settingPermssion?.find(ele => ele.area == 'master')?.write == 1
+      const settingPermssion = JSON.parse(sessionStorage.getItem('permission'));
+      const orderPermission = settingPermssion?.find((ele) => ele.area == 'master')?.write == 1;
       // console.log("fef",orderPermission)
-      this.showAccept = orderPermission
+      this.showAccept = orderPermission;
     }
   }
 
   // convenience getters for template
-  get fF() { return this.fcmForm.controls; }
-  get fS() { return this.smsForm.controls; }
+  get fF() {
+    return this.fcmForm.controls;
+  }
+  get fS() {
+    return this.smsForm.controls;
+  }
 
   // Normalize autocomplete input
   private filterUsers(value: any) {
-    const filterValue =
-      typeof value === 'string'
-        ? value.toLowerCase()
-        : value?.text?.toLowerCase() || '';
+    const filterValue = typeof value === 'string' ? value.toLowerCase() : value?.text?.toLowerCase() || '';
 
-    return this.allUsers.filter(option =>
-      option.text.toLowerCase().includes(filterValue)
-    );
+    return this.allUsers.filter((option) => option.text.toLowerCase().includes(filterValue));
   }
 
   // For autocomplete display
@@ -107,15 +109,15 @@ export class PushComponent implements OnInit {
 
   // When selecting autocomplete option
   selectUser(option: any) {
-    if (this.selectedUsers.some(u => u.id === option.id)) {
-      this.toastr.warning("User already added");
+    if (this.selectedUsers.some((u) => u.id === option.id)) {
+      this.toastr.warning('User already added');
       this.userCtrl.setValue('');
       return;
     }
 
     this.selectedUsers.push({
       id: option.id,
-      text: option.text
+      text: option.text,
     });
 
     // keep form controls in sync
@@ -143,18 +145,18 @@ export class PushComponent implements OnInit {
     if (!value) return;
 
     if (!/^[0-9]+$/.test(value)) {
-      this.toastr.error("Only numbers allowed");
+      this.toastr.error('Only numbers allowed');
       return;
     }
 
-    if (this.selectedUsers.some(u => u.text === value)) {
-      this.toastr.warning("User already added");
+    if (this.selectedUsers.some((u) => u.text === value)) {
+      this.toastr.warning('User already added');
       return;
     }
 
     this.selectedUsers.push({
-      id: value,      // fallback id = number
-      text: value
+      id: value, // fallback id = number
+      text: value,
     });
 
     // keep form controls in sync
@@ -164,9 +166,7 @@ export class PushComponent implements OnInit {
 
   // Helper to get filtered list synchronously
   private filteredUsersSource(value: string) {
-    return this.allUsers.filter(u =>
-      u.text.toLowerCase().includes((value || '').toLowerCase())
-    );
+    return this.allUsers.filter((u) => u.text.toLowerCase().includes((value || '').toLowerCase()));
   }
 
   // Block non-numeric keys
@@ -183,7 +183,7 @@ export class PushComponent implements OnInit {
 
   // keep both forms' userId in sync with selectedUsers
   private updateFormUserIds() {
-    const ids = this.selectedUsers.map(u => u.id);
+    const ids = this.selectedUsers.map((u) => u.id);
     this.fcmForm.get('userId')?.setValue(ids);
     this.smsForm.get('userId')?.setValue(ids);
   }
@@ -195,7 +195,7 @@ export class PushComponent implements OnInit {
     }
     const recipientType = this.fcmForm.get('recipientType')?.value;
 
-    console.log("selectedUsers", this.selectedUsers, recipientType);
+    console.log('selectedUsers', this.selectedUsers, recipientType);
 
     // validate based on recipientType
     if (recipientType === 'single' && this.selectedUsers.length === 0) {
@@ -212,7 +212,7 @@ export class PushComponent implements OnInit {
     const payload: any = {
       title: this.fcmForm.get('title')?.value,
       message: this.fcmForm.get('message')?.value,
-      recipientType: recipientType
+      recipientType: recipientType,
     };
 
     if (recipientType === 'single') {
@@ -222,11 +222,10 @@ export class PushComponent implements OnInit {
       payload.groupId = this.fcmForm.value.groupId;
     }
 
-
-    this.authService.pushnotification(payload)
-      .subscribe((res: any) => {
+    this.authService.pushnotification(payload).subscribe(
+      (res: any) => {
         if (res.success == true) {
-          this.toastr.success("Notification Sent Successfully", '', { timeOut: 2000 });
+          this.toastr.success('Notification Sent Successfully', '', { timeOut: 2000 });
           // reset form and submitted flag
           this.fcmForm.reset();
           this.selectedUsers = [];
@@ -235,9 +234,11 @@ export class PushComponent implements OnInit {
         } else {
           this.toastr.error(res.massage || 'Failed to send notification', '', { timeOut: 2000 });
         }
-      }, (err) => {
+      },
+      (err) => {
         this.toastr.error('Failed to send notification', '', { timeOut: 2000 });
-      });
+      },
+    );
   }
 
   sendSMS() {
@@ -263,7 +264,7 @@ export class PushComponent implements OnInit {
     const payload: any = {
       title: this.smsForm.get('title')?.value,
       message: this.smsForm.get('message')?.value,
-      recipientType: recipientType
+      recipientType: recipientType,
     };
 
     if (recipientType === 'single') {
@@ -273,10 +274,10 @@ export class PushComponent implements OnInit {
       payload.groupId = this.smsForm.value.groupId;
     }
 
-    this.authService.pushSms(payload)
-      .subscribe((res: any) => {
+    this.authService.pushSms(payload).subscribe(
+      (res: any) => {
         if (res.success == true) {
-          this.toastr.success("SMS Sent Successfully", '', { timeOut: 2000 });
+          this.toastr.success('SMS Sent Successfully', '', { timeOut: 2000 });
           this.smsForm.reset();
           this.selectedUsers = [];
           this.updateFormUserIds();
@@ -284,9 +285,10 @@ export class PushComponent implements OnInit {
         } else {
           this.toastr.error(res.massage || 'Failed to send SMS', '', { timeOut: 2000 });
         }
-      }, (err) => {
+      },
+      (err) => {
         this.toastr.error('Failed to send SMS', '', { timeOut: 2000 });
-      });
+      },
+    );
   }
-
 }

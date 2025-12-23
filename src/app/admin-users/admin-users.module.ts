@@ -7,20 +7,19 @@ import { TranslateModule } from '@ngx-translate/core';
 import { NgMaterialModule } from '../ng-material.module';
 
 @NgModule({
-  declarations: [
-    AdminUsersComponent
-  ],
+  declarations: [AdminUsersComponent],
   imports: [
     CommonModule,
     NgMaterialModule,
     RouterModule.forChild([
       {
-        path: "",
-        component: AdminUsersComponent
-      }
+        path: '',
+        component: AdminUsersComponent,
+      },
     ]),
-    FormsModule, ReactiveFormsModule,
+    FormsModule,
+    ReactiveFormsModule,
     TranslateModule,
-  ]
+  ],
 })
-export class AdminUsersModule { }
+export class AdminUsersModule {}

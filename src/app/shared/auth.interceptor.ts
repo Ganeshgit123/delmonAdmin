@@ -7,8 +7,7 @@ const TOKEN_HEADER_KEY = 'Authorization';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
-
-  constructor(private authService: AuthService) { }
+  constructor(private authService: AuthService) {}
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     let authReq = req;
     const token = this.authService.getToken();
@@ -17,8 +16,8 @@ export class AuthInterceptor implements HttpInterceptor {
     if (token) {
       authReq = req.clone({
         setHeaders: {
-          'Authorization': `${token}`,
-          'language': `${langkey}`,
+          Authorization: `${token}`,
+          language: `${langkey}`,
         },
         // headers: req.headers.set(TOKEN_HEADER_KEY, token),
       });
@@ -26,7 +25,6 @@ export class AuthInterceptor implements HttpInterceptor {
     // console.log("auth",authReq)
     return next.handle(authReq);
   }
-  
 }
 // export const authInterceptorProviders = [
 //   { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }

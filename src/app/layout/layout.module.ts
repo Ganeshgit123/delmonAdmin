@@ -30,7 +30,7 @@ import { TranslateModule } from '@ngx-translate/core';
     NavbarComponent,
     SidebarComponent,
     FooterComponent,
-    ContentAnimateDirective
-  ]
+    ContentAnimateDirective,
+  ],
 })
-export class LayoutModule { }
+export class LayoutModule {}

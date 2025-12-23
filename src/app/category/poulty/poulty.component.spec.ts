@@ -8,9 +8,8 @@ describe('PoultyComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ PoultyComponent ]
-    })
-    .compileComponents();
+      declarations: [PoultyComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

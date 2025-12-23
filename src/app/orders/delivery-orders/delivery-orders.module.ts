@@ -7,21 +7,19 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 
 @NgModule({
-  declarations: [
-    DeliveryOrdersComponent
-  ],
+  declarations: [DeliveryOrdersComponent],
   imports: [
     CommonModule,
     RouterModule.forChild([
       {
-        path:"",
-        component: DeliveryOrdersComponent
-      }
+        path: '',
+        component: DeliveryOrdersComponent,
+      },
     ]),
     NgMaterialModule,
     TranslateModule,
-    FormsModule, 
+    FormsModule,
     ReactiveFormsModule,
-  ]
+  ],
 })
-export class DeliveryOrdersModule { }
+export class DeliveryOrdersModule {}

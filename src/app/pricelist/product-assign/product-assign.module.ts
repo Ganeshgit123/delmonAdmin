@@ -7,22 +7,21 @@ import { NgxSpinnerModule } from 'ngx-spinner';
 import { TranslateModule } from '@ngx-translate/core';
 import { ProductAssignComponent } from '../product-assign/product-assign.component';
 
-
 @NgModule({
   declarations: [ProductAssignComponent],
   imports: [
     CommonModule,
     RouterModule.forChild([
       {
-        path:"",
-        component: ProductAssignComponent
-      }
+        path: '',
+        component: ProductAssignComponent,
+      },
     ]),
     NgMaterialModule,
-    FormsModule, 
+    FormsModule,
     ReactiveFormsModule,
     NgxSpinnerModule,
     TranslateModule,
-  ]
+  ],
 })
-export class ProductAssignModule { }
+export class ProductAssignModule {}

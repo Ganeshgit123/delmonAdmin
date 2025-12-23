@@ -5,7 +5,7 @@ phases:
     commands:
       - echo installing nodejs...
       - curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
-      - sudo apt-get install -y nodejs  #aws code build use ubuntu environement
+      - sudo apt-get install -y nodejs #aws code build use ubuntu environement
   pre_build:
     commands:
       - echo installing dependencies...
@@ -22,6 +22,6 @@ phases:
       - mv scripts ./dist
 artifacts:
   files:
-    - "**/*"
+    - '**/*'
   discard-paths: no
   base-directory: dist

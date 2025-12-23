@@ -3,7 +3,7 @@
 }
 
 ::ng-deep .holiday-date .mat-calendar-body-cell-content {
-  background-color: red !important;  /* Holidays */
+  background-color: red !important; /* Holidays */
   color: white !important;
 }
 
@@ -16,17 +16,17 @@
   background-color: purple !important; /* Selected + Holiday */
   color: white !important;
 }
-.list_date{
+.list_date {
   margin-top: 5rem;
 }
-.list_date li{
+.list_date li {
   font-size: 18px;
 }
-.list_date li img{
+.list_date li img {
   width: 18px;
   height: 18px;
 }
-.tite{
+.tite {
   font-size: 20px;
   margin-left: -2rem;
 }

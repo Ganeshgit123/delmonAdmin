@@ -8,9 +8,8 @@ describe('NormalComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ NormalComponent ]
-    })
-    .compileComponents();
+      declarations: [NormalComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

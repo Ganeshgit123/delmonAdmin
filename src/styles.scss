@@ -16,15 +16,23 @@ $delmon-angular-accent: mat.m2-define-palette(mat.$m2-pink-palette, A200, A100, 
 // The warn palette is optional (defaults to red).
 $delmon-angular-warn: mat.m2-define-palette(mat.$m2-red-palette);
 
-$custom-typography: mat.m2-define-typography-config($font-family: '"Poppins",sans-serif');
-$custom-typography-ar: mat.m2-define-typography-config($font-family: 'DroidKufi' !important);
+$custom-typography: mat.m2-define-typography-config(
+  $font-family: '"Poppins",sans-serif',
+);
+$custom-typography-ar: mat.m2-define-typography-config(
+  $font-family: 'DroidKufi' !important,
+);
 
-$delmon-angular-theme: mat.m2-define-light-theme((color: (primary: $delmon-angular-primary,
-        accent: $delmon-angular-accent,
-        warn: $delmon-angular-warn,
-      ),
-      typography: $custom-typography,
-    ));
+$delmon-angular-theme: mat.m2-define-light-theme(
+  (
+    color: (
+      primary: $delmon-angular-primary,
+      accent: $delmon-angular-accent,
+      warn: $delmon-angular-warn,
+    ),
+    typography: $custom-typography,
+  )
+);
 
 @include mat.core();
 @include mat.all-component-themes($delmon-angular-theme);
@@ -43,12 +51,11 @@ html:lang(ar) {
   font-family: 'DroidKufi' !important;
 }
 
-
 :root {
-  --main-color: #E31D1A;
+  --main-color: #e31d1a;
   --white-color: #ffffff;
   --black-color: #000000;
-  --font-family: "Poppins", sans-serif;
+  --font-family: 'Poppins', sans-serif;
 }
 
 :root:lang(ar) {
@@ -282,9 +289,8 @@ select.form-control {
   width: 58px;
 }
 
-
 .view_btn {
-  background: #37A037;
+  background: #37a037;
   color: var(--white-color) !important;
   border: none !important;
   padding: 10px 20px;
@@ -293,7 +299,7 @@ select.form-control {
 }
 
 .red_btn {
-  background: #B51E1E;
+  background: #b51e1e;
   color: var(--white-color) !important;
   border: none !important;
   padding: 10px 20px;
@@ -323,36 +329,36 @@ select.form-control {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: #F21C471F;
-  -webkit-transition: .5s;
-  transition: .5s;
+  background-color: #f21c471f;
+  -webkit-transition: 0.5s;
+  transition: 0.5s;
   border-radius: 10px;
   cursor: pointer;
 }
 
 .slider:before {
   position: absolute;
-  content: "";
+  content: '';
   width: 10px;
   height: 10px;
-  background: #F21C47;
+  background: #f21c47;
   border-radius: 1.125rem;
-  -webkit-transition: .5s;
-  transition: .5s;
+  -webkit-transition: 0.5s;
+  transition: 0.5s;
   right: 4px;
   top: 3px;
 }
 
-input:checked+.slider {
-  background-color: #00C8531F;
+input:checked + .slider {
+  background-color: #00c8531f;
 }
 
-input:focus+.slider {
+input:focus + .slider {
   box-shadow: 0 0 0;
 }
 
-input:checked+.slider:before {
-  background: #00C853;
+input:checked + .slider:before {
+  background: #00c853;
   left: 4px;
   position: absolute;
   right: 0;
@@ -419,7 +425,7 @@ select {
 }
 
 .btn-own-cancel {
-  background: #6F6F6F1D !important;
+  background: #6f6f6f1d !important;
 }
 
 .btn-own-cancel:hover {
@@ -435,11 +441,11 @@ select {
   right: 70px !important;
 }
 
-.sidebar-folded .sidebar .sidebar-body .sidebar-nav .nav-item.mm-active>.nav-link::before {
+.sidebar-folded .sidebar .sidebar-body .sidebar-nav .nav-item.mm-active > .nav-link::before {
   display: none;
 }
 
-.sidebar .sidebar-body .sidebar-nav .nav-item>.nav-link:lang(ar) {
+.sidebar .sidebar-body .sidebar-nav .nav-item > .nav-link:lang(ar) {
   padding-right: 10px !important;
   padding-left: auto;
 }
@@ -455,7 +461,7 @@ select {
   max-width: 500px !important;
 }
 
-[dir=rtl] th.mat-header-cell {
+[dir='rtl'] th.mat-header-cell {
   text-align: center !important;
 }
 
@@ -518,12 +524,12 @@ select {
   color: var(--main-color) !important;
 }
 
-input[type=number]::-webkit-inner-spin-button,
-input[type=number]::-webkit-outer-spin-button {
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
 
-input[type=number] {
+input[type='number'] {
   -moz-appearance: textfield;
 }

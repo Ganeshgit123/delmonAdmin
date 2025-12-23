@@ -1,165 +1,170 @@
 <div class="d-flex justify-content-between align-items-center flex-wrap grid-margin">
-    <div>
-        <h2 class="mb-3 mb-md-0">{{ 'Welcome to delmon' | translate }}</h2>
-    </div>
+  <div>
+    <h2 class="mb-3 mb-md-0">{{ 'Welcome to delmon' | translate }}</h2>
+  </div>
 </div>
 
 <div class="col-12 col-xl-12 stretch-card">
-    <div class="row flex-grow">
-        <div class="col-md-3 grid-margin">
-            <div class="card">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-baseline">
-                        <h6 class="card-title mb-0">{{"TotalNoClients" | translate}}</h6>
-                    </div>
-                    <div class="row pt-2">
-                        <div class="col-6 col-md-12 col-xl-8">
-                            <h3 class="mb-0">{{getvalue[0]?.userCount?.totalUserCount}}</h3>
-                        </div>
-                        <div class="col-6 col-md-12 col-xl-4">
-                            <i class="mdi mdi-account-multiple"></i>
-                        </div>
-                    </div>
-                </div>
+  <div class="row flex-grow">
+    <div class="col-md-3 grid-margin">
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-baseline">
+            <h6 class="card-title mb-0">{{ 'TotalNoClients' | translate }}</h6>
+          </div>
+          <div class="row pt-2">
+            <div class="col-6 col-md-12 col-xl-8">
+              <h3 class="mb-0">{{ getvalue[0]?.userCount?.totalUserCount }}</h3>
             </div>
-        </div>
-        <div class="col-md-3 grid-margin">
-            <div class="card">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-baseline">
-                        <h6 class="card-title mb-0">{{"TotalNoEmployee" | translate}}</h6>
-                    </div>
-                    <div class="row pt-2">
-                        <div class="col-6 col-md-12 col-xl-8">
-                            <h3 class="mb-0">{{getvalue[0]?.userCount?.totalEmployeeCount}}</h3>
-                        </div>
-                        <div class="col-6 col-md-12 col-xl-4">
-                            <i class="mdi mdi-account-multiple"></i>
-                        </div>
-                    </div>
-                </div>
+            <div class="col-6 col-md-12 col-xl-4">
+              <i class="mdi mdi-account-multiple"></i>
             </div>
+          </div>
         </div>
-        <div class="col-md-3 grid-margin">
-            <div class="card">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-baseline">
-                        <h6 class="card-title mb-0">{{"TotalNoOrders" | translate}}</h6>
-                    </div>
-                    <div class="row pt-2">
-                        <div class="col-6 col-md-12 col-xl-8">
-                            <h3 class="mb-0">{{getvalue[0]?.ordersCount?.orderCount}}</h3>
-                        </div>
-                        <div class="col-6 col-md-12 col-xl-4">
-                            <i class="mdi mdi-cart"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3 grid-margin">
-            <div class="card">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-baseline">
-                        <h6 class="card-title mb-0">{{"TotalNoofDelivery" | translate}}</h6>
-                    </div>
-                    <div class="row pt-2">
-                        <div class="col-6 col-md-12 col-xl-8">
-                            <h3 class="mb-0">{{getvalue[0]?.deliveryCount?.deliveryCount}}</h3>
-                        </div>
-                        <div class="col-6 col-md-12 col-xl-4">
-                            <i class="mdi mdi-package-variant-closed"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3 grid-margin">
-            <div class="card">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-baseline">
-                        <h6 class="card-title mb-0">{{"CancelledOrders" | translate}}</h6>
-                    </div>
-                    <div class="row pt-2">
-                        <div class="col-6 col-md-12 col-xl-8">
-                            <h3 class="mb-0">{{getvalue[0]?.ordersCount?.cancelledOrder}}</h3>
-                        </div>
-                        <div class="col-6 col-md-12 col-xl-4">
-                            <i class="mdi mdi-cart-off"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3 grid-margin">
-            <div class="card">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-baseline">
-                        <h6 class="card-title mb-0">{{"NoOfAreas" | translate}}</h6>
-                    </div>
-                    <div class="row pt-2">
-                        <div class="col-6 col-md-12 col-xl-8">
-                            <h3 class="mb-0">{{getvalue[0]?.areaCount?.areaCount}}</h3>
-                        </div>
-                        <div class="col-6 col-md-12 col-xl-4">
-                            <i class="mdi mdi-map"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3 grid-margin">
-            <div class="card">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-baseline">
-                        <h6 class="card-title mb-0">{{"NoOfPoultryCategories" | translate}}</h6>
-                    </div>
-                    <div class="row pt-2">
-                        <div class="col-6 col-md-12 col-xl-8">
-                            <h3 class="mb-0">{{getvalue[0]?.poultryCategoriesCount?.active}}</h3>
-                        </div>
-                        <div class="col-6 col-md-12 col-xl-4">
-                            <i class="mdi mdi-duck"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3 grid-margin">
-            <div class="card">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-baseline">
-                        <h6 class="card-title mb-0">{{"NoOfFeedingCategories" | translate}}</h6>
-                    </div>
-                    <div class="row pt-2">
-                        <div class="col-6 col-md-12 col-xl-8">
-                            <h3 class="mb-0">{{getvalue[0]?.feedingCount?.active}}</h3>
-                        </div>
-                        <div class="col-6 col-md-12 col-xl-4">
-                            <i class="mdi mdi-food-variant"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+      </div>
     </div>
+    <div class="col-md-3 grid-margin">
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-baseline">
+            <h6 class="card-title mb-0">{{ 'TotalNoEmployee' | translate }}</h6>
+          </div>
+          <div class="row pt-2">
+            <div class="col-6 col-md-12 col-xl-8">
+              <h3 class="mb-0">{{ getvalue[0]?.userCount?.totalEmployeeCount }}</h3>
+            </div>
+            <div class="col-6 col-md-12 col-xl-4">
+              <i class="mdi mdi-account-multiple"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 grid-margin">
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-baseline">
+            <h6 class="card-title mb-0">{{ 'TotalNoOrders' | translate }}</h6>
+          </div>
+          <div class="row pt-2">
+            <div class="col-6 col-md-12 col-xl-8">
+              <h3 class="mb-0">{{ getvalue[0]?.ordersCount?.orderCount }}</h3>
+            </div>
+            <div class="col-6 col-md-12 col-xl-4">
+              <i class="mdi mdi-cart"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 grid-margin">
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-baseline">
+            <h6 class="card-title mb-0">{{ 'TotalNoofDelivery' | translate }}</h6>
+          </div>
+          <div class="row pt-2">
+            <div class="col-6 col-md-12 col-xl-8">
+              <h3 class="mb-0">{{ getvalue[0]?.deliveryCount?.deliveryCount }}</h3>
+            </div>
+            <div class="col-6 col-md-12 col-xl-4">
+              <i class="mdi mdi-package-variant-closed"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 grid-margin">
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-baseline">
+            <h6 class="card-title mb-0">{{ 'CancelledOrders' | translate }}</h6>
+          </div>
+          <div class="row pt-2">
+            <div class="col-6 col-md-12 col-xl-8">
+              <h3 class="mb-0">{{ getvalue[0]?.ordersCount?.cancelledOrder }}</h3>
+            </div>
+            <div class="col-6 col-md-12 col-xl-4">
+              <i class="mdi mdi-cart-off"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 grid-margin">
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-baseline">
+            <h6 class="card-title mb-0">{{ 'NoOfAreas' | translate }}</h6>
+          </div>
+          <div class="row pt-2">
+            <div class="col-6 col-md-12 col-xl-8">
+              <h3 class="mb-0">{{ getvalue[0]?.areaCount?.areaCount }}</h3>
+            </div>
+            <div class="col-6 col-md-12 col-xl-4">
+              <i class="mdi mdi-map"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 grid-margin">
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-baseline">
+            <h6 class="card-title mb-0">{{ 'NoOfPoultryCategories' | translate }}</h6>
+          </div>
+          <div class="row pt-2">
+            <div class="col-6 col-md-12 col-xl-8">
+              <h3 class="mb-0">{{ getvalue[0]?.poultryCategoriesCount?.active }}</h3>
+            </div>
+            <div class="col-6 col-md-12 col-xl-4">
+              <i class="mdi mdi-duck"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 grid-margin">
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-baseline">
+            <h6 class="card-title mb-0">{{ 'NoOfFeedingCategories' | translate }}</h6>
+          </div>
+          <div class="row pt-2">
+            <div class="col-6 col-md-12 col-xl-8">
+              <h3 class="mb-0">{{ getvalue[0]?.feedingCount?.active }}</h3>
+            </div>
+            <div class="col-6 col-md-12 col-xl-4">
+              <i class="mdi mdi-food-variant"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 <div class="row">
-    <div class="col-xl-4 col-sm-6 mb-xl-0 mb-4">
-        <div class="card">
-            <div class="card-body p-3">
-                <div class="row">
-                    <div class="col-12">
-                        <apx-chart [series]="pieChartOptions.nonAxisSeries" [chart]="pieChartOptions.chart"
-                            [colors]="pieChartOptions.colors" [stroke]="pieChartOptions.stroke"
-                            [legend]="pieChartOptions.legend" [dataLabels]="pieChartOptions.dataLabels"
-                            [labels]="pieChartOptions.chartLabels"></apx-chart>
-                    </div>
-                </div>
-            </div>
+  <div class="col-xl-4 col-sm-6 mb-xl-0 mb-4">
+    <div class="card">
+      <div class="card-body p-3">
+        <div class="row">
+          <div class="col-12">
+            <apx-chart
+              [series]="pieChartOptions.nonAxisSeries"
+              [chart]="pieChartOptions.chart"
+              [colors]="pieChartOptions.colors"
+              [stroke]="pieChartOptions.stroke"
+              [legend]="pieChartOptions.legend"
+              [dataLabels]="pieChartOptions.dataLabels"
+              [labels]="pieChartOptions.chartLabels"
+            ></apx-chart>
+          </div>
         </div>
+      </div>
     </div>
-    <!-- <div class="col-xl-8 col-sm-6 mb-xl-0 mb-4">
+  </div>
+  <!-- <div class="col-xl-8 col-sm-6 mb-xl-0 mb-4">
         <div class="card">
             <div class="card-body p-3">
                 <div class="row">

@@ -8,9 +8,8 @@ describe('SpinWheelSlicesComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ SpinWheelSlicesComponent ]
-    })
-    .compileComponents();
+      declarations: [SpinWheelSlicesComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

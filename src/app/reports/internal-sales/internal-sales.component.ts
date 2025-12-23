@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/shared/auth.service';
 import { MatPaginator } from '@angular/material/paginator';
@@ -11,9 +11,9 @@ import { NgxSpinnerService } from 'ngx-spinner';
 @Component({
   selector: 'app-internal-sales',
   templateUrl: './internal-sales.component.html',
-  styleUrls: ['./internal-sales.component.scss']
+  styleUrls: ['./internal-sales.component.scss'],
 })
-export class InternalSalesComponent implements OnInit {
+export class InternalSalesComponent implements OnInit, AfterViewInit {
   displayedColumns: string[];
   dataSource: MatTableDataSource<any>;
   getOrders = [];
@@ -30,9 +30,12 @@ export class InternalSalesComponent implements OnInit {
   @ViewChild(MatSort) matSort: MatSort;
   @ViewChild(MatTableExporterDirective, { static: true }) exporter: MatTableExporterDirective;
 
-  constructor(public authService: AuthService, private router: Router, private translate: TranslateService,
+  constructor(
+    public authService: AuthService,
+    private router: Router,
+    private translate: TranslateService,
     private spinner: NgxSpinnerService,
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.dir = localStorage.getItem('dir') || 'ltr';
@@ -46,54 +49,66 @@ export class InternalSalesComponent implements OnInit {
 
     this.userType = sessionStorage.getItem('userType');
 
-    this.displayedColumns = ['index', 'orderId', 'customerName', 'userType', 'driverName', 'item', 'qty', 'weight', 'total', 'paymentType'];
+    this.displayedColumns = [
+      'index',
+      'orderId',
+      'customerName',
+      'userType',
+      'driverName',
+      'item',
+      'qty',
+      'weight',
+      'total',
+      'paymentType',
+    ];
 
     if (this.userType == 1 || this.userType == 0) {
-      this.flowType = 'POULTRY'
+      this.flowType = 'POULTRY';
     } else if (this.userType == 2) {
-      this.flowType = 'FEEDING'
+      this.flowType = 'FEEDING';
     }
 
     const object = {
-      type: this.flowType, startDate: '', endDate: '', deliveryType: 0,
-      orderStatus: 'PLACED,USERACCEPTED,DRIVERASSIGNED,OUTFORDELIVERY,COMPLETED'
-    }
+      type: this.flowType,
+      startDate: '',
+      endDate: '',
+      deliveryType: 0,
+      orderStatus: 'PLACED,USERACCEPTED,DRIVERASSIGNED,OUTFORDELIVERY,COMPLETED',
+    };
 
     this.spinner.show();
-    this.authService.getInternalSalesReport(object).subscribe(
-      (res: any) => {
-        this.getOrders = res.data;
-        this.spinner.hide();
-        // console.log("Fef",this.getOrders)
-        this.dataSource = new MatTableDataSource(this.getOrders);
-        this.dataSource.paginator = this.matPaginator;
-        this.dataSource.sort = this.matSort;
-      });
+    this.authService.getInternalSalesReport(object).subscribe((res: any) => {
+      this.getOrders = res.data;
+      this.spinner.hide();
+      // console.log("Fef",this.getOrders)
+      this.dataSource = new MatTableDataSource(this.getOrders);
+      this.dataSource.paginator = this.matPaginator;
+      this.dataSource.sort = this.matSort;
+    });
   }
 
   callRolePermission() {
     if (sessionStorage.getItem('roleName') !== 'superAdmin') {
-      let settingPermssion = JSON.parse(sessionStorage.getItem('permission'))
-      const orderPermission = settingPermssion?.find(ele => ele.area == 'internal-sales-reports')?.write == 1
+      const settingPermssion = JSON.parse(sessionStorage.getItem('permission'));
+      const orderPermission = settingPermssion?.find((ele) => ele.area == 'internal-sales-reports')?.write == 1;
       // console.log("fef",orderPermission)
-      this.showAccept = orderPermission
+      this.showAccept = orderPermission;
     }
   }
 
   ngAfterViewInit(): void {
-    this.matPaginator._intl.itemsPerPageLabel = this.translate.instant("itemsPerPage");
+    this.matPaginator._intl.itemsPerPageLabel = this.translate.instant('itemsPerPage');
   }
 
   getDateQuery(object) {
     this.spinner.show();
-    this.authService.getInternalSalesReport(object).subscribe(
-      (res: any) => {
-        this.getOrders = res.data;
-        this.spinner.hide();
-        this.dataSource = new MatTableDataSource(this.getOrders);
-        this.dataSource.paginator = this.matPaginator;
-        this.dataSource.sort = this.matSort;
-      });
+    this.authService.getInternalSalesReport(object).subscribe((res: any) => {
+      this.getOrders = res.data;
+      this.spinner.hide();
+      this.dataSource = new MatTableDataSource(this.getOrders);
+      this.dataSource.paginator = this.matPaginator;
+      this.dataSource.sort = this.matSort;
+    });
   }
 
   applyFilter(event: Event) {
@@ -106,14 +121,14 @@ export class InternalSalesComponent implements OnInit {
   }
 
   startEvent(event) {
-    var stDate = event.value
-    var date = new Date(stDate);
+    const stDate = event.value;
+    const date = new Date(stDate);
 
     const year: number = date.getFullYear();
     const month: number = date.getMonth() + 1; // Note: Months are zero-indexed, so add 1
     const day: number = date.getDate();
 
-    const startFomatDate: string = `${day.toString().padStart(2, '0')}/${month.toString().padStart(2, '0')}/${year}`;
+    const startFomatDate = `${day.toString().padStart(2, '0')}/${month.toString().padStart(2, '0')}/${year}`;
 
     this.startDate = startFomatDate;
 
@@ -122,28 +137,31 @@ export class InternalSalesComponent implements OnInit {
   }
 
   endEvent(event) {
-    var stDate = event.value
-    var date = new Date(stDate);
+    const stDate = event.value;
+    const date = new Date(stDate);
 
     const year: number = date.getFullYear();
     const month: number = date.getMonth() + 1; // Note: Months are zero-indexed, so add 1
     const day: number = date.getDate();
 
-    const endFomatDate: string = `${day.toString().padStart(2, '0')}/${month.toString().padStart(2, '0')}/${year}`;
+    const endFomatDate = `${day.toString().padStart(2, '0')}/${month.toString().padStart(2, '0')}/${year}`;
 
     this.endDate = endFomatDate;
 
-    const object = { type: this.flowType, startDate: this.startDate, endDate: this.endDate, deliveryType: 0 }
-    this.getDateQuery(object)
+    const object = { type: this.flowType, startDate: this.startDate, endDate: this.endDate, deliveryType: 0 };
+    this.getDateQuery(object);
   }
 
   onChangeFlowTypeFilter(value) {
     this.flowType = value;
     const object = {
-      type: this.flowType, startDate: this.startDate, endDate: this.endDate, deliveryType: 0,
-      orderStatus: 'PLACED,USERACCEPTED,DRIVERASSIGNED,OUTFORDELIVERY,COMPLETED'
-    }
-    this.getDateQuery(object)
+      type: this.flowType,
+      startDate: this.startDate,
+      endDate: this.endDate,
+      deliveryType: 0,
+      orderStatus: 'PLACED,USERACCEPTED,DRIVERASSIGNED,OUTFORDELIVERY,COMPLETED',
+    };
+    this.getDateQuery(object);
   }
 
   exportIt() {
@@ -163,5 +181,4 @@ export class InternalSalesComponent implements OnInit {
       fileName: `Internal Sales Report ${this.formattedDateTime}`,
     });
   }
-
 }

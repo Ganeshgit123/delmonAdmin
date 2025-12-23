@@ -8,7 +8,7 @@ import { ToastrService } from 'ngx-toastr';
 @Component({
   selector: 'app-feeding-related',
   templateUrl: './feeding-related.component.html',
-  styleUrls: ['./feeding-related.component.scss']
+  styleUrls: ['./feeding-related.component.scss'],
 })
 export class FeedingRelatedComponent implements OnInit {
   pieceForm: FormGroup;
@@ -23,8 +23,14 @@ export class FeedingRelatedComponent implements OnInit {
   showAccept = true;
   superAdminRole = false;
 
-  constructor(private modalService: NgbModal, public fb: FormBuilder, public authService: AuthService,
-    private toastr: ToastrService, private router: Router, private route: ActivatedRoute,) {
+  constructor(
+    private modalService: NgbModal,
+    public fb: FormBuilder,
+    public authService: AuthService,
+    private toastr: ToastrService,
+    private router: Router,
+    private route: ActivatedRoute,
+  ) {
     this.pieceForm = this.fb.group({
       product: this.fb.array(this.pieceRelatedArray),
     });
@@ -48,54 +54,51 @@ export class FeedingRelatedComponent implements OnInit {
     this.route.params.subscribe((params) => {
       this.prodParamsId = params['id'];
     });
-    this.authService.getProductsDetails('FEEDING', this.prodParamsId).subscribe(
-      (res: any) => {
-        this.getvalue = res.data[0];
-        this.cartonActive = this.getvalue.cartonActive;
-        this.piecesActive = this.getvalue.piecesActive;
-        // this form builder is used only show the main product values
-        this.oldValue = this.fb.group({
-          categoryId: [this.getvalue['categoryId']],
-          enProductName: [this.getvalue['enProductName']],
-          arProductName: [this.getvalue['arProductName']],
-        });
-
-        // delete the firstobject because firstobject is a main product object
-        const deleteFirstObject = res.data.shift();
-
-        // filter the old related product with soldType = 1 for piece
-        this.pieceRelatedArray = res.data.filter((element) => {
-          return element.soldType == 1;
-        });
-
-        // for pass old values to new formbuilder
-        var dropDownValue = this.pieceRelatedArray;
-        var dropDownArray = []
-
-        if (dropDownValue.length > 0) {
-          for (var i = 0; i < dropDownValue.length; i++) {
-            dropDownArray.push(this.getPiecesValue(dropDownValue[i]))
-          }
-        }
-        this.pieceForm = this.fb.group({
-          product: this.fb.array(dropDownArray),
-        });
+    this.authService.getProductsDetails('FEEDING', this.prodParamsId).subscribe((res: any) => {
+      this.getvalue = res.data[0];
+      this.cartonActive = this.getvalue.cartonActive;
+      this.piecesActive = this.getvalue.piecesActive;
+      // this form builder is used only show the main product values
+      this.oldValue = this.fb.group({
+        categoryId: [this.getvalue['categoryId']],
+        enProductName: [this.getvalue['enProductName']],
+        arProductName: [this.getvalue['arProductName']],
       });
 
-    // Used for list the category
-    this.authService.getCategory('FEEDING').subscribe(
-      (res: any) => {
-        this.getCategory = res.data;
+      // delete the firstobject because firstobject is a main product object
+      const deleteFirstObject = res.data.shift();
+
+      // filter the old related product with soldType = 1 for piece
+      this.pieceRelatedArray = res.data.filter((element) => {
+        return element.soldType == 1;
+      });
+
+      // for pass old values to new formbuilder
+      const dropDownValue = this.pieceRelatedArray;
+      const dropDownArray = [];
+
+      if (dropDownValue.length > 0) {
+        for (let i = 0; i < dropDownValue.length; i++) {
+          dropDownArray.push(this.getPiecesValue(dropDownValue[i]));
+        }
       }
-    );
+      this.pieceForm = this.fb.group({
+        product: this.fb.array(dropDownArray),
+      });
+    });
+
+    // Used for list the category
+    this.authService.getCategory('FEEDING').subscribe((res: any) => {
+      this.getCategory = res.data;
+    });
   }
 
   callRolePermission() {
     if (sessionStorage.getItem('roleName') !== 'superAdmin') {
-      let settingPermssion = JSON.parse(sessionStorage.getItem('permission'))
-      const orderPermission = settingPermssion?.find(ele => ele.area == 'products')?.write == 1
+      const settingPermssion = JSON.parse(sessionStorage.getItem('permission'));
+      const orderPermission = settingPermssion?.find((ele) => ele.area == 'products')?.write == 1;
       // console.log("fef",orderPermission)
-      this.showAccept = orderPermission
+      this.showAccept = orderPermission;
     }
   }
 
@@ -114,12 +117,12 @@ export class FeedingRelatedComponent implements OnInit {
       description: [obj.description],
       arDescription: [obj.arDescription],
       active: [obj.active],
-      isEdit: true
-    })
+      isEdit: true,
+    });
   }
 
   addPieces() {
-    let control = <FormArray>this.pieceForm.controls.product;
+    const control = this.pieceForm.controls.product as FormArray;
     control.push(
       this.fb.group({
         categoryId: [this.getvalue.categoryId],
@@ -134,98 +137,93 @@ export class FeedingRelatedComponent implements OnInit {
         description: [this.getvalue.description],
         arDescription: [this.getvalue.arDescription],
         parentId: Number(this.prodParamsId),
-      })
-    )
+      }),
+    );
   }
 
   onSubmitData() {
     // Compare the old product value to new product value and remove the old product value for piece flow
-    this.pieceForm.value.product = this.pieceForm.value.product.filter(val => {
+    this.pieceForm.value.product = this.pieceForm.value.product.filter((val) => {
       return !this.pieceRelatedArray.find((val2) => {
-        return val.id === val2.id
-      })
+        return val.id === val2.id;
+      });
     });
 
     //  merge the two piece form value and carton form value
     const arr3 = [...this.pieceForm.value.product];
 
     // send the value inside product key
-    const object = { product: arr3 }
+    const object = { product: arr3 };
 
     // console.log("merge", object)
-    this.authService.addReletedProduct(object)
-      .subscribe((res: any) => {
-        if (res.error == false) {
-          this.toastr.success('Success ', res.message);
-          this.modalService.dismissAll();
-          this.ngOnInit();
-        } else {
-          this.toastr.error('Enter valid ', res.message);
-        }
-      });
+    this.authService.addReletedProduct(object).subscribe((res: any) => {
+      if (res.error == false) {
+        this.toastr.success('Success ', res.message);
+        this.modalService.dismissAll();
+        this.ngOnInit();
+      } else {
+        this.toastr.error('Enter valid ', res.message);
+      }
+    });
   }
 
   changePieceStatus(value) {
     if (value.piecesActive === 1) {
-      var visible = 0
+      var visible = 0;
     } else {
-      var visible = 1
+      var visible = 1;
     }
-    const object = { piecesActive: visible }
+    const object = { piecesActive: visible };
     // console.log("fef",object,value.id)
 
-    this.authService.editProduct(object, value.id)
-      .subscribe((res: any) => {
-        if (res.error == false) {
-          this.toastr.success('Success ', res.message);
-          this.ngOnInit();
-        } else {
-          this.toastr.error('Enter valid ', res.message);
-        }
-      });
+    this.authService.editProduct(object, value.id).subscribe((res: any) => {
+      if (res.error == false) {
+        this.toastr.success('Success ', res.message);
+        this.ngOnInit();
+      } else {
+        this.toastr.error('Enter valid ', res.message);
+      }
+    });
   }
 
   updateProduct(data) {
-    const editArray = []
-    editArray.push(data)
+    const editArray = [];
+    editArray.push(data);
     const keyToRemove = 'isEdit';
     // Remove the specified key from all objects in the array
-    const newArray = editArray.map(obj => {
+    const newArray = editArray.map((obj) => {
       const { [keyToRemove]: removedKey, ...rest } = obj;
       return rest;
     });
-    const object = { product: newArray }
+    const object = { product: newArray };
     // console.log("fdswef", object)
-    this.authService.editReletedProduct(object)
-      .subscribe((res: any) => {
-        if (res.error == false) {
-          this.toastr.success('Success ', res.message);
-          this.modalService.dismissAll();
-          this.ngOnInit();
-        } else {
-          this.toastr.error('Enter valid ', res.message);
-        }
-      });
+    this.authService.editReletedProduct(object).subscribe((res: any) => {
+      if (res.error == false) {
+        this.toastr.success('Success ', res.message);
+        this.modalService.dismissAll();
+        this.ngOnInit();
+      } else {
+        this.toastr.error('Enter valid ', res.message);
+      }
+    });
   }
 
   changeProdStatus(value) {
     if (value.active === 1) {
-      var visible = 0
+      var visible = 0;
     } else {
-      var visible = 1
+      var visible = 1;
     }
-    const object = { active: visible }
+    const object = { active: visible };
     // console.log("fef",object,value.id)
 
-    this.authService.editProduct(object, value.id)
-      .subscribe((res: any) => {
-        if (res.error == false) {
-          this.toastr.success('Success ', res.message);
-          this.ngOnInit();
-        } else {
-          this.toastr.error('Enter valid ', res.message);
-        }
-      });
+    this.authService.editProduct(object, value.id).subscribe((res: any) => {
+      if (res.error == false) {
+        this.toastr.success('Success ', res.message);
+        this.ngOnInit();
+      } else {
+        this.toastr.error('Enter valid ', res.message);
+      }
+    });
   }
-
 }

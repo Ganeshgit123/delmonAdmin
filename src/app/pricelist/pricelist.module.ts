@@ -7,24 +7,21 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgxSpinnerModule } from 'ngx-spinner';
 import { TranslateModule } from '@ngx-translate/core';
 
-
 @NgModule({
-  declarations: [
-    PricelistComponent,
-  ],
+  declarations: [PricelistComponent],
   imports: [
     CommonModule,
     RouterModule.forChild([
       {
-        path:"",
-        component: PricelistComponent
-      }
+        path: '',
+        component: PricelistComponent,
+      },
     ]),
     NgMaterialModule,
-    FormsModule, 
+    FormsModule,
     ReactiveFormsModule,
     NgxSpinnerModule,
     TranslateModule,
-  ]
+  ],
 })
-export class PricelistModule { }
+export class PricelistModule {}

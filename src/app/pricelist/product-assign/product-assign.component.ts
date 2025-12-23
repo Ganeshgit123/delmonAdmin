@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
@@ -15,9 +15,9 @@ import { NgxSpinnerService } from 'ngx-spinner';
 @Component({
   selector: 'app-product-assign',
   templateUrl: './product-assign.component.html',
-  styleUrls: ['./product-assign.component.scss']
+  styleUrls: ['./product-assign.component.scss'],
 })
-export class ProductAssignComponent implements OnInit {
+export class ProductAssignComponent implements OnInit, AfterViewInit {
   displayedColumns: string[];
   dataSource: any;
   columnsSchema: any;
@@ -39,9 +39,15 @@ export class ProductAssignComponent implements OnInit {
   @ViewChild(MatSort) matSort: MatSort;
   @ViewChild(MatTableExporterDirective, { static: true }) exporter: MatTableExporterDirective;
 
-  constructor(public fb: FormBuilder, public authService: AuthService,
-    private toastr: ToastrService, private router: Router, private route: ActivatedRoute,
-    private translate: TranslateService, private spinner: NgxSpinnerService,) { }
+  constructor(
+    public fb: FormBuilder,
+    public authService: AuthService,
+    private toastr: ToastrService,
+    private router: Router,
+    private route: ActivatedRoute,
+    private translate: TranslateService,
+    private spinner: NgxSpinnerService,
+  ) {}
 
   ngOnInit(): void {
     this.callRolePermission();
@@ -63,17 +69,17 @@ export class ProductAssignComponent implements OnInit {
       this.flowType = 'FEEDING';
     }
 
-    const object = { type: this.flowType, id: this.params }
+    const object = { type: this.flowType, id: this.params };
     this.getAPICAll(object);
   }
 
   getAPICAll(object) {
-    this.authService.getProductPriceList(object.type, object.id).subscribe(
-      (res: any) => {
-        var productListArray = res.data;
-        this.getProdPriceList = productListArray.reverse();
+    this.authService.getProductPriceList(object.type, object.id).subscribe((res: any) => {
+      const productListArray = res.data;
+      this.getProdPriceList = productListArray.reverse();
 
-        this.COLUMNS_SCHEMA = [{
+      this.COLUMNS_SCHEMA = [
+        {
           key: 'name',
           type: 'text',
           label: 'Product Name',
@@ -97,29 +103,37 @@ export class ProductAssignComponent implements OnInit {
           key: 'isEdit',
           type: 'isEdit',
           label: '',
-        }]
+        },
+      ];
 
-        this.USER_DATA = this.getProdPriceList;
+      this.USER_DATA = this.getProdPriceList;
 
-        this.columnsSchema = this.COLUMNS_SCHEMA;
-        this.displayedColumns = this.COLUMNS_SCHEMA.map((col) => col.key);
-        this.dataSource = this.USER_DATA;
-        this.dataSource = new MatTableDataSource(this.USER_DATA);
-        this.dataSource.paginator = this.matPaginator;
-        this.dataSource.sort = this.matSort;
-        // console.log("original",this.USER_DATA)
-        this.exportArray = this.USER_DATA.map(({ id, productId, name, weight, price, offer_price, stock }) =>
-          ({ id, name, productId, weight, price, offer_price, stock }));
-        // console.log("Sfef",this.exportArray)
-      })
+      this.columnsSchema = this.COLUMNS_SCHEMA;
+      this.displayedColumns = this.COLUMNS_SCHEMA.map((col) => col.key);
+      this.dataSource = this.USER_DATA;
+      this.dataSource = new MatTableDataSource(this.USER_DATA);
+      this.dataSource.paginator = this.matPaginator;
+      this.dataSource.sort = this.matSort;
+      // console.log("original",this.USER_DATA)
+      this.exportArray = this.USER_DATA.map(({ id, productId, name, weight, price, offer_price, stock }) => ({
+        id,
+        name,
+        productId,
+        weight,
+        price,
+        offer_price,
+        stock,
+      }));
+      // console.log("Sfef",this.exportArray)
+    });
   }
 
   callRolePermission() {
     if (sessionStorage.getItem('roleName') !== 'superAdmin') {
-      let settingPermssion = JSON.parse(sessionStorage.getItem('permission'))
-      const orderPermission = settingPermssion?.find(ele => ele.area == 'priceList')?.write == 1
+      const settingPermssion = JSON.parse(sessionStorage.getItem('permission'));
+      const orderPermission = settingPermssion?.find((ele) => ele.area == 'priceList')?.write == 1;
       // console.log("fef",orderPermission)
-      this.showAccept = orderPermission
+      this.showAccept = orderPermission;
     }
   }
 
@@ -133,12 +147,12 @@ export class ProductAssignComponent implements OnInit {
   }
 
   updateList(element) {
-    element.isEdit = !element.isEdit
+    element.isEdit = !element.isEdit;
     if (element.productId) {
       if (element.offer_price) {
-        var offerAMt = element.offer_price
+        var offerAMt = element.offer_price;
       } else {
-        offerAMt = 0
+        offerAMt = 0;
       }
       const data = {
         id: element.id,
@@ -146,33 +160,19 @@ export class ProductAssignComponent implements OnInit {
         price: element.price,
         offerPrice: offerAMt,
         stock: Number(Math.max(0, element.stock)),
-      }
+      };
       // console.log("fffeee", data)
-      this.updateOldList(data)
+      this.updateOldList(data);
     } else {
       const data = {
         productId: element.id,
         price: element.price,
         offerPrice: element.offer_price,
         stock: Number(Math.max(0, element.stock)),
-        priceListNameId: Number(this.params)
-      }
+        priceListNameId: Number(this.params),
+      };
       // console.log("dde", data)
-      this.authService.addProductPriceList(data)
-        .subscribe((res: any) => {
-          if (res.error == false) {
-            this.toastr.success('Success ', res.message);
-            this.ngOnInit();
-          } else {
-            this.toastr.error('Enter valid ', res.message);
-          }
-        });
-    }
-  }
-
-  updateOldList(data) {
-    this.authService.editProductPriceList(data, this.params)
-      .subscribe((res: any) => {
+      this.authService.addProductPriceList(data).subscribe((res: any) => {
         if (res.error == false) {
           this.toastr.success('Success ', res.message);
           this.ngOnInit();
@@ -180,12 +180,24 @@ export class ProductAssignComponent implements OnInit {
           this.toastr.error('Enter valid ', res.message);
         }
       });
+    }
+  }
+
+  updateOldList(data) {
+    this.authService.editProductPriceList(data, this.params).subscribe((res: any) => {
+      if (res.error == false) {
+        this.toastr.success('Success ', res.message);
+        this.ngOnInit();
+      } else {
+        this.toastr.error('Enter valid ', res.message);
+      }
+    });
   }
 
   onChangeFlowTypeFilter(value) {
     this.flowType = value;
-    const object = { type: this.flowType, id: this.params }
-    this.getAPICAll(object)
+    const object = { type: this.flowType, id: this.params };
+    this.getAPICAll(object);
   }
 
   exportToExcel() {
@@ -194,7 +206,7 @@ export class ProductAssignComponent implements OnInit {
     const readonlyColumns = [2]; // Example: Make the second column readonly
 
     // Iterate over rows and make specific columns readonly
-    readonlyColumns.forEach(col => {
+    readonlyColumns.forEach((col) => {
       for (let row = 1; row <= XLSX.utils.decode_range(worksheet['!ref']).e.r; row++) {
         const cellAddress = XLSX.utils.encode_cell({ c: col, r: row });
         const cell = worksheet[cellAddress];
@@ -203,7 +215,6 @@ export class ProductAssignComponent implements OnInit {
         }
       }
     });
-
 
     const today = new Date();
     const dateFormatted = today.toISOString().slice(0, 10); // Format as YYYY-MM-DD
@@ -218,15 +229,15 @@ export class ProductAssignComponent implements OnInit {
 
   importXl(event) {
     const file = event.target.files && event.target.files[0];
-    var reader = new FileReader();
+    const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onload = (event: any) => {
       this.fileUpload = event.target.result;
-    }
+    };
     this.fileImgUpload = file;
     // console.log("upload",this.fileImgUpload)
     this.spinner.show();
-    var postData = new FormData();
+    const postData = new FormData();
     postData.append('file', this.fileImgUpload);
     this.authService.excelUpload(postData, this.params).subscribe((res: any) => {
       if (res.error == false) {

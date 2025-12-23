@@ -8,9 +8,8 @@ describe('CanelledOrdersComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ CanelledOrdersComponent ]
-    })
-    .compileComponents();
+      declarations: [CanelledOrdersComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

@@ -8,22 +8,20 @@ import { NgxSpinnerModule } from 'ngx-spinner';
 import { TranslateModule } from '@ngx-translate/core';
 
 @NgModule({
-  declarations: [
-    BannersComponent
-  ],
+  declarations: [BannersComponent],
   imports: [
     CommonModule,
     RouterModule.forChild([
       {
-        path:"",
-        component: BannersComponent
-      }
+        path: '',
+        component: BannersComponent,
+      },
     ]),
     NgMaterialModule,
-    FormsModule, 
+    FormsModule,
     ReactiveFormsModule,
     NgxSpinnerModule,
     TranslateModule,
-  ]
+  ],
 })
-export class BannersModule { }
+export class BannersModule {}

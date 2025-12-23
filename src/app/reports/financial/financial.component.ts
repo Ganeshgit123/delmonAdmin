@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/shared/auth.service';
 import { MatPaginator } from '@angular/material/paginator';
@@ -11,9 +11,9 @@ import { NgxSpinnerService } from 'ngx-spinner';
 @Component({
   selector: 'app-financial',
   templateUrl: './financial.component.html',
-  styleUrls: ['./financial.component.scss']
+  styleUrls: ['./financial.component.scss'],
 })
-export class FinancialComponent implements OnInit {
+export class FinancialComponent implements OnInit, AfterViewInit {
   displayedColumns: string[];
   dataSource: MatTableDataSource<any>;
   getOrders = [];
@@ -30,9 +30,12 @@ export class FinancialComponent implements OnInit {
   @ViewChild(MatSort) matSort: MatSort;
   @ViewChild(MatTableExporterDirective, { static: true }) exporter: MatTableExporterDirective;
 
-  constructor(public authService: AuthService, private router: Router, private translate: TranslateService,
+  constructor(
+    public authService: AuthService,
+    private router: Router,
+    private translate: TranslateService,
     private spinner: NgxSpinnerService,
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.dir = localStorage.getItem('dir') || 'ltr';
@@ -45,31 +48,48 @@ export class FinancialComponent implements OnInit {
 
     this.userType = sessionStorage.getItem('userType');
 
-    this.displayedColumns = ['index', 'orderId', 'salesInvoiceNo', 'bankTransationNo', 'customerName', 'userType', 'driverName', 'orderDetails', 'prodDetails',
-      'vat', 'deliveryFee', 'total', 'paymentType', 'sonicNo', 'orderStatus', 'orderDate', 'deliveryDate'];
+    this.displayedColumns = [
+      'index',
+      'orderId',
+      'salesInvoiceNo',
+      'bankTransationNo',
+      'customerName',
+      'userType',
+      'driverName',
+      'orderDetails',
+      'prodDetails',
+      'vat',
+      'deliveryFee',
+      'total',
+      'paymentType',
+      'sonicNo',
+      'orderStatus',
+      'orderDate',
+      'deliveryDate',
+    ];
 
     if (this.userType == 1 || this.userType == 0) {
-      this.flowType = 'POULTRY'
+      this.flowType = 'POULTRY';
     } else if (this.userType == 2) {
-      this.flowType = 'FEEDING'
+      this.flowType = 'FEEDING';
     }
 
     this.spinner.show();
-    const object = { type: this.flowType, startDate: '', endDate: '' }
-    this.getDateQuery(object)
+    const object = { type: this.flowType, startDate: '', endDate: '' };
+    this.getDateQuery(object);
   }
 
   callRolePermission() {
     if (sessionStorage.getItem('roleName') !== 'superAdmin') {
-      let settingPermssion = JSON.parse(sessionStorage.getItem('permission'))
-      const orderPermission = settingPermssion?.find(ele => ele.area == 'financial-reports')?.write == 1
+      const settingPermssion = JSON.parse(sessionStorage.getItem('permission'));
+      const orderPermission = settingPermssion?.find((ele) => ele.area == 'financial-reports')?.write == 1;
       // console.log("fef",orderPermission)
-      this.showAccept = orderPermission
+      this.showAccept = orderPermission;
     }
   }
 
   ngAfterViewInit(): void {
-    this.matPaginator._intl.itemsPerPageLabel = this.translate.instant("itemsPerPage");
+    this.matPaginator._intl.itemsPerPageLabel = this.translate.instant('itemsPerPage');
   }
 
   // Detect VAT titles in English and Arabic, case-insensitive
@@ -89,15 +109,17 @@ export class FinancialComponent implements OnInit {
   }
 
   // Filter VAT-only items from a mixed array
-  private filterVat(items: Array<{ title: string; price?: string | number }>): Array<{ title: string; price?: string | number }> {
+  private filterVat(items: { title: string; price?: string | number }[]): { title: string; price?: string | number }[] {
     if (!Array.isArray(items)) return [];
-    return items.filter(i => this.isVatTitle(i.title));
+    return items.filter((i) => this.isVatTitle(i.title));
   }
 
   // Filter Delivery-only items from a mixed array
-  private filterDelivery(items: Array<{ title: string; price?: string | number }>): Array<{ title: string; price?: string | number }> {
+  private filterDelivery(
+    items: { title: string; price?: string | number }[],
+  ): { title: string; price?: string | number }[] {
     if (!Array.isArray(items)) return [];
-    return items.filter(i => this.isDeliveryTitle(i.title));
+    return items.filter((i) => this.isDeliveryTitle(i.title));
   }
 
   // Normalize price by stripping currency like "BD" and returning a number
@@ -113,36 +135,34 @@ export class FinancialComponent implements OnInit {
 
   getDateQuery(object) {
     this.spinner.show();
-    this.authService.getFinanceReport(object).subscribe(
-      (res: any) => {
-        // ...existing code...
-        this.getOrders = res.deliveryBoyOrderList.reverse();
+    this.authService.getFinanceReport(object).subscribe((res: any) => {
+      // ...existing code...
+      this.getOrders = res.deliveryBoyOrderList.reverse();
 
-        this.getOrders = this.getOrders.map(order => {
-          const items = order.order;
-          const vatItems = this.filterVat(items).map(i => ({
-            ...i,
-            price: this.normalizePrice(i.price) // store price without "BD"
-          }));
-          const deliveryItems = this.filterDelivery(items).map(i => ({
-            ...i,
-            price: this.normalizePrice(i.price) // store price without "BD"
-          }));
-          return {
-            ...order,
-            vatItems,
-            deliveryItems,
-          };
-        });
+      this.getOrders = this.getOrders.map((order) => {
+        const items = order.order;
+        const vatItems = this.filterVat(items).map((i) => ({
+          ...i,
+          price: this.normalizePrice(i.price), // store price without "BD"
+        }));
+        const deliveryItems = this.filterDelivery(items).map((i) => ({
+          ...i,
+          price: this.normalizePrice(i.price), // store price without "BD"
+        }));
+        return {
+          ...order,
+          vatItems,
+          deliveryItems,
+        };
+      });
 
-        // ...existing code...
-        this.spinner.hide();
-        // console.log("Fef", this.getOrders);
-        this.dataSource = new MatTableDataSource(this.getOrders);
-        this.dataSource.paginator = this.matPaginator;
-        this.dataSource.sort = this.matSort;
-      }
-    );
+      // ...existing code...
+      this.spinner.hide();
+      // console.log("Fef", this.getOrders);
+      this.dataSource = new MatTableDataSource(this.getOrders);
+      this.dataSource.paginator = this.matPaginator;
+      this.dataSource.sort = this.matSort;
+    });
   }
 
   applyFilter(event: Event) {
@@ -155,14 +175,14 @@ export class FinancialComponent implements OnInit {
   }
 
   startEvent(event) {
-    var stDate = event.value
-    var date = new Date(stDate);
+    const stDate = event.value;
+    const date = new Date(stDate);
 
     const year: number = date.getFullYear();
     const month: number = date.getMonth() + 1; // Note: Months are zero-indexed, so add 1
     const day: number = date.getDate();
 
-    const startFomatDate: string = `${day.toString().padStart(2, '0')}/${month.toString().padStart(2, '0')}/${year}`;
+    const startFomatDate = `${day.toString().padStart(2, '0')}/${month.toString().padStart(2, '0')}/${year}`;
 
     this.startDate = startFomatDate;
 
@@ -171,25 +191,25 @@ export class FinancialComponent implements OnInit {
   }
 
   endEvent(event) {
-    var stDate = event.value
-    var date = new Date(stDate);
+    const stDate = event.value;
+    const date = new Date(stDate);
 
     const year: number = date.getFullYear();
     const month: number = date.getMonth() + 1; // Note: Months are zero-indexed, so add 1
     const day: number = date.getDate();
 
-    const endFomatDate: string = `${day.toString().padStart(2, '0')}/${month.toString().padStart(2, '0')}/${year}`;
+    const endFomatDate = `${day.toString().padStart(2, '0')}/${month.toString().padStart(2, '0')}/${year}`;
 
     this.endDate = endFomatDate;
 
-    const object = { type: this.flowType, startDate: this.startDate, endDate: this.endDate }
-    this.getDateQuery(object)
+    const object = { type: this.flowType, startDate: this.startDate, endDate: this.endDate };
+    this.getDateQuery(object);
   }
 
   onChangeFlowTypeFilter(value) {
     this.flowType = value;
-    const object = { type: this.flowType, startDate: this.startDate, endDate: this.endDate }
-    this.getDateQuery(object)
+    const object = { type: this.flowType, startDate: this.startDate, endDate: this.endDate };
+    this.getDateQuery(object);
   }
 
   exportIt() {
@@ -209,5 +229,4 @@ export class FinancialComponent implements OnInit {
       fileName: `Financial Report ${this.formattedDateTime}`,
     });
   }
-
 }

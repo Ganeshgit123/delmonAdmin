@@ -7,6 +7,10 @@
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
+    "lint:fix": "ng lint --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "type-check": "tsc -p tsconfig.app.json --noEmit",
     "e2e": "ng e2e"
   },
   "private": true,
@@ -55,6 +59,9 @@
     "@angular/compiler-cli": "^21.0.6",
     "@types/jasmine": "^3.6.11",
     "@types/node": "^18.19.0",
+    "angular-eslint": "21.1.0",
+    "eslint": "^9.39.1",
+    "eslint-config-prettier": "^9.1.2",
     "jasmine-core": "~5.1.0",
     "jasmine-spec-reporter": "~6.0.0",
     "karma": "~6.3.19",
@@ -62,6 +69,8 @@
     "karma-coverage-istanbul-reporter": "~3.0.3",
     "karma-jasmine": "^4.0.2",
     "karma-jasmine-html-reporter": "^1.7.0",
-    "typescript": "~5.9.3"
+    "prettier": "^3.7.4",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "8.47.0"
   }
 }

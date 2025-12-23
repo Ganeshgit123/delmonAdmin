@@ -6,19 +6,17 @@ import { NgMaterialModule } from '../ng-material.module';
 import { TranslateModule } from '@ngx-translate/core';
 
 @NgModule({
-  declarations: [
-    FeebacksComponent
-  ],
+  declarations: [FeebacksComponent],
   imports: [
     CommonModule,
     RouterModule.forChild([
       {
-        path:"",
-        component: FeebacksComponent
-      }
+        path: '',
+        component: FeebacksComponent,
+      },
     ]),
     NgMaterialModule,
-    TranslateModule
-  ]
+    TranslateModule,
+  ],
 })
-export class FeebacksModule { }
+export class FeebacksModule {}

@@ -1,23 +1,23 @@
 <div class="d-flex justify-content-between align-items-center flex-wrap grid-margin">
   <div>
-    <h2 class="mb-3 mb-md-0">{{"Internal Sales Reports" | translate}}</h2>
+    <h2 class="mb-3 mb-md-0">{{ 'Internal Sales Reports' | translate }}</h2>
   </div>
 </div>
 <ngx-spinner bdColor="rgba(51,51,51,0.8)" size="medium" color="#fff" type="ball-scale-multiple">
-  <p style="font-size: 20px; color: white"> {{"Loading" | translate}}...</p>
+  <p style="font-size: 20px; color: white">{{ 'Loading' | translate }}...</p>
 </ngx-spinner>
 <div class="row">
   <div class="col-md-3">
     <mat-form-field appearance="standard">
-      <mat-label>{{"Search" | translate}}</mat-label>
-      <input matInput (keyup)="applyFilter($event)" placeholder="{{'Search' | translate}}" #input>
+      <mat-label>{{ 'Search' | translate }}</mat-label>
+      <input matInput (keyup)="applyFilter($event)" placeholder="{{ 'Search' | translate }}" #input />
     </mat-form-field>
   </div>
   @if (superAdminRole) {
     <div class="col-md-2 city_col">
       <select #type (change)="onChangeFlowTypeFilter(type.value)" class="form-control">
-        <option value="POULTRY">{{"Poultry" | translate}}</option>
-        <option value="FEEDING">{{"Feeding" | translate}}</option>
+        <option value="POULTRY">{{ 'Poultry' | translate }}</option>
+        <option value="FEEDING">{{ 'Feeding' | translate }}</option>
       </select>
     </div>
   }
@@ -37,54 +37,59 @@
     <mat-datepicker #picker1></mat-datepicker>
   </mat-form-field>
 </div> -->
-@if (showAccept) {
-  <div class="col-md-7 text-center">
-    <p class="exp_btn_righ"><button (click)="exportIt()" class="export_btn">{{"Export" | translate}}</button></p>
-  </div>
-}
+  @if (showAccept) {
+    <div class="col-md-7 text-center">
+      <p class="exp_btn_righ">
+        <button (click)="exportIt()" class="export_btn">{{ 'Export' | translate }}</button>
+      </p>
+    </div>
+  }
 </div>
 
 <div class="mat-elevation-z8">
   <table class="table" mat-table matTableExporter #exporter="matTableExporter" [dataSource]="dataSource" matSort>
-
     <ng-container matColumnDef="index">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>{{"S.No" | translate}}</th>
-      <td mat-cell *matCellDef="let element; let i = index;"> {{matPaginator.pageSize * matPaginator.pageIndex + i
-      + 1}} </td>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'S.No' | translate }}</th>
+      <td mat-cell *matCellDef="let element; let i = index">
+        {{ matPaginator.pageSize * matPaginator.pageIndex + i + 1 }}
+      </td>
     </ng-container>
 
     <ng-container matColumnDef="orderId">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"OrderId" | translate}}</th>
-      <td mat-cell *matCellDef="let element">{{element.id}} </td>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'OrderId' | translate }}</th>
+      <td mat-cell *matCellDef="let element">{{ element.id }}</td>
     </ng-container>
 
     <ng-container matColumnDef="customerName">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"customerName" | translate}}</th>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'customerName' | translate }}</th>
       <td mat-cell *matCellDef="let element">
-        <p>{{element.userName}} <br> {{element.mobileNumber}}</p>
+        <p>
+          {{ element.userName }} <br />
+          {{ element.mobileNumber }}
+        </p>
       </td>
     </ng-container>
 
     <ng-container matColumnDef="userType">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"userType" | translate}}</th>
-      <td mat-cell *matCellDef="let element">{{element.userType}}</td>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'userType' | translate }}</th>
+      <td mat-cell *matCellDef="let element">{{ element.userType }}</td>
     </ng-container>
 
     <ng-container matColumnDef="driverName">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"DriverName" | translate}}</th>
-      <td mat-cell *matCellDef="let element"> {{element?.deliveryBoyDetail.userName}} </td>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'DriverName' | translate }}</th>
+      <td mat-cell *matCellDef="let element">{{ element?.deliveryBoyDetail.userName }}</td>
     </ng-container>
 
     <ng-container matColumnDef="item">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"item" | translate}}</th>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'item' | translate }}</th>
       <td mat-cell *matCellDef="let element">
         @for (item of element.cartDetails; track item) {
           <p>
-            @if (dir == 'ltr') {
-              <span>{{item.enProductName}}</span>
+            @if (dir === 'ltr') {
+              <span>{{ item.enProductName }}</span>
             }
-            @if (dir == 'rtl') {
-              <span>{{item.arProductName}}</span>
+            @if (dir === 'rtl') {
+              <span>{{ item.arProductName }}</span>
             }
           </p>
         }
@@ -92,24 +97,25 @@
     </ng-container>
 
     <ng-container matColumnDef="qty">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"Quantity" | translate}}</th>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'Quantity' | translate }}</th>
       <td mat-cell *matCellDef="let element">
         @for (item of element.cartDetails; track item) {
-          <p>{{item.quantity}}</p>
+          <p>{{ item.quantity }}</p>
         }
       </td>
     </ng-container>
 
     <ng-container matColumnDef="weight">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"Weight" | translate}}</th>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'Weight' | translate }}</th>
       <td mat-cell *matCellDef="let element">
         @for (item of element.cartDetails; track item) {
-          <p> {{item.weight}}
+          <p>
+            {{ item.weight }}
             @if (item.cartonActive == 1) {
-              <span>({{"Carton" | translate}})</span>
+              <span>({{ 'Carton' | translate }})</span>
             }
             @if (item.piecesActive == 1) {
-              <span>({{"Piece" | translate}})</span>
+              <span>({{ 'Piece' | translate }})</span>
             }
           </p>
         }
@@ -117,22 +123,21 @@
     </ng-container>
 
     <ng-container matColumnDef="total">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"TotalPrice" | translate}}</th>
-      <td mat-cell *matCellDef="let element"> {{element.netAmount}} </td>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'TotalPrice' | translate }}</th>
+      <td mat-cell *matCellDef="let element">{{ element.netAmount }}</td>
     </ng-container>
 
     <ng-container matColumnDef="paymentType">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"PaymentMode" | translate}}</th>
-      <td mat-cell *matCellDef="let element"> {{element.paymentTypeId}} </td>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'PaymentMode' | translate }}</th>
+      <td mat-cell *matCellDef="let element">{{ element.paymentTypeId }}</td>
     </ng-container>
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
 
     <tr class="mat-row" *matNoDataRow>
-      <td class="mat-cell text-center" colspan="13">{{"No data found" | translate}}</td>
+      <td class="mat-cell text-center" colspan="13">{{ 'No data found' | translate }}</td>
     </tr>
   </table>
   <mat-paginator [pageSizeOptions]="[10, 20, 25]" showFirstLastButtons></mat-paginator>
-
 </div>

@@ -6,19 +6,17 @@ import { NgMaterialModule } from '../../ng-material.module';
 import { TranslateModule } from '@ngx-translate/core';
 
 @NgModule({
-  declarations: [
-    FavouritProductsComponent
-  ],
+  declarations: [FavouritProductsComponent],
   imports: [
     CommonModule,
     RouterModule.forChild([
       {
-        path: "",
-        component: FavouritProductsComponent
-      }
+        path: '',
+        component: FavouritProductsComponent,
+      },
     ]),
     NgMaterialModule,
     TranslateModule,
-  ]
+  ],
 })
-export class FavouritProductsModule { }
+export class FavouritProductsModule {}

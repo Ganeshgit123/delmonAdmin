@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -14,9 +14,9 @@ import Swal from 'sweetalert2';
 @Component({
   selector: 'app-feeding',
   templateUrl: './feeding.component.html',
-  styleUrls: ['./feeding.component.scss']
+  styleUrls: ['./feeding.component.scss'],
 })
-export class FeedingComponent implements OnInit {
+export class FeedingComponent implements OnInit, AfterViewInit {
   displayedColumns: string[];
   dataSource: MatTableDataSource<any>;
   getvalue = [];
@@ -37,9 +37,15 @@ export class FeedingComponent implements OnInit {
   @ViewChild(MatPaginator) matPaginator: MatPaginator;
   @ViewChild(MatSort) matSort: MatSort;
 
-  constructor(private modalService: NgbModal, public fb: FormBuilder, public authService: AuthService,
-    private toastr: ToastrService, private router: Router, private spinner: NgxSpinnerService,
-    private translate: TranslateService,) { }
+  constructor(
+    private modalService: NgbModal,
+    public fb: FormBuilder,
+    public authService: AuthService,
+    private toastr: ToastrService,
+    private router: Router,
+    private spinner: NgxSpinnerService,
+    private translate: TranslateService,
+  ) {}
 
   ngOnInit(): void {
     this.callRolePermission();
@@ -50,18 +56,27 @@ export class FeedingComponent implements OnInit {
     }
 
     if (this.showAccept == true) {
-      this.displayedColumns = ['index', 'enName', 'arName', 'image', 'colorCode', 'vat', 'rowActionToggle', 'actionUser', 'actionEmployee', 'rowActionIcon'];
+      this.displayedColumns = [
+        'index',
+        'enName',
+        'arName',
+        'image',
+        'colorCode',
+        'vat',
+        'rowActionToggle',
+        'actionUser',
+        'actionEmployee',
+        'rowActionIcon',
+      ];
     } else if (this.showAccept == false) {
       this.displayedColumns = ['index', 'enName', 'arName', 'image', 'colorCode', 'vat'];
     }
-    this.authService.getCategory('FEEDING').subscribe(
-      (res: any) => {
-        this.getvalue = res.data;
-        this.dataSource = new MatTableDataSource(this.getvalue);
-        this.dataSource.paginator = this.matPaginator;
-        this.dataSource.sort = this.matSort;
-      }
-    );
+    this.authService.getCategory('FEEDING').subscribe((res: any) => {
+      this.getvalue = res.data;
+      this.dataSource = new MatTableDataSource(this.getvalue);
+      this.dataSource.paginator = this.matPaginator;
+      this.dataSource.sort = this.matSort;
+    });
 
     this.categoryForm = this.fb.group({
       enName: ['', [Validators.required]],
@@ -76,19 +91,21 @@ export class FeedingComponent implements OnInit {
     });
   }
 
-  get f() { return this.categoryForm.controls; }
+  get f() {
+    return this.categoryForm.controls;
+  }
 
   callRolePermission() {
     if (sessionStorage.getItem('roleName') !== 'superAdmin') {
-      let settingPermssion = JSON.parse(sessionStorage.getItem('permission'))
-      const orderPermission = settingPermssion?.find(ele => ele.area == 'category')?.write == 1
+      const settingPermssion = JSON.parse(sessionStorage.getItem('permission'));
+      const orderPermission = settingPermssion?.find((ele) => ele.area == 'category')?.write == 1;
       // console.log("fef",orderPermission)
-      this.showAccept = orderPermission
+      this.showAccept = orderPermission;
     }
   }
 
   ngAfterViewInit(): void {
-    this.matPaginator._intl.itemsPerPageLabel = this.translate.instant("itemsPerPage");
+    this.matPaginator._intl.itemsPerPageLabel = this.translate.instant('itemsPerPage');
   }
 
   applyFilter(event: Event) {
@@ -108,27 +125,33 @@ export class FeedingComponent implements OnInit {
   }
 
   checkFileFormat(checkFile) {
-    if (checkFile.type == 'image/webp' || checkFile.type == 'image/png' || checkFile.type == 'image/jpeg' || checkFile.type == 'image/TIF' || checkFile.type == 'image/tif' || checkFile.type == 'image/tiff') {
+    if (
+      checkFile.type == 'image/webp' ||
+      checkFile.type == 'image/png' ||
+      checkFile.type == 'image/jpeg' ||
+      checkFile.type == 'image/TIF' ||
+      checkFile.type == 'image/tif' ||
+      checkFile.type == 'image/tiff'
+    ) {
       return false;
     } else {
       return true;
     }
   }
 
-
   removeImg() {
-    this.iconImg = "";
-    this.fileImgUpload = "";
+    this.iconImg = '';
+    this.fileImgUpload = '';
   }
 
   uploadImageFile(event) {
     const file = event.target.files && event.target.files[0];
-    var valid = this.checkFileFormat(event.target.files[0]);
+    const valid = this.checkFileFormat(event.target.files[0]);
     if (!valid) {
-      var reader = new FileReader();
+      const reader = new FileReader();
       reader.onload = (event: any) => {
         this.iconImg = event.target.result;
-      }
+      };
       reader.readAsDataURL(event.target.files[0]);
       this.fileImgUpload = file;
     }
@@ -166,15 +189,14 @@ export class FeedingComponent implements OnInit {
       return false;
     }
 
-
     if (this.isEdit) {
-      this.categoryEditService(this.categoryForm.value)
+      this.categoryEditService(this.categoryForm.value);
       return;
     }
 
     this.spinner.show();
     this.submitted = false;
-    var postData = new FormData();
+    const postData = new FormData();
     postData.append('image', this.fileImgUpload);
     this.authService.s3upload(postData).subscribe((res: any) => {
       if (res.error == false) {
@@ -183,26 +205,25 @@ export class FeedingComponent implements OnInit {
         if (this.iconImgUrl) {
           data['image'] = this.iconImgUrl;
         } else {
-          data['image'] = "";
+          data['image'] = '';
         }
-        data['type'] = "FEEDING";
+        data['type'] = 'FEEDING';
         data['userType'] = 1;
         data['employeeType'] = 1;
         // console.log("add", data)
-        this.authService.addPoultryCategory(data)
-          .subscribe((res: any) => {
-            if (res.error == false) {
-              this.toastr.success('Success ', res.message);
-              this.spinner.hide();
-              this.iconImg = null;
-              this.submitted = false;
-              this.categoryForm.reset();
-              this.modalService.dismissAll();
-              this.ngOnInit();
-            } else {
-              this.toastr.error('Enter valid ', res.message);
-            }
-          });
+        this.authService.addPoultryCategory(data).subscribe((res: any) => {
+          if (res.error == false) {
+            this.toastr.success('Success ', res.message);
+            this.spinner.hide();
+            this.iconImg = null;
+            this.submitted = false;
+            this.categoryForm.reset();
+            this.modalService.dismissAll();
+            this.ngOnInit();
+          } else {
+            this.toastr.error('Enter valid ', res.message);
+          }
+        });
       }
     });
   }
@@ -210,7 +231,7 @@ export class FeedingComponent implements OnInit {
   categoryEditService(data) {
     if (this.fileImgUpload) {
       this.spinner.show();
-      var postData = new FormData();
+      const postData = new FormData();
       postData.append('image', this.fileImgUpload);
       this.authService.s3upload(postData).subscribe((res: any) => {
         if (res.error == false) {
@@ -219,132 +240,126 @@ export class FeedingComponent implements OnInit {
           if (this.iconImgUrl) {
             data['image'] = this.iconImgUrl;
           } else {
-            data['image'] = "";
+            data['image'] = '';
           }
           // console.log("1stImageUpload", data)
-          this.authService.editCategory(data, this.categoryId)
-            .subscribe((res: any) => {
-              if (res.error == false) {
-                this.toastr.success('Success ', res.message);
-                this.iconImg = null;
-                this.categoryForm.reset();
-                this.modalService.dismissAll();
-                this.ngOnInit();
-                this.spinner.hide();
-              } else {
-                this.toastr.error('Enter valid ', res.message);
-              }
-            });
+          this.authService.editCategory(data, this.categoryId).subscribe((res: any) => {
+            if (res.error == false) {
+              this.toastr.success('Success ', res.message);
+              this.iconImg = null;
+              this.categoryForm.reset();
+              this.modalService.dismissAll();
+              this.ngOnInit();
+              this.spinner.hide();
+            } else {
+              this.toastr.error('Enter valid ', res.message);
+            }
+          });
         }
       });
     } else {
       const data = this.categoryForm.value;
       data['image'] = this.iconImg;
       // console.log("withoutupload", data)
-      this.authService.editCategory(data, this.categoryId)
-        .subscribe((res: any) => {
-          if (res.error == false) {
-            this.toastr.success(res.message);
-            this.iconImg = null;
-            this.categoryForm.reset();
-            this.modalService.dismissAll();
-            this.ngOnInit();
-            this.spinner.hide();
-          } else {
-            this.toastr.error(res.message);
-          }
-        })
+      this.authService.editCategory(data, this.categoryId).subscribe((res: any) => {
+        if (res.error == false) {
+          this.toastr.success(res.message);
+          this.iconImg = null;
+          this.categoryForm.reset();
+          this.modalService.dismissAll();
+          this.ngOnInit();
+          this.spinner.hide();
+        } else {
+          this.toastr.error(res.message);
+        }
+      });
     }
   }
 
   changeStatus(value) {
     if (value.active === 1) {
-      var visible = 0
+      var visible = 0;
     } else {
-      var visible = 1
+      var visible = 1;
     }
-    const object = { active: visible }
+    const object = { active: visible };
 
-    this.authService.editCategory(object, value.id)
-      .subscribe((res: any) => {
-        if (res.error == false) {
-          this.toastr.success('Success ', res.message);
-          this.ngOnInit();
-        } else {
-          this.toastr.error('Enter valid ', res.message);
-        }
-      });
+    this.authService.editCategory(object, value.id).subscribe((res: any) => {
+      if (res.error == false) {
+        this.toastr.success('Success ', res.message);
+        this.ngOnInit();
+      } else {
+        this.toastr.error('Enter valid ', res.message);
+      }
+    });
   }
 
   deleteCategory(value) {
     Swal.fire({
-      title: this.translate.instant("AreYouSure"),
-      text: this.translate.instant("YouWontBeRevertThis"),
+      title: this.translate.instant('AreYouSure'),
+      text: this.translate.instant('YouWontBeRevertThis'),
       icon: 'warning',
       showCancelButton: true,
-      cancelButtonText: this.translate.instant("Cancel"),
+      cancelButtonText: this.translate.instant('Cancel'),
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
-      confirmButtonText: this.translate.instant("YesDeleteIt")
+      confirmButtonText: this.translate.instant('YesDeleteIt'),
     }).then((result) => {
       if (result.isConfirmed) {
-        Swal.fire({
-          title: this.translate.instant("Deleted"),
-          text: this.translate.instant("YourFileHasBeenDeleted"),
+        (Swal.fire({
+          title: this.translate.instant('Deleted'),
+          text: this.translate.instant('YourFileHasBeenDeleted'),
           icon: 'success',
-          confirmButtonText: this.translate.instant("Ok")
+          confirmButtonText: this.translate.instant('Ok'),
         }),
           this.authService.deleteCategory(value).subscribe((res: any) => {
             if (res.error == false) {
               this.toastr.success('Success ', res.message);
-              this.ngOnInit()
+              this.ngOnInit();
             } else {
               this.toastr.error('Error', res.message);
             }
-          });
+          }));
       }
-    })
+    });
   }
 
   changeUserStatus(value) {
     let stat: number;
     if (value.userType == 0) {
-      stat = 1
+      stat = 1;
     } else if (value.userType == 1) {
-      stat = 0
+      stat = 0;
     }
-    const object = { userType: stat }
+    const object = { userType: stat };
 
-    this.authService.editCategory(object, value.id)
-      .subscribe((res: any) => {
-        if (res.error == false) {
-          this.toastr.success('Success ', res.message);
-          this.ngOnInit();
-        } else {
-          this.toastr.error('Enter valid ', res.message);
-        }
-      });
+    this.authService.editCategory(object, value.id).subscribe((res: any) => {
+      if (res.error == false) {
+        this.toastr.success('Success ', res.message);
+        this.ngOnInit();
+      } else {
+        this.toastr.error('Enter valid ', res.message);
+      }
+    });
   }
 
   changeEmployeeStatus(value) {
     let stat: number;
     if (value.employeeType == 0) {
-      stat = 1
+      stat = 1;
     } else if (value.employeeType == 1) {
-      stat = 0
+      stat = 0;
     }
 
-    const object = { employeeType: stat }
+    const object = { employeeType: stat };
 
-    this.authService.editCategory(object, value.id)
-      .subscribe((res: any) => {
-        if (res.error == false) {
-          this.toastr.success('Success ', res.message);
-          this.ngOnInit();
-        } else {
-          this.toastr.error('Enter valid ', res.message);
-        }
-      });
+    this.authService.editCategory(object, value.id).subscribe((res: any) => {
+      if (res.error == false) {
+        this.toastr.success('Success ', res.message);
+        this.ngOnInit();
+      } else {
+        this.toastr.error('Enter valid ', res.message);
+      }
+    });
   }
-
 }

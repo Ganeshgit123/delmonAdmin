@@ -1,9 +1,8 @@
 <nav class="sidebar">
   <div class="sidebar-header">
-
     <!--- Logo -->
     <a class="sidebar-brand">
-      <span><img src="assets/images/logo.svg" width="150px"></span>
+      <span><img src="assets/images/logo.svg" width="150px" /></span>
     </a>
 
     <!--- Toggler -->
@@ -12,94 +11,99 @@
       <span></span>
       <span></span>
     </div>
-
   </div>
   <div class="sidebar-body" (mouseenter)="operSidebarFolded()" (mouseleave)="closeSidebarFolded()">
-
     <!--- Sidemenu start -->
 
     <ul class="sidebar-nav metismenu" id="sidebar-menu" #sidebarMenu>
       @for (item of menuItems; track item) {
-      @if (item == false) {
-      <span> </span>
-      } @else {
-      @if (item.isTitle) {
-      <li class="nav-item nav-category">{{ item.label | translate}}</li>
-      }
-      @if (!item.isTitle) {
-      <li class="nav-item">
-        @if (hasItems(item)) {
-        <a class="nav-link" href="javascript:void(0);">
-          @if (item.icon) {
-          <i class="{{ item.icon }}"></i>
+        @if (item == false) {
+          <span> </span>
+        } @else {
+          @if (item.isTitle) {
+            <li class="nav-item nav-category">{{ item.label | translate }}</li>
           }
-          <span class="link-title"> {{ item.label | translate}}</span>
-          <span class="link-arrow" data-feather="chevron-down" appFeatherIcon></span>
-        </a>
-        }
-        @if (!hasItems(item)) {
-        <a class="nav-link nav-link-ref" [routerLink]="item.link" [attr.data-parent]="item.parentId">
-          @if (item.icon) {
-          <i class="{{ item.icon }}"></i>
-          }
-          <span class="link-title"> {{ item.label | translate}}</span>
-          @if (item.badge) {
-          <span class="badge badge-{{item.badge.variant}}">{{item.badge.text}}</span>
-          }
-        </a>
-        }
-        @if (hasItems(item)) {
-        <ul class="sidebar-nav sub-menu nav-second-level" aria-expanded="false">
-          @for (subitem of item.subItems; track subitem) {
-          <li class="nav-item" [ngClass]="{'side-nav-item': hasItems(subitem)}">
-            @if (subitem == false) {
-            <span> </span>
-            } @else {
-            @if (hasItems(subitem)) {
-            <a class="nav-link side-nav-link-a-ref" href="javascript:void(0);">
-              @if (subitem.icon) {
-              <i class="link-icon" [attr.data-feather]="subitem.icon" appFeatherIcon></i>
-              }
-              <span class="link-title"> {{ subitem.label | translate}}</span>
-              <span class="link-arrow" data-feather="chevron-down" appFeatherIcon></span>
-            </a>
-            }
-            @if (!hasItems(subitem)) {
-            <a class="nav-link nav-link-ref" [routerLink]="subitem.link" [attr.data-parent]="subitem.parentId">
-              @if (subitem.icon) {
-              <i class="link-icon" [attr.data-feather]="subitem.icon" appFeatherIcon></i>
-              }
-              {{ subitem.label | translate}}
-            </a>
-            }
-            @if (hasItems(subitem)) {
-            <ul class="sidebar-nav sub-menu nav-third-level" aria-expanded="false">
-              @for (subSubitem of subitem.subItems; track subSubitem) {
-              <li class="nav-item">
-                <a class="nav-link nav-link-ref" [routerLink]="subSubitem.link" [routerLinkActive]="['active']"
-                  [attr.data-parent]="subSubitem.parentId">
-                  @if (subitem.icon) {
-                  <i class="link-icon" [attr.data-feather]="subitem.icon" appFeatherIcon></i>
+          @if (!item.isTitle) {
+            <li class="nav-item">
+              @if (hasItems(item)) {
+                <a class="nav-link" href="javascript:void(0);">
+                  @if (item.icon) {
+                    <i class="{{ item.icon }}"></i>
                   }
-                  {{ subSubitem.label | translate}}
+                  <span class="link-title"> {{ item.label | translate }}</span>
+                  <span class="link-arrow" data-feather="chevron-down" appFeatherIcon></span>
                 </a>
-              </li>
               }
-            </ul>
-            }
-            }
-          </li>
+              @if (!hasItems(item)) {
+                <a class="nav-link nav-link-ref" [routerLink]="item.link" [attr.data-parent]="item.parentId">
+                  @if (item.icon) {
+                    <i class="{{ item.icon }}"></i>
+                  }
+                  <span class="link-title"> {{ item.label | translate }}</span>
+                  @if (item.badge) {
+                    <span class="badge badge-{{ item.badge.variant }}">{{ item.badge.text }}</span>
+                  }
+                </a>
+              }
+              @if (hasItems(item)) {
+                <ul class="sidebar-nav sub-menu nav-second-level" aria-expanded="false">
+                  @for (subitem of item.subItems; track subitem) {
+                    <li class="nav-item" [ngClass]="{ 'side-nav-item': hasItems(subitem) }">
+                      @if (subitem == false) {
+                        <span> </span>
+                      } @else {
+                        @if (hasItems(subitem)) {
+                          <a class="nav-link side-nav-link-a-ref" href="javascript:void(0);">
+                            @if (subitem.icon) {
+                              <i class="link-icon" [attr.data-feather]="subitem.icon" appFeatherIcon></i>
+                            }
+                            <span class="link-title"> {{ subitem.label | translate }}</span>
+                            <span class="link-arrow" data-feather="chevron-down" appFeatherIcon></span>
+                          </a>
+                        }
+                        @if (!hasItems(subitem)) {
+                          <a
+                            class="nav-link nav-link-ref"
+                            [routerLink]="subitem.link"
+                            [attr.data-parent]="subitem.parentId"
+                          >
+                            @if (subitem.icon) {
+                              <i class="link-icon" [attr.data-feather]="subitem.icon" appFeatherIcon></i>
+                            }
+                            {{ subitem.label | translate }}
+                          </a>
+                        }
+                        @if (hasItems(subitem)) {
+                          <ul class="sidebar-nav sub-menu nav-third-level" aria-expanded="false">
+                            @for (subSubitem of subitem.subItems; track subSubitem) {
+                              <li class="nav-item">
+                                <a
+                                  class="nav-link nav-link-ref"
+                                  [routerLink]="subSubitem.link"
+                                  [routerLinkActive]="['active']"
+                                  [attr.data-parent]="subSubitem.parentId"
+                                >
+                                  @if (subitem.icon) {
+                                    <i class="link-icon" [attr.data-feather]="subitem.icon" appFeatherIcon></i>
+                                  }
+                                  {{ subSubitem.label | translate }}
+                                </a>
+                              </li>
+                            }
+                          </ul>
+                        }
+                      }
+                    </li>
+                  }
+                </ul>
+              }
+            </li>
           }
-        </ul>
         }
-      </li>
-      }
-      }
       }
     </ul>
 
     <!--- Sidemenu end -->
-
   </div>
 </nav>
 <!-- <nav class="settings-sidebar">

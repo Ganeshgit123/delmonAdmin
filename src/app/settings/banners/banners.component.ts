@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -14,9 +14,9 @@ import { TranslateService } from '@ngx-translate/core';
 @Component({
   selector: 'app-banners',
   templateUrl: './banners.component.html',
-  styleUrls: ['./banners.component.scss']
+  styleUrls: ['./banners.component.scss'],
 })
-export class BannersComponent implements OnInit {
+export class BannersComponent implements OnInit, AfterViewInit {
   displayedColumns: string[];
   dataSource: MatTableDataSource<any>;
   getvalue = [];
@@ -38,9 +38,15 @@ export class BannersComponent implements OnInit {
   @ViewChild(MatPaginator) matPaginator: MatPaginator;
   @ViewChild(MatSort) matSort: MatSort;
 
-  constructor(private modalService: NgbModal, public fb: FormBuilder, public authService: AuthService,
-    private toastr: ToastrService, private router: Router, private spinner: NgxSpinnerService,
-    private translate: TranslateService,) { }
+  constructor(
+    private modalService: NgbModal,
+    public fb: FormBuilder,
+    public authService: AuthService,
+    private toastr: ToastrService,
+    private router: Router,
+    private spinner: NgxSpinnerService,
+    private translate: TranslateService,
+  ) {}
 
   ngOnInit(): void {
     this.callRolePermission();
@@ -59,25 +65,19 @@ export class BannersComponent implements OnInit {
     this.userType = sessionStorage.getItem('userType');
 
     if (this.userType == 1 || this.superAdminRole == true) {
-      this.authService.getBanner().subscribe(
-        (res: any) => {
-          this.getvalue = res.data.filter(
-            (data) => data.type == "POULTRY"
-          )
-          this.dataSource = new MatTableDataSource(this.getvalue);
-          this.dataSource.paginator = this.matPaginator;
-          this.dataSource.sort = this.matSort;
-        });
+      this.authService.getBanner().subscribe((res: any) => {
+        this.getvalue = res.data.filter((data) => data.type == 'POULTRY');
+        this.dataSource = new MatTableDataSource(this.getvalue);
+        this.dataSource.paginator = this.matPaginator;
+        this.dataSource.sort = this.matSort;
+      });
     } else {
-      this.authService.getBanner().subscribe(
-        (res: any) => {
-          this.getvalue = res.data.filter(
-            (data) => data.type == "FEEDING"
-          )
-          this.dataSource = new MatTableDataSource(this.getvalue);
-          this.dataSource.paginator = this.matPaginator;
-          this.dataSource.sort = this.matSort;
-        });
+      this.authService.getBanner().subscribe((res: any) => {
+        this.getvalue = res.data.filter((data) => data.type == 'FEEDING');
+        this.dataSource = new MatTableDataSource(this.getvalue);
+        this.dataSource.paginator = this.matPaginator;
+        this.dataSource.sort = this.matSort;
+      });
     }
 
     this.bannerForm = this.fb.group({
@@ -88,19 +88,21 @@ export class BannersComponent implements OnInit {
     });
   }
 
-  get f() { return this.bannerForm.controls; }
+  get f() {
+    return this.bannerForm.controls;
+  }
 
   callRolePermission() {
     if (sessionStorage.getItem('roleName') !== 'superAdmin') {
-      let settingPermssion = JSON.parse(sessionStorage.getItem('permission'))
-      const orderPermission = settingPermssion?.find(ele => ele.area == 'master')?.write == 1
+      const settingPermssion = JSON.parse(sessionStorage.getItem('permission'));
+      const orderPermission = settingPermssion?.find((ele) => ele.area == 'master')?.write == 1;
       // console.log("fef",orderPermission)
-      this.showAccept = orderPermission
+      this.showAccept = orderPermission;
     }
   }
 
   ngAfterViewInit(): void {
-    this.matPaginator._intl.itemsPerPageLabel = this.translate.instant("itemsPerPage");
+    this.matPaginator._intl.itemsPerPageLabel = this.translate.instant('itemsPerPage');
   }
 
   applyFilter(event: Event) {
@@ -121,7 +123,14 @@ export class BannersComponent implements OnInit {
   }
 
   checkFileFormat(checkFile) {
-    if (checkFile.type == 'image/webp' || checkFile.type == 'image/png' || checkFile.type == 'image/jpeg' || checkFile.type == 'image/TIF' || checkFile.type == 'image/tif' || checkFile.type == 'image/tiff') {
+    if (
+      checkFile.type == 'image/webp' ||
+      checkFile.type == 'image/png' ||
+      checkFile.type == 'image/jpeg' ||
+      checkFile.type == 'image/TIF' ||
+      checkFile.type == 'image/tif' ||
+      checkFile.type == 'image/tiff'
+    ) {
       return false;
     } else {
       return true;
@@ -133,20 +142,20 @@ export class BannersComponent implements OnInit {
   }
 
   removeImg() {
-    this.iconImg = "";
-    this.fileImgUpload = "";
+    this.iconImg = '';
+    this.fileImgUpload = '';
   }
 
   uploadImageFile(event) {
     const file = event.target.files && event.target.files[0];
     if (!file) return;
 
-    var valid = this.checkFileFormat(file);
+    const valid = this.checkFileFormat(file);
     if (!valid) {
       const sanitizedFileName = this.sanitizeFileName(file.name);
       const sanitizedFile = new File([file], sanitizedFileName, { type: file.type });
 
-      var reader = new FileReader();
+      const reader = new FileReader();
       reader.onload = (event: any) => {
         this.iconImg = event.target.result;
       };
@@ -157,20 +166,20 @@ export class BannersComponent implements OnInit {
   }
 
   removearImg() {
-    this.ariconImg = "";
-    this.arfileImgUpload = "";
+    this.ariconImg = '';
+    this.arfileImgUpload = '';
   }
 
   uploadarImageFile(event) {
     const file = event.target.files && event.target.files[0];
     if (!file) return;
 
-    var valid = this.checkFileFormat(file);
+    const valid = this.checkFileFormat(file);
     if (!valid) {
       const sanitizedFileName = this.sanitizeFileName(file.name);
       const sanitizedFile = new File([file], sanitizedFileName, { type: file.type });
 
-      var reader = new FileReader();
+      const reader = new FileReader();
       reader.onload = (event: any) => {
         this.ariconImg = event.target.result;
       };
@@ -203,17 +212,17 @@ export class BannersComponent implements OnInit {
     }
 
     if (this.isEdit) {
-      this.bannerEditService(this.bannerForm.value)
+      this.bannerEditService(this.bannerForm.value);
       return;
     }
     this.submitted = false;
     this.spinner.show();
-    var postData = new FormData();
+    const postData = new FormData();
     postData.append('image', this.fileImgUpload);
     this.authService.s3upload(postData).subscribe((res: any) => {
       if (res.error == false) {
         this.iconImgUrl = res.files;
-        var postData = new FormData();
+        const postData = new FormData();
         postData.append('image', this.arfileImgUpload);
         this.authService.s3upload(postData).subscribe((res: any) => {
           if (res.error == false) {
@@ -222,20 +231,19 @@ export class BannersComponent implements OnInit {
             data['enImage'] = this.iconImgUrl;
             data['arImage'] = this.ariconImgUrl;
             // console.log("add", data)
-            this.authService.addBanner(data)
-              .subscribe((res: any) => {
-                if (res.error == false) {
-                  this.toastr.success('Success ', res.message);
-                  this.spinner.hide();
-                  this.iconImg = null;
-                  this.ariconImg = null;
-                  this.bannerForm.reset();
-                  this.modalService.dismissAll();
-                  this.ngOnInit();
-                } else {
-                  this.toastr.error('Enter valid ', res.message);
-                }
-              });
+            this.authService.addBanner(data).subscribe((res: any) => {
+              if (res.error == false) {
+                this.toastr.success('Success ', res.message);
+                this.spinner.hide();
+                this.iconImg = null;
+                this.ariconImg = null;
+                this.bannerForm.reset();
+                this.modalService.dismissAll();
+                this.ngOnInit();
+              } else {
+                this.toastr.error('Enter valid ', res.message);
+              }
+            });
           }
         });
       }
@@ -250,7 +258,7 @@ export class BannersComponent implements OnInit {
       this.authService.s3upload(postData).subscribe((res: any) => {
         if (res.error == false) {
           this.iconImgUrl = res.files;
-          var postData = new FormData();
+          const postData = new FormData();
           postData.append('image', this.arfileImgUpload);
           this.authService.s3upload(postData).subscribe((res: any) => {
             if (res.error == false) {
@@ -259,20 +267,19 @@ export class BannersComponent implements OnInit {
               data['enImage'] = this.iconImgUrl;
               data['arImage'] = this.ariconImgUrl;
               // console.log("editBothImage", data)
-              this.authService.editBanner(data, this.bannerId)
-                .subscribe((res: any) => {
-                  if (res.error == false) {
-                    this.toastr.success('Success ', res.message);
-                    this.iconImg = null;
-                    this.ariconImg = null;
-                    this.bannerForm.reset();
-                    this.modalService.dismissAll();
-                    this.ngOnInit();
-                    this.spinner.hide();
-                  } else {
-                    this.toastr.error('Enter valid ', res.message);
-                  }
-                });
+              this.authService.editBanner(data, this.bannerId).subscribe((res: any) => {
+                if (res.error == false) {
+                  this.toastr.success('Success ', res.message);
+                  this.iconImg = null;
+                  this.ariconImg = null;
+                  this.bannerForm.reset();
+                  this.modalService.dismissAll();
+                  this.ngOnInit();
+                  this.spinner.hide();
+                } else {
+                  this.toastr.error('Enter valid ', res.message);
+                }
+              });
             }
           });
         }
@@ -288,20 +295,19 @@ export class BannersComponent implements OnInit {
           data['enImage'] = this.iconImgUrl;
           data['arImage'] = this.ariconImg;
           // console.log("1stImageUpload", data)
-          this.authService.editBanner(data, this.bannerId)
-            .subscribe((res: any) => {
-              if (res.error == false) {
-                this.toastr.success('Success ', res.message);
-                this.iconImg = null;
-                this.ariconImg = null;
-                this.bannerForm.reset();
-                this.modalService.dismissAll();
-                this.ngOnInit();
-                this.spinner.hide();
-              } else {
-                this.toastr.error('Enter valid ', res.message);
-              }
-            });
+          this.authService.editBanner(data, this.bannerId).subscribe((res: any) => {
+            if (res.error == false) {
+              this.toastr.success('Success ', res.message);
+              this.iconImg = null;
+              this.ariconImg = null;
+              this.bannerForm.reset();
+              this.modalService.dismissAll();
+              this.ngOnInit();
+              this.spinner.hide();
+            } else {
+              this.toastr.error('Enter valid ', res.message);
+            }
+          });
         }
       });
     } else if (this.arfileImgUpload) {
@@ -315,20 +321,19 @@ export class BannersComponent implements OnInit {
           data['enImage'] = this.iconImg;
           data['arImage'] = this.ariconImgUrl;
           // console.log("2ndImageUpload", data)
-          this.authService.editBanner(data, this.bannerId)
-            .subscribe((res: any) => {
-              if (res.error == false) {
-                this.toastr.success('Success ', res.message);
-                this.iconImg = null;
-                this.ariconImg = null;
-                this.bannerForm.reset();
-                this.modalService.dismissAll();
-                this.ngOnInit();
-                this.spinner.hide();
-              } else {
-                this.toastr.error('Enter valid ', res.message);
-              }
-            });
+          this.authService.editBanner(data, this.bannerId).subscribe((res: any) => {
+            if (res.error == false) {
+              this.toastr.success('Success ', res.message);
+              this.iconImg = null;
+              this.ariconImg = null;
+              this.bannerForm.reset();
+              this.modalService.dismissAll();
+              this.ngOnInit();
+              this.spinner.hide();
+            } else {
+              this.toastr.error('Enter valid ', res.message);
+            }
+          });
         }
       });
     } else {
@@ -336,82 +341,78 @@ export class BannersComponent implements OnInit {
       data['enImage'] = this.iconImg;
       data['arImage'] = this.ariconImg;
       // console.log("withoutupload", data)
-      this.authService.editBanner(data, this.bannerId)
-        .subscribe((res: any) => {
-          if (res.error == true) {
-            this.toastr.error('Error', res.message);
-          } else {
-            this.toastr.success('Success ', res.message);
-            this.iconImg = null;
-            this.ariconImg = null;
-            this.bannerForm.reset();
-            this.modalService.dismissAll();
-            this.ngOnInit();
-            this.spinner.hide();
-          }
-        })
+      this.authService.editBanner(data, this.bannerId).subscribe((res: any) => {
+        if (res.error == true) {
+          this.toastr.error('Error', res.message);
+        } else {
+          this.toastr.success('Success ', res.message);
+          this.iconImg = null;
+          this.ariconImg = null;
+          this.bannerForm.reset();
+          this.modalService.dismissAll();
+          this.ngOnInit();
+          this.spinner.hide();
+        }
+      });
     }
   }
 
   deleteBanner(value) {
     Swal.fire({
-      title: this.translate.instant("AreYouSure"),
-      text: this.translate.instant("YouWontBeRevertThis"),
+      title: this.translate.instant('AreYouSure'),
+      text: this.translate.instant('YouWontBeRevertThis'),
       icon: 'warning',
       showCancelButton: true,
-      cancelButtonText: this.translate.instant("Cancel"),
+      cancelButtonText: this.translate.instant('Cancel'),
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
-      confirmButtonText: this.translate.instant("YesDeleteIt")
+      confirmButtonText: this.translate.instant('YesDeleteIt'),
     }).then((result) => {
       if (result.isConfirmed) {
-        Swal.fire({
-          title: this.translate.instant("Deleted"),
-          text: this.translate.instant("YourFileHasBeenDeleted"),
+        (Swal.fire({
+          title: this.translate.instant('Deleted'),
+          text: this.translate.instant('YourFileHasBeenDeleted'),
           icon: 'success',
-          confirmButtonText: this.translate.instant("Ok")
+          confirmButtonText: this.translate.instant('Ok'),
         }),
           this.authService.deleteBanner(value).subscribe((res: any) => {
             if (res.error == false) {
               this.toastr.success('Success ', res.message);
-              this.ngOnInit()
+              this.ngOnInit();
             } else {
               this.toastr.error('Error', res.message);
             }
-          });
+          }));
       }
-    })
+    });
   }
 
   changeStatus(value) {
     if (value.active === 1) {
-      var visible = 0
+      var visible = 0;
     } else {
-      var visible = 1
+      var visible = 1;
     }
-    const object = { active: visible }
+    const object = { active: visible };
 
-    this.authService.editBanner(object, value.id)
-      .subscribe((res: any) => {
-        if (res.error == false) {
-          this.toastr.success('Success ', res.message);
-          this.ngOnInit();
-        } else {
-          this.toastr.error('Enter valid ', res.message);
-        }
-      });
+    this.authService.editBanner(object, value.id).subscribe((res: any) => {
+      if (res.error == false) {
+        this.toastr.success('Success ', res.message);
+        this.ngOnInit();
+      } else {
+        this.toastr.error('Enter valid ', res.message);
+      }
+    });
   }
 
   onChangeFilter(value) {
-    if (value == "all") {
-      this.filtVAlue = this.getvalue
+    if (value == 'all') {
+      this.filtVAlue = this.getvalue;
       this.dataSource = new MatTableDataSource(this.filtVAlue);
       this.dataSource.paginator = this.matPaginator;
       this.dataSource.sort = this.matSort;
     } else {
-      this.filtVAlue = this.getvalue.filter(
-        (data) => data.type == value
-      )
+      this.filtVAlue = this.getvalue.filter((data) => data.type == value);
       this.dataSource = new MatTableDataSource(this.filtVAlue);
       this.dataSource.paginator = this.matPaginator;
       this.dataSource.sort = this.matSort;

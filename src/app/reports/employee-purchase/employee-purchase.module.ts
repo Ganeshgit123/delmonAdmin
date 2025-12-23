@@ -6,19 +6,17 @@ import { NgMaterialModule } from '../../ng-material.module';
 import { TranslateModule } from '@ngx-translate/core';
 
 @NgModule({
-  declarations: [
-    EmployeePurchaseComponent
-  ],
+  declarations: [EmployeePurchaseComponent],
   imports: [
     CommonModule,
     RouterModule.forChild([
       {
-        path:"",
-        component: EmployeePurchaseComponent
-      }
+        path: '',
+        component: EmployeePurchaseComponent,
+      },
     ]),
     NgMaterialModule,
     TranslateModule,
-  ]
+  ],
 })
-export class EmployeePurchaseModule { }
+export class EmployeePurchaseModule {}

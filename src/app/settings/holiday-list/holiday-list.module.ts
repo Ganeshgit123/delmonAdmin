@@ -5,27 +5,25 @@ import { RouterModule } from '@angular/router';
 import { NgMaterialModule } from '../../ng-material.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
-import {MatDatepickerModule} from '@angular/material/datepicker';
-import {MatCardModule} from '@angular/material/card';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatCardModule } from '@angular/material/card';
 
 @NgModule({
-  declarations: [
-    HolidayListComponent
-  ],
+  declarations: [HolidayListComponent],
   imports: [
     CommonModule,
     RouterModule.forChild([
       {
-        path:"",
-        component: HolidayListComponent
-      }
+        path: '',
+        component: HolidayListComponent,
+      },
     ]),
     NgMaterialModule,
-    FormsModule, 
+    FormsModule,
     ReactiveFormsModule,
     TranslateModule,
     MatDatepickerModule,
-    MatCardModule
-  ]
+    MatCardModule,
+  ],
 })
-export class HolidayListModule { }
+export class HolidayListModule {}

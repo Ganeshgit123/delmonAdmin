@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -13,9 +13,9 @@ import { TranslateService } from '@ngx-translate/core';
 @Component({
   selector: 'app-unavailable',
   templateUrl: './unavailable.component.html',
-  styleUrls: ['./unavailable.component.scss']
+  styleUrls: ['./unavailable.component.scss'],
 })
-export class UnavailableComponent implements OnInit {
+export class UnavailableComponent implements OnInit, AfterViewInit {
   displayedColumns: string[];
   dataSource: MatTableDataSource<any>;
   getvalue = [];
@@ -35,9 +35,15 @@ export class UnavailableComponent implements OnInit {
   @ViewChild(MatPaginator) matPaginator: MatPaginator;
   @ViewChild(MatSort) matSort: MatSort;
 
-  constructor(private modalService: NgbModal, public fb: FormBuilder, public authService: AuthService,
-    private toastr: ToastrService, private router: Router, private spinner: NgxSpinnerService,
-    private translate: TranslateService,) { }
+  constructor(
+    private modalService: NgbModal,
+    public fb: FormBuilder,
+    public authService: AuthService,
+    private toastr: ToastrService,
+    private router: Router,
+    private spinner: NgxSpinnerService,
+    private translate: TranslateService,
+  ) {}
 
   ngOnInit(): void {
     this.callRolePermission();
@@ -50,11 +56,28 @@ export class UnavailableComponent implements OnInit {
     this.userType = sessionStorage.getItem('userType');
 
     if (this.showAccept == true) {
-      this.displayedColumns = ['index', 'orderId', 'orderDetails', 'drivers',
-        'zone', 'area', 'orderDate', 'deliveryDate', 'rowActionIcon'];
+      this.displayedColumns = [
+        'index',
+        'orderId',
+        'orderDetails',
+        'drivers',
+        'zone',
+        'area',
+        'orderDate',
+        'deliveryDate',
+        'rowActionIcon',
+      ];
     } else if (this.showAccept == false) {
-      this.displayedColumns = ['index', 'orderId', 'orderDetails', 'drivers',
-        'zone', 'area', 'orderDate', 'deliveryDate'];
+      this.displayedColumns = [
+        'index',
+        'orderId',
+        'orderDetails',
+        'drivers',
+        'zone',
+        'area',
+        'orderDate',
+        'deliveryDate',
+      ];
     }
 
     if (this.userType == 1 || this.userType == 0) {
@@ -64,30 +87,29 @@ export class UnavailableComponent implements OnInit {
     }
 
     if (this.userType == 1 || this.userType == 0) {
-      const object = { deliveryType: 1, orderStatus: 'UNAVAILABLE', type: this.userFlowType }
-      this.getTypeFilter(object)
+      const object = { deliveryType: 1, orderStatus: 'UNAVAILABLE', type: this.userFlowType };
+      this.getTypeFilter(object);
     } else if (this.userType == 2 || this.userType == 0) {
-      const object = { deliveryType: 1, orderStatus: 'UNAVAILABLE', type: this.userFlowType }
-      this.getTypeFilter(object)
+      const object = { deliveryType: 1, orderStatus: 'UNAVAILABLE', type: this.userFlowType };
+      this.getTypeFilter(object);
     }
 
-    this.authService.getDriversActive(1).subscribe(
-      (res: any) => {
-        this.getDrivers = res.data.reverse();
-      });
+    this.authService.getDriversActive(1).subscribe((res: any) => {
+      this.getDrivers = res.data.reverse();
+    });
   }
 
   callRolePermission() {
     if (sessionStorage.getItem('roleName') !== 'superAdmin') {
-      let settingPermssion = JSON.parse(sessionStorage.getItem('permission'))
-      const orderPermission = settingPermssion?.find(ele => ele.area == 'orders')?.write == 1
+      const settingPermssion = JSON.parse(sessionStorage.getItem('permission'));
+      const orderPermission = settingPermssion?.find((ele) => ele.area == 'orders')?.write == 1;
       // console.log("fef",orderPermission)
-      this.showAccept = orderPermission
+      this.showAccept = orderPermission;
     }
   }
 
   ngAfterViewInit(): void {
-    this.matPaginator._intl.itemsPerPageLabel = this.translate.instant("itemsPerPage");
+    this.matPaginator._intl.itemsPerPageLabel = this.translate.instant('itemsPerPage');
   }
 
   applyFilter(event: Event) {
@@ -139,58 +161,55 @@ export class UnavailableComponent implements OnInit {
       this.errorMsg = true;
     } else {
       const object = {
-        orderStatus: "DRIVERASSIGNED",
+        orderStatus: 'DRIVERASSIGNED',
         deliveryBoyId: this.clickedDriverId,
         deliveryOrderDate: this.deliveryDate,
-        isRechedule: 1
-      }
+        isRechedule: 1,
+      };
       // console.log("DFef",object)
-      this.authService.approveOrderSingle(this.clickOrderId, object)
-        .subscribe((res: any) => {
-          if (res.success == true) {
-            this.toastr.success('Success ', res.massage);
-            this.modalService.dismissAll();
-            this.errorMsg = false;
-            this.driverMsg = false;
-            this.ngOnInit();
-          } else {
-            this.toastr.error('Enter valid ', res.massage);
-          }
-        });
+      this.authService.approveOrderSingle(this.clickOrderId, object).subscribe((res: any) => {
+        if (res.success == true) {
+          this.toastr.success('Success ', res.massage);
+          this.modalService.dismissAll();
+          this.errorMsg = false;
+          this.driverMsg = false;
+          this.ngOnInit();
+        } else {
+          this.toastr.error('Enter valid ', res.massage);
+        }
+      });
     }
   }
 
   getTypeFilter(value) {
-    const object = { deliveryType: value.deliveryType, orderStatus: value.orderStatus, type: value.type }
-    this.authService.getOrdersWithStatus(object).subscribe(
-      (res: any) => {
-        res.data.forEach(element => {
-          element.zoneName = element.deliveryAddress?.zoneName,
-            element.area = element.deliveryAddress?.area,
-            element.driverName = element.deliveryBoyDetail?.userName
-        });
-        this.getvalue = res.data;
-        this.dataSource = new MatTableDataSource(this.getvalue);
-        this.dataSource.paginator = this.matPaginator;
-        this.dataSource.sort = this.matSort;
+    const object = { deliveryType: value.deliveryType, orderStatus: value.orderStatus, type: value.type };
+    this.authService.getOrdersWithStatus(object).subscribe((res: any) => {
+      res.data.forEach((element) => {
+        ((element.zoneName = element.deliveryAddress?.zoneName),
+          (element.area = element.deliveryAddress?.area),
+          (element.driverName = element.deliveryBoyDetail?.userName));
       });
+      this.getvalue = res.data;
+      this.dataSource = new MatTableDataSource(this.getvalue);
+      this.dataSource.paginator = this.matPaginator;
+      this.dataSource.sort = this.matSort;
+    });
   }
 
   onChangeFilter(value) {
     this.deliveryType = value;
-    if (this.deliveryType == "1") {
-      const object = { deliveryType: 1, orderStatus: 'UNAVAILABLE', type: this.userFlowType }
-      this.getTypeFilter(object)
+    if (this.deliveryType == '1') {
+      const object = { deliveryType: 1, orderStatus: 'UNAVAILABLE', type: this.userFlowType };
+      this.getTypeFilter(object);
     } else {
-      const object = { deliveryType: 0, orderStatus: 'UNAVAILABLE', type: this.userFlowType }
-      this.getTypeFilter(object)
+      const object = { deliveryType: 0, orderStatus: 'UNAVAILABLE', type: this.userFlowType };
+      this.getTypeFilter(object);
     }
   }
 
   onChangeFlowTypeFilter(value) {
     this.userFlowType = value;
-    const object = { deliveryType: this.deliveryType, orderStatus: 'UNAVAILABLE', type: this.userFlowType }
-    this.getTypeFilter(object)
+    const object = { deliveryType: this.deliveryType, orderStatus: 'UNAVAILABLE', type: this.userFlowType };
+    this.getTypeFilter(object);
   }
-
 }

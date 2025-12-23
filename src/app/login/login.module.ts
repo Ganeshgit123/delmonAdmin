@@ -13,11 +13,11 @@ const routes: Routes = [
       {
         path: '',
         redirectTo: 'login',
-        pathMatch: 'full'
+        pathMatch: 'full',
       },
-    ]
+    ],
   },
-]
+];
 
 @NgModule({
   declarations: [],
@@ -27,7 +27,7 @@ const routes: Routes = [
     ReactiveFormsModule,
     TranslateModule,
     LoginComponent,
-    RouterModule.forChild(routes)
-  ]
+    RouterModule.forChild(routes),
+  ],
 })
-export class AuthModule { }
+export class AuthModule {}

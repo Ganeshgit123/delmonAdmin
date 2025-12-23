@@ -1,21 +1,21 @@
 <div class="d-flex justify-content-between align-items-center flex-wrap grid-margin">
   <div>
-    <h2 class="mb-3 mb-md-0">{{"Celebrity Coupons" | translate}}</h2>
+    <h2 class="mb-3 mb-md-0">{{ 'Celebrity Coupons' | translate }}</h2>
   </div>
 </div>
 <div class="row">
   <div class="col-md-3">
     <mat-form-field appearance="standard">
-      <mat-label>{{"Search" | translate}}</mat-label>
-      <input matInput (keyup)="applyFilter($event)" placeholder="{{'Search' | translate}}" #input>
+      <mat-label>{{ 'Search' | translate }}</mat-label>
+      <input matInput (keyup)="applyFilter($event)" placeholder="{{ 'Search' | translate }}" #input />
     </mat-form-field>
   </div>
   <div class="col-md-5"></div>
   @if (showAccept) {
     <div class="col-md-4">
-      <div style="text-align:end;" class="add_popup_btn">
+      <div style="text-align: end" class="add_popup_btn">
         <a href="javascript:void(0);" class="btn btn-own mb-2" (click)="openModal(content)">
-          {{"CreateCoupon" | translate}}
+          {{ 'CreateCoupon' | translate }}
         </a>
       </div>
     </div>
@@ -25,10 +25,10 @@
 <ng-template #content role="document" let-modal="close">
   <div class="modal-header">
     @if (!isEdit) {
-      <h5 class="modal-title">{{"CreateCoupon" | translate}}</h5>
+      <h5 class="modal-title">{{ 'CreateCoupon' | translate }}</h5>
     }
     @if (isEdit) {
-      <h5 class="modal-title">{{"EditCoupon" | translate}}</h5>
+      <h5 class="modal-title">{{ 'EditCoupon' | translate }}</h5>
     }
     <button type="button" class="close" aria-label="Close" (click)="modal('Cross click')">
       <span aria-checked="true">&times;</span>
@@ -39,110 +39,143 @@
       <div class="row">
         <div class="col-md-6">
           <div class="form-group">
-            <label for="name">{{"CounponNameEN" | translate}}</label>
-            <input type="text" class="form-control" placeholder="{{'CounponNameEN' |translate}}"
+            <label for="name">{{ 'CounponNameEN' | translate }}</label>
+            <input
+              type="text"
+              class="form-control"
+              placeholder="{{ 'CounponNameEN' | translate }}"
               formControlName="enCouponName"
-              [ngClass]="{ 'is-invalid': submitted && f.enCouponName.errors }">
+              [ngClass]="{ 'is-invalid': submitted && f.enCouponName.errors }"
+            />
             @if (submitted && f.enCouponName.errors) {
               <div class="invalid-feedback">
                 @if (f.enCouponName.errors.required) {
-                  <div>{{"Name is required" | translate}}</div>
+                  <div>{{ 'Name is required' | translate }}</div>
                 }
               </div>
             }
           </div>
           <div class="form-group">
-            <label for="name">{{"DiscountPercentage" | translate}} (%)</label>
-            <input type="number" class="form-control" placeholder="{{'CouponCode' |translate}}"
+            <label for="name">{{ 'DiscountPercentage' | translate }} (%)</label>
+            <input
+              type="number"
+              class="form-control"
+              placeholder="{{ 'CouponCode' | translate }}"
               formControlName="discountPercentage"
-              [ngClass]="{ 'is-invalid': submitted && f.discountPercentage.errors }">
+              [ngClass]="{ 'is-invalid': submitted && f.discountPercentage.errors }"
+            />
             @if (submitted && f.discountPercentage.errors) {
               <div class="invalid-feedback">
                 @if (f.discountPercentage.errors.required) {
-                  <div>{{"discountRequired" | translate}}</div>
+                  <div>{{ 'discountRequired' | translate }}</div>
                 }
               </div>
             }
           </div>
           <div class="form-group">
-            <label for="name">{{"CouponCode" | translate}} ({{"EnterEnglishWords" | translate}})</label>
-            <input type="text" class="form-control" placeholder="{{'CouponCode' |translate}}"
-              formControlName="couponCode" (input)="onCouponInput($event)" (paste)="onCouponPaste($event)"
-              [ngClass]="{ 'is-invalid': submitted && f.couponCode.errors }">
+            <label for="name">{{ 'CouponCode' | translate }} ({{ 'EnterEnglishWords' | translate }})</label>
+            <input
+              type="text"
+              class="form-control"
+              placeholder="{{ 'CouponCode' | translate }}"
+              formControlName="couponCode"
+              (input)="onCouponInput($event)"
+              (paste)="onCouponPaste($event)"
+              [ngClass]="{ 'is-invalid': submitted && f.couponCode.errors }"
+            />
             @if (submitted && f.couponCode.errors) {
               <div class="invalid-feedback">
                 @if (f.couponCode.errors.required) {
-                  <div>{{"CouponCodeRequired" | translate}}</div>
+                  <div>{{ 'CouponCodeRequired' | translate }}</div>
                 }
               </div>
             }
           </div>
           <div class="form-group">
-            <label for="name">{{"DescriptionEN" | translate}}</label>
-            <textarea class="form-control" placeholder="{{'DescriptionEN' |translate}}"
+            <label for="name">{{ 'DescriptionEN' | translate }}</label>
+            <textarea
+              class="form-control"
+              placeholder="{{ 'DescriptionEN' | translate }}"
               formControlName="enDescription"
-            [ngClass]="{ 'is-invalid': submitted && f.enDescription.errors }"></textarea>
+              [ngClass]="{ 'is-invalid': submitted && f.enDescription.errors }"
+            ></textarea>
             @if (submitted && f.enDescription.errors) {
               <div class="invalid-feedback">
                 @if (f.enDescription.errors.required) {
-                  <div>{{"Description is required" | translate}}</div>
+                  <div>{{ 'Description is required' | translate }}</div>
                 }
               </div>
             }
           </div>
           <div class="form-group">
-            <label for="name">{{"ExpiryDate" | translate}}</label>
-            <input type="date" class="form-control" formControlName="expiryDate">
+            <label for="name">{{ 'ExpiryDate' | translate }}</label>
+            <input type="date" class="form-control" formControlName="expiryDate" />
           </div>
         </div>
         <div class="col-md-6">
           <div class="form-group">
-            <label for="name">{{"CounponNameAR" | translate}}</label>
-            <input type="text" class="form-control" placeholder="{{'CounponNameAR' |translate}}"
+            <label for="name">{{ 'CounponNameAR' | translate }}</label>
+            <input
+              type="text"
+              class="form-control"
+              placeholder="{{ 'CounponNameAR' | translate }}"
               formControlName="arCouponName"
-              [ngClass]="{ 'is-invalid': submitted && f.arCouponName.errors }">
+              [ngClass]="{ 'is-invalid': submitted && f.arCouponName.errors }"
+            />
             @if (submitted && f.arCouponName.errors) {
               <div class="invalid-feedback">
                 @if (f.arCouponName.errors.required) {
-                  <div>{{"Arabic Name is required" | translate}}</div>
+                  <div>{{ 'Arabic Name is required' | translate }}</div>
                 }
               </div>
             }
           </div>
           <div class="form-group">
-            <label for="name">{{"Title" | translate}}</label>
-            <input type="text" class="form-control" placeholder="{{'Title' |translate}}"
-              formControlName="title" [ngClass]="{ 'is-invalid': submitted && f.title.errors }">
+            <label for="name">{{ 'Title' | translate }}</label>
+            <input
+              type="text"
+              class="form-control"
+              placeholder="{{ 'Title' | translate }}"
+              formControlName="title"
+              [ngClass]="{ 'is-invalid': submitted && f.title.errors }"
+            />
             @if (submitted && f.title.errors) {
               <div class="invalid-feedback">
                 @if (f.title.errors.required) {
-                  <div>{{"TitleRequire" | translate}}</div>
+                  <div>{{ 'TitleRequire' | translate }}</div>
                 }
               </div>
             }
           </div>
           <div class="form-group">
-            <label for="name">{{"MaximumDiscount" | translate}}</label>
-            <input type="number" class="form-control" placeholder="{{'MaximumDiscount' |translate}}"
+            <label for="name">{{ 'MaximumDiscount' | translate }}</label>
+            <input
+              type="number"
+              class="form-control"
+              placeholder="{{ 'MaximumDiscount' | translate }}"
               formControlName="maximumDiscount"
-              [ngClass]="{ 'is-invalid': submitted && f.maximumDiscount.errors }">
+              [ngClass]="{ 'is-invalid': submitted && f.maximumDiscount.errors }"
+            />
             @if (submitted && f.maximumDiscount.errors) {
               <div class="invalid-feedback">
                 @if (f.maximumDiscount.errors.required) {
-                  <div>{{"maxDiscountRequired" | translate}}</div>
+                  <div>{{ 'maxDiscountRequired' | translate }}</div>
                 }
               </div>
             }
           </div>
           <div class="form-group">
-            <label for="name">{{"DescriptionAR" | translate}}</label>
-            <textarea class="form-control" placeholder="{{'DescriptionEN' |translate}}"
+            <label for="name">{{ 'DescriptionAR' | translate }}</label>
+            <textarea
+              class="form-control"
+              placeholder="{{ 'DescriptionEN' | translate }}"
               formControlName="arDescription"
-            [ngClass]="{ 'is-invalid': submitted && f.arDescription.errors }"></textarea>
+              [ngClass]="{ 'is-invalid': submitted && f.arDescription.errors }"
+            ></textarea>
             @if (submitted && f.arDescription.errors) {
               <div class="invalid-feedback">
                 @if (f.arDescription.errors.required) {
-                  <div>{{"ARDescriptionRequired" | translate}}</div>
+                  <div>{{ 'ARDescriptionRequired' | translate }}</div>
                 }
               </div>
             }
@@ -151,67 +184,68 @@
       </div>
     </form>
     <div class="text-right">
-      <button type="submit" class="btn btn-own" (click)="onSubmitData()">{{"Save" | translate}}</button>
-      <button type="button" class="btn btn-own-cancel ml-1" (click)="modal('close click')">{{"Cancel" |
-      translate}}</button>
+      <button type="submit" class="btn btn-own" (click)="onSubmitData()">{{ 'Save' | translate }}</button>
+      <button type="button" class="btn btn-own-cancel ml-1" (click)="modal('close click')">
+        {{ 'Cancel' | translate }}
+      </button>
     </div>
   </div>
 </ng-template>
 
 <div class="mat-elevation-z8">
   <table class="table" mat-table [dataSource]="dataSource" matSort>
-
     <ng-container matColumnDef="index">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>{{"S.No" | translate}}</th>
-      <td mat-cell *matCellDef="let element; let i = index;"> {{matPaginator.pageSize * matPaginator.pageIndex + i
-      + 1}} </td>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'S.No' | translate }}</th>
+      <td mat-cell *matCellDef="let element; let i = index">
+        {{ matPaginator.pageSize * matPaginator.pageIndex + i + 1 }}
+      </td>
     </ng-container>
 
     <ng-container matColumnDef="enCouponName">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"CounponName" | translate}} </th>
-      <td mat-cell *matCellDef="let element"> {{element.enCouponName}} / {{element.arCouponName}}</td>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'CounponName' | translate }}</th>
+      <td mat-cell *matCellDef="let element">{{ element.enCouponName }} / {{ element.arCouponName }}</td>
     </ng-container>
 
     <ng-container matColumnDef="couponCode">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"CouponCode" | translate}} </th>
-      <td mat-cell *matCellDef="let element"> {{element.couponCode}} </td>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'CouponCode' | translate }}</th>
+      <td mat-cell *matCellDef="let element">{{ element.couponCode }}</td>
     </ng-container>
 
     <ng-container matColumnDef="discountPercentage">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"DiscountPercentage" | translate}} </th>
-      <td mat-cell *matCellDef="let element"> {{element.discountPercentage}} </td>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'DiscountPercentage' | translate }}</th>
+      <td mat-cell *matCellDef="let element">{{ element.discountPercentage }}</td>
     </ng-container>
 
     <ng-container matColumnDef="maximumDiscount">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"MaximumDiscount" | translate}} </th>
-      <td mat-cell *matCellDef="let element"> {{element.maximumDiscount}} </td>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'MaximumDiscount' | translate }}</th>
+      <td mat-cell *matCellDef="let element">{{ element.maximumDiscount }}</td>
     </ng-container>
 
     <ng-container matColumnDef="title">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"Title" | translate}} </th>
-      <td mat-cell *matCellDef="let element"> {{element.title}} </td>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'Title' | translate }}</th>
+      <td mat-cell *matCellDef="let element">{{ element.title }}</td>
     </ng-container>
 
     <ng-container matColumnDef="enDescription">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"Description" | translate}} </th>
-      <td mat-cell *matCellDef="let element"> {{element.enDescription}} / {{element.arDescription}}</td>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'Description' | translate }}</th>
+      <td mat-cell *matCellDef="let element">{{ element.enDescription }} / {{ element.arDescription }}</td>
     </ng-container>
 
     <ng-container matColumnDef="expiryDate">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"ExpiryDate" | translate}} </th>
-      <td mat-cell *matCellDef="let element"> {{element.expiryDate}}</td>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'ExpiryDate' | translate }}</th>
+      <td mat-cell *matCellDef="let element">{{ element.expiryDate }}</td>
     </ng-container>
 
     <ng-container matColumnDef="rowActionToggle">
-      <th mat-header-cell *matHeaderCellDef>{{"Status" | translate}}</th>
+      <th mat-header-cell *matHeaderCellDef>{{ 'Status' | translate }}</th>
       <td mat-cell *matCellDef="let element" class="text-center">
         <button (change)="changeStatus(element)" class="tog_btn">
           <label class="switch">
             @if (element.active !== 1) {
-              <input unchecked type="checkbox">
+              <input unchecked type="checkbox" />
             }
             @if (element.active == 1) {
-              <input checked type="checkbox">
+              <input checked type="checkbox" />
             }
             <span class="slider"></span>
           </label>
@@ -220,27 +254,29 @@
     </ng-container>
 
     <ng-container matColumnDef="rowActionIcon">
-      <th mat-header-cell *matHeaderCellDef>{{"Action" | translate}}</th>
+      <th mat-header-cell *matHeaderCellDef>{{ 'Action' | translate }}</th>
       <td mat-cell *matCellDef="let element" class="text-center">
-        <button mat-button (click)="editCoupon(element,content)" class="edit_btn">
-          <img src="assets/images/edit_icon.svg" onmouseover="this.src='assets/images/edit_hover_icon.svg'"
-            onmouseout="this.src='assets/images/edit_icon.svg'">
-          </button>
-          <!-- <button mat-button (click)="deleteCoupon(element.id)" class="dele_btn">
+        <button mat-button (click)="editCoupon(element, content)" class="edit_btn">
+          <img
+            src="assets/images/edit_icon.svg"
+            onmouseover="this.src = 'assets/images/edit_hover_icon.svg'"
+            onmouseout="this.src = 'assets/images/edit_icon.svg'"
+          />
+        </button>
+        <!-- <button mat-button (click)="deleteCoupon(element.id)" class="dele_btn">
           <img src="assets/images/delete_icon.svg"
             onmouseover="this.src='assets/images/delete_hover_icon.svg'"
             onmouseout="this.src='assets/images/delete_icon.svg'">
           </button> -->
-        </td>
-      </ng-container>
+      </td>
+    </ng-container>
 
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
 
-      <tr class="mat-row" *matNoDataRow>
-        <td class="mat-cell text-center" colspan="9">{{"No data found" | translate}}</td>
-      </tr>
-    </table>
-    <mat-paginator [pageSizeOptions]="[10, 20, 25]" showFirstLastButtons></mat-paginator>
-
-  </div>
+    <tr class="mat-row" *matNoDataRow>
+      <td class="mat-cell text-center" colspan="9">{{ 'No data found' | translate }}</td>
+    </tr>
+  </table>
+  <mat-paginator [pageSizeOptions]="[10, 20, 25]" showFirstLastButtons></mat-paginator>
+</div>

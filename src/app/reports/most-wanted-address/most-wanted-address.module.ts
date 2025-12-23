@@ -6,19 +6,17 @@ import { NgMaterialModule } from '../../ng-material.module';
 import { TranslateModule } from '@ngx-translate/core';
 
 @NgModule({
-  declarations: [
-    MostWantedAddressComponent
-  ],
+  declarations: [MostWantedAddressComponent],
   imports: [
     CommonModule,
     RouterModule.forChild([
       {
-        path: "",
-        component: MostWantedAddressComponent
-      }
+        path: '',
+        component: MostWantedAddressComponent,
+      },
     ]),
     NgMaterialModule,
     TranslateModule,
-  ]
+  ],
 })
-export class MostWantedAddressModule { }
+export class MostWantedAddressModule {}
