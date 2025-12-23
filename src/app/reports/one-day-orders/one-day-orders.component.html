@@ -150,10 +150,10 @@
             }
             <br />
             {{ 'Weight' | translate }} : {{ item.weight }}
-            @if (item.cartonActive == 1) {
+            @if (item.cartonActive === 1) {
               <span>({{ 'Carton' | translate }})</span>
             }
-            @if (item.piecesActive == 1) {
+            @if (item.piecesActive === 1) {
               <span>({{ 'Piece' | translate }})</span>
             }
             <br />
@@ -199,10 +199,10 @@
     <ng-container matColumnDef="deliveryDate">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'DeliveryDate' | translate }}</th>
       <td mat-cell *matCellDef="let element">
-        @if (element.newDeliveryDate == null) {
+        @if (element.newDeliveryDate === null) {
           <span>{{ element.deliveryOrderDate }}</span>
         }
-        @if (element.newDeliveryDate != null) {
+        @if (element.newDeliveryDate !== null) {
           <span>{{ element.newDeliveryDate }}</span>
         }
       </td>

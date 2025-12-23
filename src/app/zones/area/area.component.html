@@ -108,7 +108,7 @@
             @if (element.active !== 1) {
               <input unchecked type="checkbox" />
             }
-            @if (element.active == 1) {
+            @if (element.active === 1) {
               <input checked type="checkbox" />
             }
             <span class="slider"></span>
@@ -135,6 +135,7 @@
                 src="assets/images/edit_icon.svg"
                 onmouseover="this.src = 'assets/images/edit_hover_icon.svg'"
                 onmouseout="this.src = 'assets/images/edit_icon.svg'"
+                alt="Edit"
               />
             </button>
           </span>

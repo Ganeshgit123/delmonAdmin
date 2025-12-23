@@ -86,10 +86,10 @@
     <ng-container matColumnDef="deliveryCost">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'Delivery Charge' | translate }}</th>
       <td mat-cell *matCellDef="let element">
-        @if (element.deliveryAddress == null) {
+        @if (element.deliveryAddress === null) {
           <span></span>
         }
-        @if (element.deliveryAddress != null) {
+        @if (element.deliveryAddress !== null) {
           <span>{{ element.deliveryAddress?.deliveryCharge }} BD</span>
         }
       </td>
@@ -137,10 +137,10 @@
     <ng-container matColumnDef="deliveryDate">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'DeliveryDate' | translate }}</th>
       <td mat-cell *matCellDef="let element">
-        @if (element.newDeliveryDate == null) {
+        @if (element.newDeliveryDate === null) {
           <span>{{ element.deliveryOrderDate }}</span>
         }
-        @if (element.newDeliveryDate != null) {
+        @if (element.newDeliveryDate !== null) {
           <span>{{ element.newDeliveryDate }}</span>
         }
       </td>

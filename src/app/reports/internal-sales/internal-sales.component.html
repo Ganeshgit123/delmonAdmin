@@ -111,10 +111,10 @@
         @for (item of element.cartDetails; track item) {
           <p>
             {{ item.weight }}
-            @if (item.cartonActive == 1) {
+            @if (item.cartonActive === 1) {
               <span>({{ 'Carton' | translate }})</span>
             }
-            @if (item.piecesActive == 1) {
+            @if (item.piecesActive === 1) {
               <span>({{ 'Piece' | translate }})</span>
             }
           </p>

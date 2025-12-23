@@ -12,10 +12,10 @@
     <div class="img_upload">
       <label for="customFile">
         @if (!iconImg) {
-          <img class="upload-img" src="assets/images/upload_img.png" />
+          <img class="upload-img" src="assets/images/upload_img.png" alt="Upload placeholder" />
         }
         @if (iconImg) {
-          <img class="upload-img" src="{{ iconImg }}" />
+          <img class="upload-img" src="{{ iconImg }}" alt="Selected image preview" />
         }
       </label>
       @if (iconImg) {
@@ -31,10 +31,10 @@
     <div class="img_upload">
       <label for="customFile1">
         @if (!ariconImg) {
-          <img class="upload-img" src="assets/images/upload_img.png" />
+          <img class="upload-img" src="assets/images/upload_img.png" alt="Upload placeholder" />
         }
         @if (ariconImg) {
-          <img class="upload-img" src="{{ ariconImg }}" />
+          <img class="upload-img" src="{{ ariconImg }}" alt="Selected image preview" />
         }
       </label>
       @if (ariconImg) {
