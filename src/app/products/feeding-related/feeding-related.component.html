@@ -8,30 +8,38 @@
   <div class="form-group">
     <div class="row">
       <div class="col-md-4">
-        <label for="name">{{ 'Select Category' | translate }}</label>
-        <select #teams class="form-control" formControlName="categoryId" class="form-control">
+        <label for="categoryId">{{ 'Select Category' | translate }}</label>
+        <select
+          #teams
+          class="form-control"
+          formControlName="categoryId"
+          class="form-control"
+          id="categoryId"
+        >
           @for (item of getCategory; track item) {
             <option selected disabled value="{{ item.id }}">{{ item.enName }} / {{ item.arName }}</option>
           }
         </select>
       </div>
       <div class="col-md-4">
-        <label for="name">{{ 'ProductNameEN' | translate }}</label>
+        <label for="enProductName">{{ 'ProductNameEN' | translate }}</label>
         <input
           type="text"
           class="form-control"
           formControlName="enProductName"
           placeholder="{{ 'ProductNameEN' | translate }}"
+          id="enProductName"
           readonly
         />
       </div>
       <div class="col-md-4">
-        <label for="name">{{ 'ProductNameAR' | translate }}</label>
+        <label for="arProductName">{{ 'ProductNameAR' | translate }}</label>
         <input
           type="text"
           class="form-control"
           formControlName="arProductName"
           placeholder="{{ 'ProductNameAR' | translate }}"
+          id="arProductName"
           readonly
         />
       </div>
@@ -39,7 +47,7 @@
   </div>
 </form>
 <br />
-@if (piecesActive == 1) {
+@if (piecesActive === 1) {
   <div class="bord_line">
     <div class="row">
       <div class="col-md-12">
@@ -71,7 +79,9 @@
                     <div class="row mb-3">
                       <div class="col-md-3">
                         <div class="form-group">
-                          <label for="name">{{ 'Weight' | translate }} ({{ 'ShouldinGrams' | translate }})</label>
+                          <label [attr.for]="'weight-' + i">
+                            {{ 'Weight' | translate }} ({{ 'ShouldinGrams' | translate }})
+                          </label>
                           <input
                             type="text"
                             pattern="\d*"
@@ -79,13 +89,19 @@
                             formControlName="weight"
                             inputmode="numeric"
                             oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                            [attr.id]="'weight-' + i"
                           />
                         </div>
                       </div>
                       <div class="col-md-2">
                         <div class="form-group">
-                          <label for="name">{{ 'No. of Pieces' | translate }}</label>
-                          <input type="number" class="form-control" formControlName="noOfPieces" />
+                          <label [attr.for]="'noOfPieces-' + i">{{ 'No. of Pieces' | translate }}</label>
+                          <input
+                            type="number"
+                            class="form-control"
+                            formControlName="noOfPieces"
+                            [attr.id]="'noOfPieces-' + i"
+                          />
                         </div>
                       </div>
                       <!-- <div class="col-md-2">
@@ -102,13 +118,18 @@
                       @if (showAccept) {
                         @if (comp.value.isEdit) {
                           <div class="col-md-1">
-                            <label class="switch inner" (change)="changeProdStatus(comp.value)">
-                              @if (comp.value.active !== 1) {
-                                <input unchecked type="checkbox" />
-                              }
-                              @if (comp.value.active == 1) {
-                                <input checked type="checkbox" />
-                              }
+                            <input
+                              type="checkbox"
+                              [checked]="comp.value.active === 1"
+                              (change)="changeProdStatus(comp.value)"
+                              [attr.id]="'piece-active-' + i"
+                              class="visually-hidden"
+                            />
+                            <label
+                              class="switch inner"
+                              [attr.for]="'piece-active-' + i"
+                              aria-label="Toggle active"
+                            >
                               <span class="slider"></span>
                             </label>
                           </div>

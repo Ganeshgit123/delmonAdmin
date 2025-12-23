@@ -50,7 +50,7 @@ export class PoultryRelatedComponent implements OnInit {
 
   ngOnInit(): void {
     this.callRolePermission();
-    if (sessionStorage.getItem('roleName') == 'superAdmin') {
+    if (sessionStorage.getItem('roleName') === 'superAdmin') {
       this.superAdminRole = true;
     } else {
       this.superAdminRole = false;
@@ -71,11 +71,11 @@ export class PoultryRelatedComponent implements OnInit {
       });
 
       // delete the firstobject because firstobject is a main product object
-      const deleteFirstObject = res.data.shift();
+      const _deleteFirstObject = res.data.shift();
 
       // filter the old related product with soldType = 1 for piece
       this.pieceRelatedArray = res.data.filter((element) => {
-        return element.soldType == 1;
+        return element.soldType === 1;
       });
 
       // for pass old values to new formbuilder
@@ -93,7 +93,7 @@ export class PoultryRelatedComponent implements OnInit {
 
       // filter the old related product with soldType = 2 for carton
       this.cartonRelatedArray = res.data.filter((element) => {
-        return element.soldType == 2;
+        return element.soldType === 2;
       });
 
       // for pass old values to new formbuilder
@@ -119,7 +119,8 @@ export class PoultryRelatedComponent implements OnInit {
   callRolePermission() {
     if (sessionStorage.getItem('roleName') !== 'superAdmin') {
       const settingPermssion = JSON.parse(sessionStorage.getItem('permission'));
-      const orderPermission = settingPermssion?.find((ele) => ele.area == 'products')?.write == 1;
+      const orderPermission =
+        settingPermssion?.find((ele) => ele.area === 'products')?.write === 1;
       // console.log("fef",orderPermission)
       this.showAccept = orderPermission;
     }
@@ -234,7 +235,7 @@ export class PoultryRelatedComponent implements OnInit {
 
     // console.log("merge", object)
     this.authService.addReletedProduct(object).subscribe((res: any) => {
-      if (res.error == false) {
+      if (res.error === false) {
         this.toastr.success('Success ', res.message);
         this.modalService.dismissAll();
         this.ngOnInit();
@@ -250,7 +251,7 @@ export class PoultryRelatedComponent implements OnInit {
     // console.log("fef",object,value.id)
 
     this.authService.editProduct(object, value.id).subscribe((res: any) => {
-      if (res.error == false) {
+      if (res.error === false) {
         this.toastr.success('Success ', res.message);
         this.ngOnInit();
       } else {
@@ -265,7 +266,7 @@ export class PoultryRelatedComponent implements OnInit {
     // console.log("fef",object,value.id)
 
     this.authService.editProduct(object, value.id).subscribe((res: any) => {
-      if (res.error == false) {
+      if (res.error === false) {
         this.toastr.success('Success ', res.message);
         this.ngOnInit();
       } else {
@@ -282,13 +283,13 @@ export class PoultryRelatedComponent implements OnInit {
     const keyToRemove = 'isEdit';
     // Remove the specified key from all objects in the array
     const newArray = editArray.map((obj) => {
-      const { [keyToRemove]: removedKey, ...rest } = obj;
+      const { [keyToRemove]: _removedKey, ...rest } = obj;
       return rest;
     });
     const object = { product: newArray };
     // console.log("fdswef", object)
     this.authService.editReletedProduct(object).subscribe((res: any) => {
-      if (res.error == false) {
+      if (res.error === false) {
         this.toastr.success('Success ', res.message);
         this.modalService.dismissAll();
         this.ngOnInit();

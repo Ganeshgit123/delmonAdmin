@@ -364,11 +364,7 @@ export class BasketComponent implements OnInit, AfterViewInit {
   }
 
   changeStatus(value) {
-    if (value.active === 1) {
-      var visible = 0;
-    } else {
-      var visible = 1;
-    }
+    const visible = value.active === 1 ? 0 : 1;
     const object = { active: visible };
 
     this.authService.editProduct(object, value.id).subscribe((res: any) => {
