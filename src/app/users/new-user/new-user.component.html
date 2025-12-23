@@ -52,7 +52,7 @@
                   class="form-control"
                   placeholder="{{ 'PhoneNumber' | translate }}"
                   formControlName="mobileNumber"
-                  onKeyPress="if(this.value.length==8) return false;"
+                  onKeyPress="if(this.value.length===8) return false;"
                   [ngClass]="{ 'is-invalid': submitted && f['mobileNumber'].errors }"
                 />
                 @if (submitted && f['mobileNumber'].errors) {
@@ -105,7 +105,7 @@
                   class="form-control"
                   placeholder="{{ 'PhoneNumber' | translate }}"
                   formControlName="mobileNumber"
-                  onKeyPress="if(this.value.length==8) return false;"
+                  onKeyPress="if(this.value.length===8) return false;"
                   [ngClass]="{ 'is-invalid': submitted && empf.mobileNumber.errors }"
                 />
                 @if (submitted && empf['mobileNumber'].errors) {
@@ -177,7 +177,7 @@
                   class="form-control"
                   placeholder="{{ 'PhoneNumber' | translate }}"
                   formControlName="mobileNumber"
-                  onKeyPress="if(this.value.length==8) return false;"
+                  onKeyPress="if(this.value.length===8) return false;"
                   [ngClass]="{ 'is-invalid': submitted && merchantf.mobileNumber.errors }"
                 />
                 @if (submitted && merchantf['mobileNumber'].errors) {

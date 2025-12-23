@@ -27,10 +27,10 @@
 
 <ng-template #basket role="document" let-modal="close">
   <div class="modal-header">
-    @if (isBasketEdit == false) {
+    @if (isBasketEdit === false) {
       <h5 class="modal-title">{{ 'Add Basket' | translate }}</h5>
     }
-    @if (isBasketEdit == true) {
+    @if (isBasketEdit === true) {
       <h5 class="modal-title">{{ 'Edit Basket' | translate }}</h5>
     }
     <button type="button" class="close" aria-label="Close" (click)="modal('Cross click')">
@@ -42,12 +42,13 @@
       <div class="form-group">
         <div class="row">
           <div class="col-md-6">
-            <label for="name">{{ 'BasketNameEnglish' | translate }}</label>
+            <label for="enProductName">{{ 'BasketNameEnglish' | translate }}</label>
             <input
               type="text"
               class="form-control"
               placeholder="{{ 'BasketNameEnglish' | translate }}"
               formControlName="enProductName"
+              id="enProductName"
               [ngClass]="{ 'is-invalid': submitted && f.enProductName.errors }"
             />
             @if (submitted && f.enProductName.errors) {
@@ -59,12 +60,13 @@
             }
           </div>
           <div class="col-md-6">
-            <label for="name">{{ 'BasketNameArabic' | translate }}</label>
+            <label for="arProductName">{{ 'BasketNameArabic' | translate }}</label>
             <input
               type="text"
               class="form-control"
               placeholder="{{ 'BasketNameArabic' | translate }}"
               formControlName="arProductName"
+              id="arProductName"
               [ngClass]="{ 'is-invalid': submitted && f.arProductName.errors }"
             />
             @if (submitted && f.arProductName.errors) {
@@ -78,22 +80,22 @@
         </div>
       </div>
       <div class="form-group text-center">
-        <label for="name">{{ 'Image' | translate }}</label>
+        <label for="customFile">{{ 'Image' | translate }}</label>
         <div class="img_upload">
           <label for="customFile">
             <p class="text-center">
               @if (!iconImg && !prodImg) {
-                <img class="upload-img" src="assets/images/upload_img.png" />
+                <img class="upload-img" src="assets/images/upload_img.png" alt="Upload placeholder" />
               }
             </p>
             <p class="text-center">
               @if (iconImg && !prodImg) {
-                <img class="upload-img" src="{{ iconImg }}" />
+                <img class="upload-img" src="{{ iconImg }}" alt="Icon preview" />
               }
             </p>
             <p class="text-center">
               @if (prodImg) {
-                <img class="upload-img" src="{{ prodImg }}" />
+                <img class="upload-img" src="{{ prodImg }}" alt="Product preview" />
               }
             </p>
           </label>
@@ -151,35 +153,37 @@
     <ng-container matColumnDef="rowActionToggle">
       <th mat-header-cell *matHeaderCellDef>{{ 'Status' | translate }}</th>
       <td mat-cell *matCellDef="let element" class="text-center">
-        <button (change)="changeStatus(element)" class="tog_btn">
-          <label class="switch">
-            @if (element.active !== 1) {
-              <input unchecked type="checkbox" />
-            }
-            @if (element.active == 1) {
-              <input checked type="checkbox" />
-            }
+        <div class="tog_btn">
+          <input
+            type="checkbox"
+            [checked]="element.active === 1"
+            (change)="changeStatus(element)"
+            [attr.id]="'active-' + element.id"
+          />
+          <label class="switch" [attr.for]="'active-' + element.id">
             <span class="slider"></span>
           </label>
-        </button>
+        </div>
       </td>
     </ng-container>
 
     <ng-container matColumnDef="rowActionIcon">
       <th mat-header-cell *matHeaderCellDef>{{ 'Action' | translate }}</th>
       <td mat-cell *matCellDef="let element" class="text-center">
-        <button mat-button (click)="editBasket(element, basket)" class="edit_btn">
+        <button mat-button (click)="editBasket(element, basket)" class="edit_btn" aria-label="Edit basket">
           <img
             src="assets/images/edit_icon.svg"
             onmouseover="this.src = 'assets/images/edit_hover_icon.svg'"
             onmouseout="this.src = 'assets/images/edit_icon.svg'"
+            alt="Edit"
           />
         </button>
-        <button mat-button (click)="deleteProduct(element.id)" class="dele_btn">
+        <button mat-button (click)="deleteProduct(element.id)" class="dele_btn" aria-label="Delete basket">
           <img
             src="assets/images/delete_icon.svg"
             onmouseover="this.src = 'assets/images/delete_hover_icon.svg'"
             onmouseout="this.src = 'assets/images/delete_icon.svg'"
+            alt="Delete"
           />
         </button>
       </td>
@@ -213,10 +217,10 @@
               @for (item of selectedProvince; track item) {
                 <mat-option [value]="item.id">
                   {{ item.enProductName }} ({{ item.weight }})
-                  @if (item.soldType == 1) {
+                  @if (item.soldType === 1) {
                     <span>({{ 'Piece' | translate }})</span>
                   }
-                  @if (item.soldType == 2) {
+                  @if (item.soldType === 2) {
                     <span>({{ 'Cartons' | translate }})</span>
                   }
                 </mat-option>
@@ -231,16 +235,16 @@
             <div class="col-md-4">
               <div class="row mb-3">
                 <div class="col-md-4">
-                  <img src="{{ item.image[0] }}" />
+                  <img src="{{ item.image[0] }}" alt="Product image" />
                 </div>
                 <div class="col-md-6">
                   <p class="mb-0">{{ item.name }}</p>
                   <p>{{ item.weight }}</p>
                 </div>
                 <div class="col-md-2">
-                  <p class="del_icon" (click)="removeImg(item.id)">
+                  <button class="del_icon btn btn-link p-0" type="button" (click)="removeImg(item.id)" (keyup.enter)="removeImg(item.id)" (keyup.space)="removeImg(item.id)" aria-label="Remove image">
                     <mat-icon>delete</mat-icon>
-                  </p>
+                  </button>
                 </div>
               </div>
             </div>

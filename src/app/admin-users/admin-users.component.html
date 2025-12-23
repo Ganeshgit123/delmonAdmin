@@ -142,13 +142,13 @@
     <ng-container matColumnDef="userType">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'User Types' | translate }}</th>
       <td mat-cell *matCellDef="let element">
-        @if (element.userType == 1) {
+        @if (element.userType === 1) {
           <span>{{ 'Poultry' | translate }}</span>
         }
-        @if (element.userType == 2) {
+        @if (element.userType === 2) {
           <span>{{ 'Feeding' | translate }}</span>
         }
-        @if (element.userType == 3) {
+        @if (element.userType === 3) {
           <span>{{ 'BothFlow' | translate }}</span>
         }
       </td>

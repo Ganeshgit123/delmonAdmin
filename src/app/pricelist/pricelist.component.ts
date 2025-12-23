@@ -10,6 +10,18 @@ import { ToastrService } from 'ngx-toastr';
 import Swal from 'sweetalert2';
 import { TranslateService } from '@ngx-translate/core';
 
+interface PriceListName {
+  id: number;
+  name: string;
+  active?: number;
+}
+
+interface ApiResponse<T> {
+  error: boolean;
+  message: string;
+  data: T;
+}
+
 @Component({
   selector: 'app-pricelist',
   templateUrl: './pricelist.component.html',
@@ -17,13 +29,12 @@ import { TranslateService } from '@ngx-translate/core';
 })
 export class PricelistComponent implements OnInit, AfterViewInit {
   displayedColumns: string[];
-  dataSource: MatTableDataSource<any>;
-  getvalue = [];
+  dataSource: MatTableDataSource<PriceListName>;
+  getvalue: PriceListName[] = [];
   priceListForm: FormGroup;
   isEdit = false;
-  bannerId: any;
   submitted = false;
-  priceNameId: any;
+  priceNameId: number | null = null;
   showAccept = true;
   superAdminRole = false;
 
@@ -41,7 +52,7 @@ export class PricelistComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.callRolePermission();
-    if (sessionStorage.getItem('roleName') == 'superAdmin') {
+    if (sessionStorage.getItem('roleName') === 'superAdmin') {
       this.superAdminRole = true;
     } else {
       this.superAdminRole = false;
@@ -49,7 +60,7 @@ export class PricelistComponent implements OnInit, AfterViewInit {
 
     this.displayedColumns = ['index', 'name', 'rowActionIcon'];
 
-    this.authService.getPriceListName().subscribe((res: any) => {
+    this.authService.getPriceListName().subscribe((res: ApiResponse<PriceListName[]>) => {
       this.getvalue = res.data;
       this.dataSource = new MatTableDataSource(this.getvalue);
       this.dataSource.paginator = this.matPaginator;
@@ -68,7 +79,7 @@ export class PricelistComponent implements OnInit, AfterViewInit {
   callRolePermission() {
     if (sessionStorage.getItem('roleName') !== 'superAdmin') {
       const settingPermssion = JSON.parse(sessionStorage.getItem('permission'));
-      const orderPermission = settingPermssion?.find((ele) => ele.area == 'priceList')?.write == 1;
+      const orderPermission = settingPermssion?.find((ele) => ele.area === 'priceList')?.write === 1;
       // console.log("fef",orderPermission)
       this.showAccept = orderPermission;
     }
@@ -87,7 +98,7 @@ export class PricelistComponent implements OnInit, AfterViewInit {
     }
   }
 
-  openModal(content) {
+  openModal(content: unknown) {
     this.priceListForm.reset();
     this.isEdit = false;
     this.modalService.open(content, { centered: true });
@@ -104,8 +115,8 @@ export class PricelistComponent implements OnInit, AfterViewInit {
       return;
     }
     this.submitted = false;
-    this.authService.addPriceListName(this.priceListForm.value).subscribe((res: any) => {
-      if (res.error == false) {
+    this.authService.addPriceListName(this.priceListForm.value).subscribe((res: ApiResponse<unknown>) => {
+      if (res.error === false) {
         this.toastr.success('Success ', res.message);
         this.priceListForm.reset();
         this.modalService.dismissAll();
@@ -116,19 +127,19 @@ export class PricelistComponent implements OnInit, AfterViewInit {
     });
   }
 
-  editPriceName(data, content) {
+  editPriceName(data: PriceListName, content: unknown) {
     this.modalService.open(content, { centered: true });
     this.isEdit = true;
-    this.priceNameId = data['id'];
+    this.priceNameId = data.id;
 
     this.priceListForm = this.fb.group({
-      name: [data['name']],
+      name: [data.name],
     });
   }
 
-  priceNameEditService(data) {
-    this.authService.editPriceListName(data, this.priceNameId).subscribe((res: any) => {
-      if (res.error == false) {
+  priceNameEditService(data: { name: string }) {
+    this.authService.editPriceListName(data, this.priceNameId as number).subscribe((res: ApiResponse<unknown>) => {
+      if (res.error === false) {
         this.toastr.success('Success ', res.message);
         this.priceListForm.reset();
         this.modalService.dismissAll();
@@ -139,7 +150,7 @@ export class PricelistComponent implements OnInit, AfterViewInit {
     });
   }
 
-  deletePriceName(value) {
+  deletePriceName(value: number) {
     Swal.fire({
       title: this.translate.instant('AreYouSure'),
       text: this.translate.instant('YouWontBeRevertThis'),
@@ -151,25 +162,25 @@ export class PricelistComponent implements OnInit, AfterViewInit {
       confirmButtonText: this.translate.instant('YesDeleteIt'),
     }).then((result) => {
       if (result.isConfirmed) {
-        (Swal.fire({
+        Swal.fire({
           title: this.translate.instant('Deleted'),
           text: this.translate.instant('YourFileHasBeenDeleted'),
           icon: 'success',
           confirmButtonText: this.translate.instant('Ok'),
-        }),
-          this.authService.deletePriceListName(value).subscribe((res: any) => {
-            if (res.error == false) {
-              this.toastr.success('Success ', res.message);
-              this.ngOnInit();
-            } else {
-              this.toastr.error('Error', res.message);
-            }
-          }));
+        });
+        this.authService.deletePriceListName(value).subscribe((res: ApiResponse<unknown>) => {
+          if (res.error === false) {
+            this.toastr.success('Success ', res.message);
+            this.ngOnInit();
+          } else {
+            this.toastr.error('Error', res.message);
+          }
+        });
       }
     });
   }
 
-  setPrice(id) {
+  setPrice(id: number) {
     this.router.navigate([`/assing_product_pricelist/${id}`]);
   }
 }

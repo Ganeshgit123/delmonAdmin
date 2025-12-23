@@ -83,79 +83,80 @@
     <ng-container matColumnDef="mostWantedProduct">
       <th mat-header-cell *matHeaderCellDef>{{ 'Most wanted product' | translate }}</th>
       <td mat-cell *matCellDef="let element" class="text-center">
-        <button (change)="changeMostWantedProduct(element)" class="tog_btn">
-          <label class="switch">
-            @if (element.mostWantedProduct !== 1) {
-              <input unchecked type="checkbox" />
-            }
-            @if (element.mostWantedProduct == 1) {
-              <input checked type="checkbox" />
-            }
+        <div class="tog_btn">
+          <input
+            type="checkbox"
+            [checked]="element.mostWantedProduct === 1"
+            (change)="changeMostWantedProduct(element)"
+            [attr.id]="'mostWanted-' + element.id"
+          />
+          <label class="switch" [attr.for]="'mostWanted-' + element.id">
             <span class="slider"></span>
           </label>
-        </button>
+        </div>
       </td>
     </ng-container>
 
     <ng-container matColumnDef="offers">
       <th mat-header-cell *matHeaderCellDef>{{ 'Offers' | translate }}</th>
       <td mat-cell *matCellDef="let element" class="text-center">
-        <button (change)="changeOffers(element)" class="tog_btn">
-          <label class="switch">
-            @if (element.offers !== 1) {
-              <input unchecked type="checkbox" />
-            }
-            @if (element.offers == 1) {
-              <input checked type="checkbox" />
-            }
+        <div class="tog_btn">
+          <input
+            type="checkbox"
+            [checked]="element.offers === 1"
+            (change)="changeOffers(element)"
+            [attr.id]="'offers-' + element.id"
+          />
+          <label class="switch" [attr.for]="'offers-' + element.id">
             <span class="slider"></span>
           </label>
-        </button>
+        </div>
       </td>
     </ng-container>
 
     <ng-container matColumnDef="newProduct">
       <th mat-header-cell *matHeaderCellDef>{{ 'New Product' | translate }}</th>
       <td mat-cell *matCellDef="let element" class="text-center">
-        <button (change)="changeNewProduct(element)" class="tog_btn">
-          <label class="switch">
-            @if (element.newProduct !== 1) {
-              <input unchecked type="checkbox" />
-            }
-            @if (element.newProduct == 1) {
-              <input checked type="checkbox" />
-            }
+        <div class="tog_btn">
+          <input
+            type="checkbox"
+            [checked]="element.newProduct === 1"
+            (change)="changeNewProduct(element)"
+            [attr.id]="'newProduct-' + element.id"
+          />
+          <label class="switch" [attr.for]="'newProduct-' + element.id">
             <span class="slider"></span>
           </label>
-        </button>
+        </div>
       </td>
     </ng-container>
 
     <ng-container matColumnDef="rowActionToggle">
       <th mat-header-cell *matHeaderCellDef>{{ 'Status' | translate }}</th>
       <td mat-cell *matCellDef="let element" class="text-center">
-        <button (change)="changeStatus(element)" class="tog_btn">
-          <label class="switch">
-            @if (element.active !== 1) {
-              <input unchecked type="checkbox" />
-            }
-            @if (element.active == 1) {
-              <input checked type="checkbox" />
-            }
+        <div class="tog_btn">
+          <input
+            type="checkbox"
+            [checked]="element.active === 1"
+            (change)="changeStatus(element)"
+            [attr.id]="'active-' + element.id"
+          />
+          <label class="switch" [attr.for]="'active-' + element.id">
             <span class="slider"></span>
           </label>
-        </button>
+        </div>
       </td>
     </ng-container>
 
     <ng-container matColumnDef="rowActionIcon">
       <th mat-header-cell *matHeaderCellDef>{{ 'Action' | translate }}</th>
       <td mat-cell *matCellDef="let element" class="text-center">
-        <button mat-button (click)="editProduct(element, content)" class="edit_btn">
+        <button mat-button (click)="editProduct(element, content)" class="edit_btn" aria-label="Edit product">
           <img
             src="assets/images/edit_icon.svg"
             onmouseover="this.src = 'assets/images/edit_hover_icon.svg'"
             onmouseout="this.src = 'assets/images/edit_icon.svg'"
+            alt="Edit"
           />
         </button>
         <!-- <button mat-button (click)="deleteProduct(element.id)" class="dele_btn">
@@ -178,10 +179,10 @@
 
 <ng-template #content role="document" let-modal="close">
   <div class="modal-header">
-    @if (isEdit == false) {
+    @if (isEdit === false) {
       <h5 class="modal-title">{{ 'Add Product' | translate }}</h5>
     }
-    @if (isEdit == true) {
+    @if (isEdit === true) {
       <h5 class="modal-title">{{ 'Edit Product' | translate }}</h5>
     }
     <button type="button" class="close" aria-label="Close" (click)="modal('Cross click')">
@@ -194,8 +195,8 @@
         <div class="row">
           @if (!isEdit) {
             <div class="col-md-4">
-              <label for="name">{{ 'Select Category' | translate }}</label>
-              <select #teams class="form-control" class="form-control" (change)="selectCategory(teams.value)">
+              <label for="categoryId">{{ 'Select Category' | translate }}</label>
+              <select #teams id="categoryId" class="form-control" class="form-control" (change)="selectCategory(teams.value)">
                 <option selected disabled>{{ 'Select Category' | translate }}</option>
                 @for (item of getCategoryUSer; track item) {
                   <option value="{{ item.id }}">{{ item.enName }} / {{ item.arName }}</option>
@@ -205,9 +206,10 @@
           }
           @if (isEdit) {
             <div class="col-md-4">
-              <label for="name">{{ 'Select Category' | translate }}</label>
+              <label for="categoryId">{{ 'Select Category' | translate }}</label>
               <select
                 #teams
+                id="categoryId"
                 class="form-control"
                 formControlName="categoryId"
                 class="form-control"
@@ -222,10 +224,10 @@
           }
           @if (subCate) {
             <div class="col-md-4">
-              @if (subCategLength != 0) {
+              @if (subCategLength !== 0) {
                 <div>
-                  <label for="name">{{ 'Select SubCategory' | translate }}</label>
-                  <select #subCaa class="form-control" class="form-control" (change)="selectSubCategory(subCaa.value)">
+                  <label for="subCategoryId">{{ 'Select SubCategory' | translate }}</label>
+                  <select #subCaa id="subCategoryId" class="form-control" class="form-control" (change)="selectSubCategory(subCaa.value)">
                     <option selected disabled>{{ 'Select SubCategory' | translate }}</option>
                     @for (item of getSubCategory; track item) {
                       <option value="{{ item.id }}">{{ item.enName }} / {{ item.arName }}</option>
@@ -237,11 +239,12 @@
           }
           @if (subSubCate) {
             <div class="col-md-4">
-              @if (subSubCategLength != 0) {
+              @if (subSubCategLength !== 0) {
                 <div>
-                  <label for="name">{{ 'Select Sub SubCategory' | translate }}</label>
+                  <label for="subSubCategoryId">{{ 'Select Sub SubCategory' | translate }}</label>
                   <select
                     #subCaa
+                    id="subSubCategoryId"
                     class="form-control"
                     class="form-control"
                     (change)="selectSubSubCategory(subCaa.value)"
@@ -260,10 +263,10 @@
         <div class="row">
           @if (subSubSubCate) {
             <div class="col-md-4">
-              @if (subSubSubCategLength != 0) {
+              @if (subSubSubCategLength !== 0) {
                 <div>
-                  <label for="name">{{ 'Select Sub Sub SubCategory' | translate }}</label>
-                  <select #nesub class="form-control" class="form-control" (change)="selectLastCategory(nesub.value)">
+                  <label for="subSubSubCategoryId">{{ 'Select Sub Sub SubCategory' | translate }}</label>
+                  <select #nesub id="subSubSubCategoryId" class="form-control" class="form-control" (change)="selectLastCategory(nesub.value)">
                     <option selected disabled>{{ 'Select Sub Sub SubCategory' | translate }}</option>
                     @for (item of getSubSubSubCategory; track item) {
                       <option value="{{ item.id }}">{{ item.enName }} / {{ item.arName }}</option>
@@ -279,12 +282,13 @@
       <div class="form-group">
         <div class="row">
           <div class="col-md-6">
-            <label for="name">{{ 'ProductNameEN' | translate }}</label>
+            <label for="enProductName">{{ 'ProductNameEN' | translate }}</label>
             <input
               type="text"
               class="form-control"
               placeholder="{{ 'ProductNameEN' | translate }}"
               formControlName="enProductName"
+              id="enProductName"
               [ngClass]="{ 'is-invalid': submitted && f.enProductName.errors }"
             />
             @if (submitted && f.enProductName.errors) {
@@ -296,12 +300,13 @@
             }
           </div>
           <div class="col-md-6">
-            <label for="name">{{ 'ProductNameAR' | translate }}</label>
+            <label for="arProductName">{{ 'ProductNameAR' | translate }}</label>
             <input
               type="text"
               class="form-control"
               placeholder="{{ 'ProductNameAR' | translate }}"
               formControlName="arProductName"
+              id="arProductName"
               [ngClass]="{ 'is-invalid': submitted && f.arProductName.errors }"
             />
             @if (submitted && f.arProductName.errors) {
@@ -317,11 +322,12 @@
       <div class="row">
         <div class="col-md-6">
           <div class="form-group">
-            <label for="name">{{ 'Description' | translate }}</label>
+            <label for="description">{{ 'Description' | translate }}</label>
             <textarea
               class="form-control"
               placeholder="{{ 'Description' | translate }}"
               formControlName="description"
+              id="description"
               [ngClass]="{ 'is-invalid': submitted && f.description.errors }"
             ></textarea>
             @if (submitted && f.description.errors) {
@@ -335,11 +341,12 @@
         </div>
         <div class="col-md-6">
           <div class="form-group">
-            <label for="name">{{ 'DescriptionAR' | translate }}</label>
+            <label for="arDescription">{{ 'DescriptionAR' | translate }}</label>
             <textarea
               class="form-control"
               placeholder="{{ 'DescriptionAR' | translate }}"
               formControlName="arDescription"
+              id="arDescription"
               [ngClass]="{ 'is-invalid': submitted && f.arDescription.errors }"
             ></textarea>
             @if (submitted && f.arDescription.errors) {
@@ -353,22 +360,22 @@
         </div>
       </div>
       <div class="form-group text-center">
-        <label for="name">{{ 'Image' | translate }}</label>
+        <label for="customFile">{{ 'Image' | translate }}</label>
         <div class="img_upload">
           <label for="customFile">
             <p class="text-center">
               @if (!iconImg && !prodImg) {
-                <img class="upload-img" src="assets/images/upload_img.png" />
+                <img class="upload-img" src="assets/images/upload_img.png" alt="Upload placeholder" />
               }
             </p>
             <p class="text-center">
               @if (iconImg && !prodImg) {
-                <img class="upload-img" src="{{ iconImg }}" />
+                <img class="upload-img" src="{{ iconImg }}" alt="Icon preview" />
               }
             </p>
             <p class="text-center">
               @if (prodImg) {
-                <img class="upload-img" src="{{ prodImg }}" />
+                <img class="upload-img" src="{{ prodImg }}" alt="Product preview" />
               }
             </p>
           </label>
@@ -388,11 +395,11 @@
       </div>
       <div class="col-md-12">
         <p *ngIf="previews?.length > 1" class="errr_msg">Max upload limit is reached</p>
-        <p *ngIf="imageNeed == true" class="errr_msg">Image upload is required</p>
+        <p *ngIf="imageNeed === true" class="errr_msg">Image upload is required</p>
       </div>
     </div>
     <br>
-      <div class="upload-btn-wrapper" *ngIf="previews?.length == 0">
+      <div class="upload-btn-wrapper" *ngIf="previews?.length === 0">
         <button class="pic_btn"><img src="assets/images/upload_img.png" width="50px" style="margin:0 5px;">
           Add picture
           <input type="file" formControlName="image" (change)="changeProductImages($event)"
@@ -402,10 +409,10 @@
     </div> -->
     </form>
     <div class="text-right">
-      @if (isEdit == false && isRelated == false) {
+      @if (isEdit === false && isRelated === false) {
         <button type="submit" class="btn btn-own" (click)="onSubmitData()">{{ 'Save' | translate }}</button>
       }
-      @if (isEdit == true && isRelated == false) {
+      @if (isEdit === true && isRelated === false) {
         <button type="submit" class="btn btn-own" (click)="productEditService()">{{ 'Update' | translate }}</button>
       }
       <button type="button" class="btn btn-own-cancel ml-1" (click)="modal('close click')">

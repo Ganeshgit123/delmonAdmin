@@ -9,6 +9,23 @@ import { MatTableDataSource } from '@angular/material/table';
 import { ToastrService } from 'ngx-toastr';
 import { TranslateService } from '@ngx-translate/core';
 
+interface ApiResponse<T> {
+  error: boolean;
+  message: string;
+  data: T;
+}
+
+interface PriceListName {
+  id: number;
+  name: string;
+}
+
+interface UserAssignItem {
+  id: number;
+  name: string;
+  priceListNames?: string[] | string;
+}
+
 @Component({
   selector: 'app-user-assign',
   templateUrl: './user-assign.component.html',
@@ -16,12 +33,11 @@ import { TranslateService } from '@ngx-translate/core';
 })
 export class UserAssignComponent implements OnInit, AfterViewInit {
   displayedColumns: string[];
-  dataSource: MatTableDataSource<any>;
-  getvalue = [];
+  dataSource: MatTableDataSource<UserAssignItem>;
+  getvalue: UserAssignItem[] = [];
   userListForm: FormGroup;
-  userListId: any;
   submitted = false;
-  getPriceName = [];
+  getPriceName: PriceListName[] = [];
   showAccept = true;
   superAdminRole = false;
 
@@ -39,26 +55,26 @@ export class UserAssignComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.callRolePermission();
-    if (sessionStorage.getItem('roleName') == 'superAdmin') {
+    if (sessionStorage.getItem('roleName') === 'superAdmin') {
       this.superAdminRole = true;
     } else {
       this.superAdminRole = false;
     }
 
-    if (this.showAccept == true) {
+    if (this.showAccept === true) {
       this.displayedColumns = ['index', 'name', 'priceListNames', 'rowActionIcon'];
-    } else if (this.showAccept == false) {
+    } else if (this.showAccept === false) {
       this.displayedColumns = ['index', 'name', 'priceListNames'];
     }
 
-    this.authService.getuserListPrice().subscribe((res: any) => {
+    this.authService.getuserListPrice().subscribe((res: ApiResponse<UserAssignItem[]>) => {
       this.getvalue = res.data;
       this.dataSource = new MatTableDataSource(this.getvalue);
       this.dataSource.paginator = this.matPaginator;
       this.dataSource.sort = this.matSort;
     });
 
-    this.authService.getPriceListName().subscribe((res: any) => {
+    this.authService.getPriceListName().subscribe((res: ApiResponse<PriceListName[]>) => {
       this.getPriceName = res.data;
     });
 
@@ -74,7 +90,7 @@ export class UserAssignComponent implements OnInit, AfterViewInit {
   callRolePermission() {
     if (sessionStorage.getItem('roleName') !== 'superAdmin') {
       const settingPermssion = JSON.parse(sessionStorage.getItem('permission'));
-      const orderPermission = settingPermssion?.find((ele) => ele.area == 'priceList')?.write == 1;
+      const orderPermission = settingPermssion?.find((ele) => ele.area === 'priceList')?.write === 1;
       // console.log("fef",orderPermission)
       this.showAccept = orderPermission;
     }
@@ -93,15 +109,15 @@ export class UserAssignComponent implements OnInit, AfterViewInit {
     }
   }
 
-  onSelectPriceName(id, element) {
+  onSelectPriceName(id: number, element: UserAssignItem) {
     // console.log("vd",element)
     const data = {
       name: element.name,
       priceListNameId: id,
     };
 
-    this.authService.edituserListPrice(data, element.id).subscribe((res: any) => {
-      if (res.error == false) {
+    this.authService.edituserListPrice(data, element.id).subscribe((res: ApiResponse<unknown>) => {
+      if (res.error === false) {
         this.toastr.success('Success ', res.message);
         this.userListForm.reset();
         this.ngOnInit();

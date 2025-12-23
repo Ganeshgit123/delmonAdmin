@@ -1,16 +1,13 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpParams, HttpErrorResponse } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment.prod';
 import { Router } from '@angular/router';
-const httpOptions = {
-  headers: new HttpHeaders({
-    'Content-Type': 'application/json',
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Credentials': 'true',
-  }),
-};
+interface ApiResponse<T = unknown> {
+  error: boolean;
+  message: string;
+  data?: T;
+}
 @Injectable({
   providedIn: 'root',
 })
@@ -32,16 +29,16 @@ export class AuthService {
     private router: Router,
   ) {}
 
-  s3upload(user: any) {
-    return this.http.post<any>(`${this.s3Endpoint}/upload`, user);
+  s3upload(user: unknown) {
+    return this.http.post<ApiResponse<unknown>>(`${this.s3Endpoint}/upload`, user);
   }
 
-  excelUpload(data: any, id) {
-    return this.http.post<any>(`${this.userEndpoint}/productImport/${id}`, data);
+  excelUpload(data: unknown, id: number | string) {
+    return this.http.post<ApiResponse<unknown>>(`${this.userEndpoint}/productImport/${id}`, data);
   }
 
-  signIn(user: any) {
-    return this.http.post<any>(`${this.endpoint}/login`, user);
+  signIn(user: unknown) {
+    return this.http.post<ApiResponse<unknown>>(`${this.endpoint}/login`, user);
   }
   getToken() {
     return sessionStorage.getItem('access_token');
@@ -55,426 +52,432 @@ export class AuthService {
     return localStorage.getItem('flow');
   }
 
-  doLogout(): Observable<any> {
+  doLogout(): Observable<ApiResponse<unknown>> {
     const param1 = new HttpParams();
-    return this.http.get<any>(`${this.endpoint}/logout`, { params: param1 });
+    return this.http.get<ApiResponse<unknown>>(`${this.endpoint}/logout`, { params: param1 });
   }
 
-  getContent() {
+  getContent(): Observable<ApiResponse<unknown>> {
     const param1 = new HttpParams();
-    return this.http.get<any>(`${this.endpoint}/setting`, { params: param1 });
+    return this.http.get<ApiResponse<unknown>>(`${this.endpoint}/setting`, { params: param1 });
   }
 
-  updateContent(data: any, id) {
-    return this.http.post<any>(`${this.endpoint}/setting/${id}`, data);
+  updateContent(data: unknown, id: number | string) {
+    return this.http.post<ApiResponse<unknown>>(`${this.endpoint}/setting/${id}`, data);
   }
 
-  changePassword(data: any) {
-    return this.http.post<any>(`${this.endpoint}/changePassword/`, data);
+  changePassword(data: unknown) {
+    return this.http.post<ApiResponse<unknown>>(`${this.endpoint}/changePassword/`, data);
   }
-  readNotifyChange(data, id) {
-    return this.http.post<any>(`${this.endpoint}/notification/${id}`, data);
+  readNotifyChange(data: unknown, id: number | string) {
+    return this.http.post<ApiResponse<unknown>>(`${this.endpoint}/notification/${id}`, data);
   }
 
-  getRoles(): Observable<any> {
+  getRoles(): Observable<ApiResponse<unknown>> {
     const param1 = new HttpParams();
-    return this.http.get<any>(`${this.endpoint}/roleType`, { params: param1 });
+    return this.http.get<ApiResponse<unknown>>(`${this.endpoint}/roleType`, { params: param1 });
   }
 
-  addRole(user: any) {
-    return this.http.post<any>(`${this.endpoint}/roleType`, user);
+  addRole(user: unknown) {
+    return this.http.post<ApiResponse<unknown>>(`${this.endpoint}/roleType`, user);
   }
 
-  editRole(data: any, id) {
-    return this.http.post<any>(`${this.endpoint}/roleType/${id}`, data);
+  editRole(data: unknown, id: number | string) {
+    return this.http.post<ApiResponse<unknown>>(`${this.endpoint}/roleType/${id}`, data);
   }
 
-  deleteRole(id: any) {
-    return this.http.delete<any>(`${this.endpoint}/roleType/${id}`);
+  deleteRole(id: number | string) {
+    return this.http.delete<ApiResponse<unknown>>(`${this.endpoint}/roleType/${id}`);
   }
 
-  getUserAdmin(): Observable<any> {
+  getUserAdmin(): Observable<ApiResponse<unknown>> {
     const param1 = new HttpParams();
-    return this.http.get<any>(`${this.endpoint}/roles`, { params: param1 });
+    return this.http.get<ApiResponse<unknown>>(`${this.endpoint}/roles`, { params: param1 });
   }
 
-  getAdminUser(): Observable<any> {
+  getAdminUser(): Observable<ApiResponse<unknown>> {
     const param1 = new HttpParams();
     const id = JSON.parse(sessionStorage.getItem('adminId'));
-    return this.http.get<any>(`${this.endpoint}/adminUser/${id}`, { params: param1 });
+    return this.http.get<ApiResponse<unknown>>(`${this.endpoint}/adminUser/${id}`, { params: param1 });
   }
 
-  addAdminUser(user: any) {
-    return this.http.post<any>(`${this.endpoint}/adminUser`, user);
+  addAdminUser(user: unknown) {
+    return this.http.post<ApiResponse<unknown>>(`${this.endpoint}/adminUser`, user);
   }
 
-  editAdminUser(data: any, id) {
-    return this.http.post<any>(`${this.endpoint}/adminUser/${id}`, data);
+  editAdminUser(data: unknown, id: number | string) {
+    return this.http.post<ApiResponse<unknown>>(`${this.endpoint}/adminUser/${id}`, data);
   }
 
-  getBanner(): Observable<any> {
+  getBanner(): Observable<ApiResponse<unknown>> {
     const headers = new HttpHeaders().set('type', 'POULTRY');
-    return this.http.get<any>(`${this.endpoint}/banner`, { headers: headers });
+    return this.http.get<ApiResponse<unknown>>(`${this.endpoint}/banner`, { headers: headers });
   }
 
-  addBanner(data: any) {
+  addBanner(data: unknown) {
     const headers = new HttpHeaders().set('type', 'POULTRY');
-    return this.http.post<any>(`${this.endpoint}/banner`, data, { headers: headers });
+    return this.http.post<ApiResponse<unknown>>(`${this.endpoint}/banner`, data, { headers: headers });
   }
 
-  editBanner(user: any, id) {
+  editBanner(user: unknown, id: number | string) {
     const headers = new HttpHeaders().set('type', 'POULTRY');
-    return this.http.post<any>(`${this.endpoint}/banner/${id}`, user, { headers: headers });
+    return this.http.post<ApiResponse<unknown>>(`${this.endpoint}/banner/${id}`, user, { headers: headers });
   }
 
-  deleteBanner(id: any) {
+  deleteBanner(id: number | string) {
     const headers = new HttpHeaders().set('type', 'POULTRY');
-    return this.http.delete<any>(`${this.endpoint}/banner/delete/${id}`, { headers: headers });
+    return this.http.delete<ApiResponse<unknown>>(`${this.endpoint}/banner/delete/${id}`, { headers: headers });
   }
 
-  getNormalUsers() {
+  getNormalUsers(): Observable<ApiResponse<unknown>> {
     const headers = new HttpHeaders().set('type', 'POULTRY');
-    return this.http.get<any>(`${this.endpoint}/user`, {
+    return this.http.get<ApiResponse<unknown>>(`${this.endpoint}/user`, {
       headers: headers,
       params: new HttpParams().set('userType', 'USER'),
     });
   }
 
-  getMerchantUsers() {
+  getMerchantUsers(): Observable<ApiResponse<unknown>> {
     const headers = new HttpHeaders().set('type', 'POULTRY');
-    return this.http.get<any>(`${this.endpoint}/user`, {
+    return this.http.get<ApiResponse<unknown>>(`${this.endpoint}/user`, {
       headers: headers,
       params: new HttpParams().set('userType', 'MERCHANT'),
     });
   }
 
-  approveMerchant(data: any, id) {
+  approveMerchant(data: unknown, id: number | string): Observable<ApiResponse<unknown>> {
     const headers = new HttpHeaders().set('type', 'POULTRY');
-    return this.http.post<any>(`${this.endpoint}/user/update/${id}`, data, { headers: headers });
+    return this.http.post<ApiResponse<unknown>>(`${this.endpoint}/user/update/${id}`, data, { headers: headers });
   }
 
-  getEmployeeUsers() {
+  getEmployeeUsers(): Observable<ApiResponse<unknown>> {
     const headers = new HttpHeaders().set('type', 'POULTRY');
-    return this.http.get<any>(`${this.endpoint}/user`, {
+    return this.http.get<ApiResponse<unknown>>(`${this.endpoint}/user`, {
       headers: headers,
       params: new HttpParams().set('userType', 'EMPLOYEE'),
     });
   }
 
-  approveEmployee(data: any, id) {
+  approveEmployee(data: unknown, id: number | string): Observable<ApiResponse<unknown>> {
     const headers = new HttpHeaders().set('type', 'POULTRY');
-    return this.http.post<any>(`${this.endpoint}/user/update/${id}`, data, { headers: headers });
+    return this.http.post<ApiResponse<unknown>>(`${this.endpoint}/user/update/${id}`, data, { headers: headers });
   }
 
-  getCategory(type): Observable<any> {
+  getCategory(type: string): Observable<ApiResponse<unknown>> {
     const headers = new HttpHeaders().set('type', type);
-    return this.http.get<any>(`${this.endpoint}/category`, { headers: headers });
+    return this.http.get<ApiResponse<unknown>>(`${this.endpoint}/category`, { headers: headers });
   }
 
-  getCategoryUser(type): Observable<any> {
+  getCategoryUser(type: string): Observable<ApiResponse<unknown>> {
     const headers = new HttpHeaders().set('type', type);
-    return this.http.get<any>(`${this.userEndpoint}/category`, { headers: headers });
+    return this.http.get<ApiResponse<unknown>>(`${this.userEndpoint}/category`, { headers: headers });
   }
 
-  getSubCategory(id): Observable<any> {
+  getSubCategory(id: number | string): Observable<ApiResponse<unknown>> {
     const headers = new HttpHeaders().set('type', 'FEEDING');
-    return this.http.get<any>(`${this.endpoint}/subCategory`, {
+    return this.http.get<ApiResponse<unknown>>(`${this.endpoint}/subCategory`, {
       headers: headers,
       params: new HttpParams().set('categoryId', id),
     });
   }
 
-  addPoultryCategory(data: any) {
+  addPoultryCategory(data: unknown): Observable<ApiResponse<unknown>> {
     const headers = new HttpHeaders().set('type', 'POULTRY');
-    return this.http.post<any>(`${this.endpoint}/category`, data, { headers: headers });
+    return this.http.post<ApiResponse<unknown>>(`${this.endpoint}/category`, data, { headers: headers });
   }
 
-  editCategory(user: any, id) {
+  editCategory(user: unknown, id: number | string): Observable<ApiResponse<unknown>> {
     const headers = new HttpHeaders().set('type', 'POULTRY');
-    return this.http.post<any>(`${this.endpoint}/category/${id}`, user, { headers: headers });
+    return this.http.post<ApiResponse<unknown>>(`${this.endpoint}/category/${id}`, user, { headers: headers });
   }
 
-  deleteCategory(id: any) {
+  deleteCategory(id: number | string): Observable<ApiResponse<unknown>> {
     const headers = new HttpHeaders().set('type', 'POULTRY');
-    return this.http.delete<any>(`${this.endpoint}/category/delete/${id}`, { headers: headers });
+    return this.http.delete<ApiResponse<unknown>>(`${this.endpoint}/category/delete/${id}`, { headers: headers });
   }
 
-  getProducts(type): Observable<any> {
+  getProducts(type: string): Observable<ApiResponse<unknown>> {
     const headers = new HttpHeaders().set('type', type);
-    return this.http.get<any>(`${this.endpoint}/product`, { headers: headers });
+    return this.http.get<ApiResponse<unknown>>(`${this.endpoint}/product`, { headers: headers });
   }
 
-  getProductsWithoutParentId1(type): Observable<any> {
+  getProductsWithoutParentId1(type: string): Observable<ApiResponse<unknown>> {
     const headers = new HttpHeaders().set('type', type);
-    return this.http.get<any>(`${this.endpoint}/product`, {
+    return this.http.get<ApiResponse<unknown>>(`${this.endpoint}/product`, {
       headers: headers,
       params: new HttpParams().set('parentId', 'ALL'),
     });
   }
 
-  getProductsWithParentOnly(type): Observable<any> {
+  getProductsWithParentOnly(type: string): Observable<ApiResponse<unknown>> {
     const headers = new HttpHeaders().set('type', type);
-    return this.http.get<any>(`${this.endpoint}/product`, {
+    return this.http.get<ApiResponse<unknown>>(`${this.endpoint}/product`, {
       headers: headers,
       params: new HttpParams().set('parentId', 0),
     });
   }
 
-  getProductsWithParentIdFeed(type): Observable<any> {
+  getProductsWithParentIdFeed(type: string): Observable<ApiResponse<unknown>> {
     const headers = new HttpHeaders().set('type', type);
-    return this.http.get<any>(`${this.endpoint}/product`, {
+    return this.http.get<ApiResponse<unknown>>(`${this.endpoint}/product`, {
       headers: headers,
       params: new HttpParams().set('parentId', 0),
     });
   }
 
-  addProduct(data: any) {
+  addProduct(data: unknown): Observable<ApiResponse<unknown>> {
     const headers = new HttpHeaders().set('type', 'POULTRY');
-    return this.http.post<any>(`${this.endpoint}/product`, data, { headers: headers });
+    return this.http.post<ApiResponse<unknown>>(`${this.endpoint}/product`, data, { headers: headers });
   }
 
-  editProduct(data: any, id) {
+  editProduct(data: unknown, id: number | string): Observable<ApiResponse<unknown>> {
     const headers = new HttpHeaders().set('type', 'POULTRY');
-    return this.http.post<any>(`${this.endpoint}/product/${id}`, data, { headers: headers });
+    return this.http.post<ApiResponse<unknown>>(`${this.endpoint}/product/${id}`, data, { headers: headers });
   }
 
-  deleteProd(id: any) {
+  deleteProd(id: number | string): Observable<ApiResponse<unknown>> {
     const headers = new HttpHeaders().set('type', 'POULTRY');
-    return this.http.delete<any>(`${this.endpoint}/product/delete/${id}`, { headers: headers });
+    return this.http.delete<ApiResponse<unknown>>(`${this.endpoint}/product/delete/${id}`, { headers: headers });
   }
 
-  deleteProdSoft(id: any) {
+  deleteProdSoft(id: number | string): Observable<ApiResponse<unknown>> {
     const headers = new HttpHeaders().set('type', 'POULTRY');
-    return this.http.delete<any>(`${this.endpoint}/product/${id}`, { headers: headers });
+    return this.http.delete<ApiResponse<unknown>>(`${this.endpoint}/product/${id}`, { headers: headers });
   }
 
-  getProductsDetails(type, id): Observable<any> {
+  getProductsDetails(type: string, id: number | string): Observable<ApiResponse<unknown>> {
     const headers = new HttpHeaders().set('type', type);
-    return this.http.get<any>(`${this.endpoint}/product/${id}`, { headers: headers });
+    return this.http.get<ApiResponse<unknown>>(`${this.endpoint}/product/${id}`, { headers: headers });
   }
 
-  addReletedProduct(data: any) {
-    return this.http.post<any>(`${this.endpoint}/product/add`, data);
+  addReletedProduct(data: unknown): Observable<ApiResponse<unknown>> {
+    return this.http.post<ApiResponse<unknown>>(`${this.endpoint}/product/add`, data);
   }
 
-  editReletedProduct(data: any) {
-    return this.http.post<any>(`${this.endpoint}/product/update`, data);
+  editReletedProduct(data: unknown): Observable<ApiResponse<unknown>> {
+    return this.http.post<ApiResponse<unknown>>(`${this.endpoint}/product/update`, data);
   }
 
-  getPriceListName(): Observable<any> {
+  getPriceListName(): Observable<ApiResponse<unknown>> {
     const headers = new HttpHeaders().set('type', 'POULTRY');
-    return this.http.get<any>(`${this.endpoint}/priceListName`, { headers: headers });
+    return this.http.get<ApiResponse<unknown>>(`${this.endpoint}/priceListName`, { headers: headers });
   }
 
-  addPriceListName(data: any) {
+  addPriceListName(data: unknown): Observable<ApiResponse<unknown>> {
     const headers = new HttpHeaders().set('type', 'POULTRY');
-    return this.http.post<any>(`${this.endpoint}/priceListName`, data, { headers: headers });
+    return this.http.post<ApiResponse<unknown>>(`${this.endpoint}/priceListName`, data, { headers: headers });
   }
-  editPriceListName(user: any, id) {
+  editPriceListName(user: unknown, id: number | string): Observable<ApiResponse<unknown>> {
     const headers = new HttpHeaders().set('type', 'POULTRY');
-    return this.http.post<any>(`${this.endpoint}/priceListName/${id}`, user, { headers: headers });
-  }
-
-  deletePriceListName(id: any) {
-    const headers = new HttpHeaders().set('type', 'POULTRY');
-    return this.http.delete<any>(`${this.endpoint}/priceListName/delete/${id}`, { headers: headers });
+    return this.http.post<ApiResponse<unknown>>(`${this.endpoint}/priceListName/${id}`, user, { headers: headers });
   }
 
-  addProductPriceList(data: any) {
+  deletePriceListName(id: number | string): Observable<ApiResponse<unknown>> {
     const headers = new HttpHeaders().set('type', 'POULTRY');
-    return this.http.post<any>(`${this.endpoint}/ProductPriceList`, data, { headers: headers });
+    return this.http.delete<ApiResponse<unknown>>(`${this.endpoint}/priceListName/delete/${id}`, { headers: headers });
   }
 
-  getProductPriceList(type, id): Observable<any> {
+  addProductPriceList(data: unknown): Observable<ApiResponse<unknown>> {
+    const headers = new HttpHeaders().set('type', 'POULTRY');
+    return this.http.post<ApiResponse<unknown>>(`${this.endpoint}/ProductPriceList`, data, { headers: headers });
+  }
+
+  getProductPriceList(type: string, id: number | string): Observable<ApiResponse<unknown>> {
     const headers = new HttpHeaders().set('type', type);
-    return this.http.get<any>(`${this.endpoint}/ProductPriceList`, {
+    return this.http.get<ApiResponse<unknown>>(`${this.endpoint}/ProductPriceList`, {
       headers: headers,
       params: new HttpParams().set('priceListId', id),
     });
   }
 
-  editProductPriceList(user: any, id) {
+  editProductPriceList(user: unknown, id: number | string): Observable<ApiResponse<unknown>> {
     const headers = new HttpHeaders().set('type', 'POULTRY');
-    return this.http.post<any>(`${this.endpoint}/ProductPriceList/${id}`, user, { headers: headers });
+    return this.http.post<ApiResponse<unknown>>(`${this.endpoint}/ProductPriceList/${id}`, user, { headers: headers });
   }
 
-  getuserListPrice(): Observable<any> {
+  getuserListPrice(): Observable<ApiResponse<unknown>> {
     const headers = new HttpHeaders().set('type', 'POULTRY');
-    return this.http.get<any>(`${this.endpoint}/userType`, { headers: headers });
+    return this.http.get<ApiResponse<unknown>>(`${this.endpoint}/userType`, { headers: headers });
   }
 
-  edituserListPrice(user: any, id) {
+  edituserListPrice(user: unknown, id: number | string): Observable<ApiResponse<unknown>> {
     const headers = new HttpHeaders().set('type', 'POULTRY');
-    return this.http.post<any>(`${this.endpoint}/userType/${id}`, user, { headers: headers });
+    return this.http.post<ApiResponse<unknown>>(`${this.endpoint}/userType/${id}`, user, { headers: headers });
   }
 
-  getReceipes(): Observable<any> {
+  getReceipes(): Observable<ApiResponse<unknown>> {
     const headers = new HttpHeaders().set('type', 'POULTRY');
-    return this.http.get<any>(`${this.endpoint}/recipies`, { headers: headers });
+    return this.http.get<ApiResponse<unknown>>(`${this.endpoint}/recipies`, { headers: headers });
   }
 
-  addReceipes(data: any) {
+  addReceipes(data: unknown): Observable<ApiResponse<unknown>> {
     const headers = new HttpHeaders().set('type', 'POULTRY');
-    return this.http.post<any>(`${this.endpoint}/recipies`, data, { headers: headers });
+    return this.http.post<ApiResponse<unknown>>(`${this.endpoint}/recipies`, data, { headers: headers });
   }
 
-  editReceipes(user: any, id) {
+  editReceipes(user: unknown, id: number | string): Observable<ApiResponse<unknown>> {
     const headers = new HttpHeaders().set('type', 'POULTRY');
-    return this.http.post<any>(`${this.endpoint}/recipies/${id}`, user, { headers: headers });
+    return this.http.post<ApiResponse<unknown>>(`${this.endpoint}/recipies/${id}`, user, { headers: headers });
   }
 
-  deleteReceipes(id: any) {
+  deleteReceipes(id: number | string): Observable<ApiResponse<unknown>> {
     const headers = new HttpHeaders().set('type', 'POULTRY');
-    return this.http.delete<any>(`${this.endpoint}/recipies/delete/${id}`, { headers: headers });
+    return this.http.delete<ApiResponse<unknown>>(`${this.endpoint}/recipies/delete/${id}`, { headers: headers });
   }
 
-  addNewBasket(data: any) {
-    return this.http.post<any>(`${this.endpoint}/product`, data);
+  addNewBasket(data: unknown): Observable<ApiResponse<unknown>> {
+    return this.http.post<ApiResponse<unknown>>(`${this.endpoint}/product`, data);
   }
 
-  getBaskets(type): Observable<any> {
+  getBaskets(type: string): Observable<ApiResponse<unknown>> {
     const headers = new HttpHeaders().set('type', type);
-    return this.http.get<any>(`${this.endpoint}/product/basketList`, {
+    return this.http.get<ApiResponse<unknown>>(`${this.endpoint}/product/basketList`, {
       headers: headers,
       params: new HttpParams().set('isBasket', 1),
     });
   }
 
-  editBakset(data: any, id) {
-    return this.http.post<any>(`${this.endpoint}/product/${id}`, data);
+  editBakset(data: unknown, id: number | string): Observable<ApiResponse<unknown>> {
+    return this.http.post<ApiResponse<unknown>>(`${this.endpoint}/product/${id}`, data);
   }
 
-  getZones(): Observable<any> {
+  getZones(): Observable<ApiResponse<unknown>> {
     const headers = new HttpHeaders().set('type', 'POULTRY');
-    return this.http.get<any>(`${this.endpoint}/zone`, { headers: headers });
+    return this.http.get<ApiResponse<unknown>>(`${this.endpoint}/zone`, { headers: headers });
   }
 
-  addZone(data: any) {
+  addZone(data: unknown): Observable<ApiResponse<unknown>> {
     const headers = new HttpHeaders().set('type', 'POULTRY');
-    return this.http.post<any>(`${this.endpoint}/zone`, data, { headers: headers });
+    return this.http.post<ApiResponse<unknown>>(`${this.endpoint}/zone`, data, { headers: headers });
   }
 
-  editZone(user: any, id) {
+  editZone(user: unknown, id: number | string): Observable<ApiResponse<unknown>> {
     const headers = new HttpHeaders().set('type', 'POULTRY');
-    return this.http.post<any>(`${this.endpoint}/zone/${id}`, user, { headers: headers });
+    return this.http.post<ApiResponse<unknown>>(`${this.endpoint}/zone/${id}`, user, { headers: headers });
   }
 
-  getAreas(id): Observable<any> {
+  getAreas(id: number | string): Observable<ApiResponse<unknown>> {
     const headers = new HttpHeaders().set('type', 'POULTRY');
-    return this.http.get<any>(`${this.endpoint}/area`, {
+    return this.http.get<ApiResponse<unknown>>(`${this.endpoint}/area`, {
       headers: headers,
       params: new HttpParams().set('zoneId', id),
     });
   }
 
-  addAreas(data: any) {
+  addAreas(data: unknown): Observable<ApiResponse<unknown>> {
     const headers = new HttpHeaders().set('type', 'POULTRY');
-    return this.http.post<any>(`${this.endpoint}/area`, data, { headers: headers });
+    return this.http.post<ApiResponse<unknown>>(`${this.endpoint}/area`, data, { headers: headers });
   }
 
-  editAreasd(user: any, id) {
+  editAreasd(user: unknown, id: number | string): Observable<ApiResponse<unknown>> {
     const headers = new HttpHeaders().set('type', 'POULTRY');
-    return this.http.post<any>(`${this.endpoint}/area/${id}`, user, { headers: headers });
+    return this.http.post<ApiResponse<unknown>>(`${this.endpoint}/area/${id}`, user, { headers: headers });
   }
 
-  getPin(id): Observable<any> {
+  getPin(id: number | string): Observable<ApiResponse<unknown>> {
     const headers = new HttpHeaders().set('type', 'POULTRY');
-    return this.http.get<any>(`${this.endpoint}/pin`, {
+    return this.http.get<ApiResponse<unknown>>(`${this.endpoint}/pin`, {
       headers: headers,
       params: new HttpParams().set('areaId', id),
     });
   }
 
-  addPin(data: any) {
+  addPin(data: unknown): Observable<ApiResponse<unknown>> {
     const headers = new HttpHeaders().set('type', 'POULTRY');
-    return this.http.post<any>(`${this.endpoint}/pin`, data, { headers: headers });
+    return this.http.post<ApiResponse<unknown>>(`${this.endpoint}/pin`, data, { headers: headers });
   }
 
-  editPin(user: any, id) {
+  editPin(user: unknown, id: number | string): Observable<ApiResponse<unknown>> {
     const headers = new HttpHeaders().set('type', 'POULTRY');
-    return this.http.post<any>(`${this.endpoint}/pin/${id}`, user, { headers: headers });
+    return this.http.post<ApiResponse<unknown>>(`${this.endpoint}/pin/${id}`, user, { headers: headers });
   }
 
-  createNewDriver(data: any) {
+  createNewDriver(data: unknown): Observable<ApiResponse<unknown>> {
     const headers = new HttpHeaders().set('type', 'POULTRY');
-    return this.http.post<any>(`${this.driverEndpoint}/auth/create`, data, { headers: headers });
+    return this.http.post<ApiResponse<unknown>>(`${this.driverEndpoint}/auth/create`, data, { headers: headers });
   }
 
-  editDriver(user: any, id) {
+  editDriver(user: unknown, id: number | string): Observable<ApiResponse<unknown>> {
     const headers = new HttpHeaders().set('type', 'POULTRY');
-    return this.http.post<any>(`${this.driverEndpoint}/auth/update/${id}`, user, { headers: headers });
+    return this.http.post<ApiResponse<unknown>>(`${this.driverEndpoint}/auth/update/${id}`, user, { headers: headers });
   }
 
-  deleteDriver(id: any) {
+  deleteDriver(id: number | string): Observable<ApiResponse<unknown>> {
     const headers = new HttpHeaders().set('type', 'POULTRY');
-    return this.http.delete<any>(`${this.driverEndpoint}/auth/delete/${id}`, { headers: headers });
+    return this.http.delete<ApiResponse<unknown>>(`${this.driverEndpoint}/auth/delete/${id}`, { headers: headers });
   }
 
-  getDrivers(): Observable<any> {
+  getDrivers(): Observable<ApiResponse<unknown>> {
     const headers = new HttpHeaders().set('type', 'POULTRY');
-    return this.http.get<any>(`${this.driverEndpoint}/auth/list`, { headers: headers });
+    return this.http.get<ApiResponse<unknown>>(`${this.driverEndpoint}/auth/list`, { headers: headers });
   }
 
-  addCoupon(data: any) {
+  addCoupon(data: unknown): Observable<ApiResponse<unknown>> {
     const headers = new HttpHeaders().set('type', 'POULTRY');
-    return this.http.post<any>(`${this.endpoint}/coupon`, data, { headers: headers });
+    return this.http.post<ApiResponse<unknown>>(`${this.endpoint}/coupon`, data, { headers: headers });
   }
 
-  editCoupon(user: any, id) {
+  editCoupon(user: unknown, id: number | string): Observable<ApiResponse<unknown>> {
     const headers = new HttpHeaders().set('type', 'POULTRY');
-    return this.http.post<any>(`${this.endpoint}/coupon/${id}`, user, { headers: headers });
+    return this.http.post<ApiResponse<unknown>>(`${this.endpoint}/coupon/${id}`, user, { headers: headers });
   }
 
-  getCoupon(type): Observable<any> {
+  getCoupon(type: string): Observable<ApiResponse<unknown>> {
     const headers = new HttpHeaders().set('type', type);
-    return this.http.get<any>(`${this.endpoint}/coupon`, { headers: headers });
+    return this.http.get<ApiResponse<unknown>>(`${this.endpoint}/coupon`, { headers: headers });
   }
 
-  deleteCoupons(id: any) {
+  deleteCoupons(id: number | string): Observable<ApiResponse<unknown>> {
     const headers = new HttpHeaders().set('type', 'POULTRY');
-    return this.http.delete<any>(`${this.endpoint}/coupon/${id}`, { headers: headers });
+    return this.http.delete<ApiResponse<unknown>>(`${this.endpoint}/coupon/${id}`, { headers: headers });
   }
 
-  getOrders(deliveryType): Observable<any> {
+  getOrders(deliveryType: string): Observable<ApiResponse<unknown>> {
     const headers = new HttpHeaders().set('type', 'POULTRY');
-    return this.http.get<any>(`${this.endpoint}/order`, {
+    return this.http.get<ApiResponse<unknown>>(`${this.endpoint}/order`, {
       headers: headers,
       params: new HttpParams().set('deliveryType', deliveryType),
     });
   }
 
-  approveOrderSingle(id, data) {
+  approveOrderSingle(id: number | string, data: unknown): Observable<ApiResponse<unknown>> {
     const headers = new HttpHeaders().set('type', 'POULTRY');
-    return this.http.post<any>(`${this.endpoint}/order/${id}`, data, { headers: headers });
+    return this.http.post<ApiResponse<unknown>>(`${this.endpoint}/order/${id}`, data, { headers: headers });
   }
 
-  approveOrderMulti(data) {
+  approveOrderMulti(data: unknown): Observable<ApiResponse<unknown>> {
     const headers = new HttpHeaders().set('type', 'POULTRY');
-    return this.http.post<any>(`${this.endpoint}/order/multiApprove`, data, { headers: headers });
+    return this.http.post<ApiResponse<unknown>>(`${this.endpoint}/order/multiApprove`, data, { headers: headers });
   }
 
-  getDriversActive(object): Observable<any> {
+  getDriversActive(object: string | number): Observable<ApiResponse<unknown>> {
     const headers = new HttpHeaders();
     // .set('type', 'POULTRY')
-    return this.http.get<any>(`${this.driverEndpoint}/auth/list`, {
+    return this.http.get<ApiResponse<unknown>>(`${this.driverEndpoint}/auth/list`, {
       headers: headers,
       params: new HttpParams().set('active', object),
     });
   }
 
-  getSettings(): Observable<any> {
+  getSettings(): Observable<ApiResponse<unknown>> {
     const headers = new HttpHeaders().set('type', 'POULTRY');
-    return this.http.get<any>(`${this.endpoint}/setting`, { headers: headers });
+    return this.http.get<ApiResponse<unknown>>(`${this.endpoint}/setting`, { headers: headers });
   }
 
-  updateSetting(body, id) {
+  updateSetting(body: unknown, id: number | string): Observable<ApiResponse<unknown>> {
     const headers = new HttpHeaders().set('type', 'POULTRY');
-    return this.http.post<any>(`${this.endpoint}/setting/${id}`, body, { headers: headers });
+    return this.http.post<ApiResponse<unknown>>(`${this.endpoint}/setting/${id}`, body, { headers: headers });
   }
 
-  getSalesReport(object) {
+  getSalesReport(object: {
+    type: string;
+    startDate: string;
+    endDate: string;
+    deliveryBoyId: string | number;
+    orderStatus: string;
+  }): Observable<ApiResponse<unknown>> {
     const headers = new HttpHeaders().set('type', object.type);
-    return this.http.get<any>(`${this.endpoint}/deliveryBoy/driverReport`, {
+    return this.http.get<ApiResponse<unknown>>(`${this.endpoint}/deliveryBoy/driverReport`, {
       headers: headers,
       params: new HttpParams()
         .set('startDate', object.startDate)
@@ -484,17 +487,23 @@ export class AuthService {
     });
   }
 
-  getFinanceReport(object) {
+  getFinanceReport(object: { type: string; startDate: string; endDate: string }): Observable<ApiResponse<unknown>> {
     const headers = new HttpHeaders().set('type', object.type);
-    return this.http.get<any>(`${this.endpoint}/deliveryBoy/driverReport`, {
+    return this.http.get<ApiResponse<unknown>>(`${this.endpoint}/deliveryBoy/driverReport`, {
       headers: headers,
       params: new HttpParams().set('startDate', object.startDate).set('endDate', object.endDate),
     });
   }
 
-  getInternalSalesReport(object) {
+  getInternalSalesReport(object: {
+    type: string;
+    startDate: string;
+    endDate: string;
+    deliveryType: string | number;
+    orderStatus: string | number;
+  }): Observable<ApiResponse<unknown>> {
     const headers = new HttpHeaders().set('type', object.type);
-    return this.http.get<any>(`${this.endpoint}/order`, {
+    return this.http.get<ApiResponse<unknown>>(`${this.endpoint}/order`, {
       headers: headers,
       params: new HttpParams()
         .set('startDate', object.startDate)
@@ -504,72 +513,72 @@ export class AuthService {
     });
   }
 
-  getFeedbacks(): Observable<any> {
+  getFeedbacks(): Observable<ApiResponse<unknown>> {
     const headers = new HttpHeaders().set('type', 'POULTRY');
-    return this.http.get<any>(`${this.endpoint}/report/getReport`, { headers: headers });
+    return this.http.get<ApiResponse<unknown>>(`${this.endpoint}/report/getReport`, { headers: headers });
   }
 
-  createNormalUser(data: any) {
+  createNormalUser(data: unknown): Observable<ApiResponse<unknown>> {
     const headers = new HttpHeaders().set('type', 'POULTRY');
-    return this.http.post<any>(`${this.endpoint}/auth/createUser`, data, { headers: headers });
+    return this.http.post<ApiResponse<unknown>>(`${this.endpoint}/auth/createUser`, data, { headers: headers });
   }
 
-  dashboard(type): Observable<any> {
+  dashboard(type: string): Observable<ApiResponse<unknown>> {
     const headers = new HttpHeaders().set('type', type);
-    return this.http.get<any>(`${this.endpoint}/dashboard`, { headers: headers });
+    return this.http.get<ApiResponse<unknown>>(`${this.endpoint}/dashboard`, { headers: headers });
   }
 
-  updateUserType(data: any, id) {
+  updateUserType(data: unknown, id: number | string): Observable<ApiResponse<unknown>> {
     const headers = new HttpHeaders().set('type', 'POULTRY');
-    return this.http.post<any>(`${this.endpoint}/user/update/${id}`, data, { headers: headers });
+    return this.http.post<ApiResponse<unknown>>(`${this.endpoint}/user/update/${id}`, data, { headers: headers });
   }
 
-  getOrdersWithStatus(object): Observable<any> {
+  getOrdersWithStatus(object: { type: string; deliveryType: string | number; orderStatus: string | number }): Observable<ApiResponse<unknown>> {
     const headers = new HttpHeaders().set('type', object.type);
-    return this.http.get<any>(`${this.endpoint}/order`, {
+    return this.http.get<ApiResponse<unknown>>(`${this.endpoint}/order`, {
       headers: headers,
       params: new HttpParams().set('deliveryType', object.deliveryType).set('orderStatus', object.orderStatus),
     });
   }
 
-  pushnotification(data: any) {
+  pushnotification(data: unknown): Observable<ApiResponse<unknown>> {
     const headers = new HttpHeaders().set('type', 'POULTRY');
-    return this.http.post<any>(`${this.endpoint}/fcm`, data, { headers: headers });
+    return this.http.post<ApiResponse<unknown>>(`${this.endpoint}/fcm`, data, { headers: headers });
   }
 
-  pushSms(data: any) {
+  pushSms(data: unknown): Observable<ApiResponse<unknown>> {
     const headers = new HttpHeaders().set('type', 'POULTRY');
-    return this.http.post<any>(`${this.endpoint}/sms`, data, { headers: headers });
+    return this.http.post<ApiResponse<unknown>>(`${this.endpoint}/sms`, data, { headers: headers });
   }
 
-  pushEMails(data: any) {
+  pushEMails(data: unknown): Observable<ApiResponse<unknown>> {
     const headers = new HttpHeaders().set('type', 'POULTRY');
-    return this.http.post<any>(`${this.endpoint}/emailNotification`, data, { headers: headers });
+    return this.http.post<ApiResponse<unknown>>(`${this.endpoint}/emailNotification`, data, { headers: headers });
   }
 
-  addSpinWheel(data: any) {
+  addSpinWheel(data: unknown): Observable<ApiResponse<unknown>> {
     const headers = new HttpHeaders().set('type', 'POULTRY');
-    return this.http.post<any>(`${this.endpoint}/SpinAndWin`, data, { headers: headers });
+    return this.http.post<ApiResponse<unknown>>(`${this.endpoint}/SpinAndWin`, data, { headers: headers });
   }
 
-  editSpinWheel(user: any, id) {
+  editSpinWheel(user: unknown, id: number | string): Observable<ApiResponse<unknown>> {
     const headers = new HttpHeaders().set('type', 'POULTRY');
-    return this.http.post<any>(`${this.endpoint}/SpinAndWin/${id}`, user, { headers: headers });
+    return this.http.post<ApiResponse<unknown>>(`${this.endpoint}/SpinAndWin/${id}`, user, { headers: headers });
   }
 
-  getSpinWheel(): Observable<any> {
+  getSpinWheel(): Observable<ApiResponse<unknown>> {
     const param1 = new HttpParams();
-    return this.http.get<any>(`${this.endpoint}/SpinAndWin`, { params: param1 });
+    return this.http.get<ApiResponse<unknown>>(`${this.endpoint}/SpinAndWin`, { params: param1 });
   }
 
-  getSpinWheelWinner(): Observable<any> {
+  getSpinWheelWinner(): Observable<ApiResponse<unknown>> {
     const param1 = new HttpParams();
-    return this.http.get<any>(`${this.endpoint}/spinAndWinList`, { params: param1 });
+    return this.http.get<ApiResponse<unknown>>(`${this.endpoint}/spinAndWinList`, { params: param1 });
   }
 
-  getSpinList(object): Observable<any> {
+  getSpinList(object: { startDate: string; endDate: string; amount: string | number }): Observable<ApiResponse<unknown>> {
     const headers = new HttpHeaders().set('type', 'POULTRY');
-    return this.http.get<any>(`${this.endpoint}/order/listWithSum`, {
+    return this.http.get<ApiResponse<unknown>>(`${this.endpoint}/order/listWithSum`, {
       headers: headers,
       params: new HttpParams()
         .set('startDate', object.startDate)
@@ -578,34 +587,34 @@ export class AuthService {
     });
   }
 
-  addUserIdForSpinner(userId: any) {
-    return this.http.post<any>(`${this.endpoint}/SpinAndWin/add`, userId);
+  addUserIdForSpinner(userId: unknown): Observable<ApiResponse<unknown>> {
+    return this.http.post<ApiResponse<unknown>>(`${this.endpoint}/SpinAndWin/add`, userId);
   }
 
-  getUserHistory(id: any): Observable<any> {
+  getUserHistory(id: number | string): Observable<ApiResponse<unknown>> {
     const headers = new HttpHeaders().set('type', 'POULTRY').set('userId', String(id));
-    return this.http.get<any>(`${this.userEndpoint}/wallet`, { headers: headers });
+    return this.http.get<ApiResponse<unknown>>(`${this.userEndpoint}/wallet`, { headers: headers });
   }
 
-  getMostWantedProductReport(object) {
+  getMostWantedProductReport(object: { type: string; startDate: string; endDate: string }): Observable<ApiResponse<unknown>> {
     const headers = new HttpHeaders().set('type', object.type);
-    return this.http.get<any>(`${this.endpoint}/product/mostOrderProduct`, {
+    return this.http.get<ApiResponse<unknown>>(`${this.endpoint}/product/mostOrderProduct`, {
       headers: headers,
       params: new HttpParams().set('startDate', object.startDate).set('endDate', object.endDate),
     });
   }
 
-  getMostWantedAddressReport(object) {
+  getMostWantedAddressReport(object: { type: string; startDate: string; endDate: string }): Observable<ApiResponse<unknown>> {
     const headers = new HttpHeaders().set('type', object.type);
-    return this.http.get<any>(`${this.endpoint}/product/mostWantedAddress`, {
+    return this.http.get<ApiResponse<unknown>>(`${this.endpoint}/product/mostWantedAddress`, {
       headers: headers,
       params: new HttpParams().set('startDate', object.startDate).set('endDate', object.endDate),
     });
   }
 
-  getFavourtieReport(object) {
+  getFavourtieReport(object: { type: string; startDate: string; endDate: string }): Observable<ApiResponse<unknown>> {
     const headers = new HttpHeaders().set('type', object.type);
-    return this.http.get<any>(`${this.endpoint}/product/mostFavoritesProduct`, {
+    return this.http.get<ApiResponse<unknown>>(`${this.endpoint}/product/mostFavoritesProduct`, {
       headers: headers,
       params: new HttpParams().set('startDate', object.startDate).set('endDate', object.endDate),
     });

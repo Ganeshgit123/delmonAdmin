@@ -63,13 +63,13 @@
             </button>
           </div>
         }
-        @if (notAssignedOrders?.length > 0 && newOrders?.length == 0) {
+        @if (notAssignedOrders?.length > 0 && newOrders?.length === 0) {
           <div>
             <button class="null_btn" (click)="selectDriverAllClick()">
               @if (isAllDriverSelect && ordDriverSelectId.length !== 0) {
                 <span class="txt_btn"> {{ 'DeselectAll' | translate }}</span>
               } @else {
-                @if (notAssignedOrders?.length > 0 && newOrders?.length == 0) {
+                @if (notAssignedOrders?.length > 0 && newOrders?.length === 0) {
                   <span class="txt_btn">{{ 'selectAll' | translate }}</span>
                 }
               }
@@ -192,7 +192,7 @@
         @if (element.orderStatus === 'DRIVERASSIGNED' || element.orderStatus === 'OUTFORDELIVERY') {
           <span
             >{{ 'OrderAssignedTo' | translate }}
-            @if (element.deliveryBoyId != null) {
+            @if (element.deliveryBoyId !== null) {
               <span>{{ element.driverName }}</span>
             }
           </span>
@@ -233,7 +233,7 @@
     <ng-container matColumnDef="deliveryDate">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'DeliveryDate' | translate }}</th>
       <td mat-cell *matCellDef="let element">
-        @if (element.newDeliveryDate == null) {
+        @if (element.newDeliveryDate === null) {
           <span>
             <span>
               @switch (isSpecificDateFormat(element.deliveryDate)) {
@@ -247,7 +247,7 @@
             </span>
           </span>
         }
-        @if (element.newDeliveryDate != null) {
+        @if (element.newDeliveryDate !== null) {
           <span>{{ element.newDeliveryDate }}</span>
         }
       </td>
@@ -256,11 +256,12 @@
     <ng-container matColumnDef="rowActionIcon">
       <th mat-header-cell *matHeaderCellDef>{{ 'Action' | translate }}</th>
       <td mat-cell *matCellDef="let element" class="text-center">
-        <button mat-button class="edit_btn" (click)="editOrderType(element, editModal)">
+        <button mat-button class="edit_btn" (click)="editOrderType(element, editModal)" aria-label="Edit order">
           <img
             src="assets/images/edit_icon.svg"
             onmouseover="this.src = 'assets/images/edit_hover_icon.svg'"
             onmouseout="this.src = 'assets/images/edit_icon.svg'"
+            alt="Edit"
           />
         </button>
         <ng-template #editModal role="document" let-modal="close">

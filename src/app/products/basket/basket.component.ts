@@ -11,6 +11,33 @@ import { NgxSpinnerService } from 'ngx-spinner';
 import Swal from 'sweetalert2';
 import { TranslateService } from '@ngx-translate/core';
 
+interface Basket {
+  id: number;
+  enProductName: string;
+  arProductName: string;
+  image: string[] | string;
+  soldType: number;
+  categoryId: number;
+  type: string;
+  price: number | null;
+  description: string;
+  arDescription: string;
+  active: number;
+  basketProductList: number[];
+}
+
+interface Product {
+  id: number;
+  enProductName: string;
+}
+
+interface ApiResponse<T> {
+  error: boolean;
+  message: string;
+  data: T;
+  files?: string | string[];
+}
+
 @Component({
   selector: 'app-basket',
   templateUrl: './basket.component.html',
@@ -18,29 +45,29 @@ import { TranslateService } from '@ngx-translate/core';
 })
 export class BasketComponent implements OnInit, AfterViewInit {
   displayedColumns: string[];
-  dataSource: MatTableDataSource<any>;
-  getvalue = [];
+  dataSource: MatTableDataSource<Basket>;
+  getvalue: Basket[] = [];
   submitted = false;
-  fileImgUpload: any;
-  getCategory = [];
-  imgs3 = [];
-  uploadFiles = [];
+  fileImgUpload: File | '' = '';
+  getCategory: unknown[] = [];
+  imgs3: string[] = [];
+  uploadFiles: File[] = [];
   imageNeed = false;
-  previews = [];
-  productId: any;
-  newUploadImg = [];
-  pushedImage = [];
+  previews: string[] = [];
+  productId: number | null = null;
+  newUploadImg: string[] = [];
+  pushedImage: string[] = [];
   isBasketEdit = false;
   basketForm: FormGroup;
-  baskedId: any;
-  getProducts = [];
-  filteredProd = [];
+  baskedId: number | null = null;
+  getProducts: Product[] = [];
+  filteredProd: Product[] = [];
   basketProdForm: FormGroup;
-  selectedProvince = [];
+  selectedProvince: Product[] = [];
   showAccept = true;
   superAdminRole = false;
-  prodImg: any;
-  iconImg: any;
+  prodImg = '';
+  iconImg: string | string[] = '';
 
   @ViewChild(MatPaginator) matPaginator: MatPaginator;
   @ViewChild(MatSort) matSort: MatSort;
@@ -57,13 +84,13 @@ export class BasketComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.callRolePermission();
-    if (sessionStorage.getItem('roleName') == 'superAdmin') {
+    if (sessionStorage.getItem('roleName') === 'superAdmin') {
       this.superAdminRole = true;
     } else {
       this.superAdminRole = false;
     }
 
-    this.authService.getBaskets('POULTRY').subscribe((res: any) => {
+    this.authService.getBaskets('POULTRY').subscribe((res: ApiResponse<Basket[]>) => {
       this.getvalue = res.data;
       this.dataSource = new MatTableDataSource(this.getvalue);
       this.dataSource.paginator = this.matPaginator;
@@ -86,9 +113,9 @@ export class BasketComponent implements OnInit, AfterViewInit {
       basketProductList: [''],
     });
 
-    if (this.showAccept == true) {
+    if (this.showAccept === true) {
       this.displayedColumns = ['index', 'name', 'image', 'addProducts', 'rowActionToggle', 'rowActionIcon'];
-    } else if (this.showAccept == false) {
+    } else if (this.showAccept === false) {
       this.displayedColumns = ['index', 'name', 'image'];
     }
   }
@@ -129,20 +156,22 @@ export class BasketComponent implements OnInit, AfterViewInit {
     this.modalService.open(basket, { centered: true, size: 'md' });
   }
 
-  changeProductImages(event: any) {
+  changeProductImages(event: Event) {
     this.imageNeed = false;
-    if (event.target.files && event.target.files[0]) {
-      const numberOfFiles = event.target.files.length;
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+      const numberOfFiles = input.files.length;
       if (numberOfFiles <= 1) {
         for (let i = 0; i < numberOfFiles; i++) {
           const reader = new FileReader();
-          reader.onload = (e: any) => {
-            this.previews.push(e.target.result);
+          reader.onload = (e: ProgressEvent<FileReader>) => {
+            const result = (e.target as FileReader).result as string;
+            this.previews.push(result);
             // console.log("fehh",this.previews)
-            this.pushedImage.push(e.target.result);
+            this.pushedImage.push(result);
           };
-          reader.readAsDataURL(event.target.files[i]);
-          this.uploadFiles.push(event.target.files[i]);
+          reader.readAsDataURL(input.files[i]);
+          this.uploadFiles.push(input.files[i]);
         }
       } else {
         this.toastr.error('Error', 'Max 1 images is allowed');
@@ -177,14 +206,15 @@ export class BasketComponent implements OnInit, AfterViewInit {
   //   this.pushedImage.splice(i, 1);
   // }
 
-  uploadImageFile(event) {
-    if (event.target.files && event.target.files[0]) {
-      const file = event.target.files && event.target.files[0];
+  uploadImageFile(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+      const file = input.files[0];
       const reader = new FileReader();
-      reader.onload = (event: any) => {
-        this.prodImg = event.target.result;
+      reader.onload = (e: ProgressEvent<FileReader>) => {
+        this.prodImg = (e.target as FileReader).result as string;
       };
-      reader.readAsDataURL(event.target.files[0]);
+      reader.readAsDataURL(input.files[0]);
       this.fileImgUpload = file;
     }
   }
@@ -208,9 +238,9 @@ export class BasketComponent implements OnInit, AfterViewInit {
       this.spinner.show();
       const postData = new FormData();
       postData.append('image', this.fileImgUpload);
-      this.authService.s3upload(postData).subscribe((res: any) => {
-        if (res.error == false) {
-          this.iconImg = res.files;
+      this.authService.s3upload(postData).subscribe((res: ApiResponse<unknown>) => {
+        if (res.error === false) {
+          this.iconImg = res.files as string;
           this.imgs3.push(this.iconImg);
           this.basketForm.value.image = JSON.stringify(this.imgs3);
           this.onSubmitBasketImage(this.basketForm.value);
@@ -247,7 +277,7 @@ export class BasketComponent implements OnInit, AfterViewInit {
     // }
   }
 
-  onSubmitBasketImage(data) {
+  onSubmitBasketImage(data: unknown) {
     this.submitted = false;
     this.basketForm.value.type = 'POULTRY';
     this.basketForm.value.price = null;
@@ -257,8 +287,8 @@ export class BasketComponent implements OnInit, AfterViewInit {
     this.basketForm.value.description = 'null';
     this.basketForm.value.arDescription = 'null';
     // console.log("submit", this.productForm.value)
-    this.authService.addNewBasket(data).subscribe((res: any) => {
-      if (res.error == false) {
+    this.authService.addNewBasket(data).subscribe((res: ApiResponse<unknown>) => {
+      if (res.error === false) {
         this.toastr.success('Success ', res.message);
         this.spinner.hide();
         this.submitted = false;
@@ -275,25 +305,25 @@ export class BasketComponent implements OnInit, AfterViewInit {
     });
   }
 
-  editBasket(data, content) {
+  editBasket(data: Basket, content: unknown) {
     this.modalService.open(content, { centered: true, size: 'lg' });
     this.isBasketEdit = true;
-    this.baskedId = data['id'];
+    this.baskedId = data.id;
     this.uploadFiles = [];
-    this.iconImg = data['image'];
-    if (this.iconImg.length == 0) {
+    this.iconImg = data.image;
+    if (Array.isArray(this.iconImg) && this.iconImg.length === 0) {
       this.iconImg = '';
       this.prodImg = '';
     }
     this.basketForm = this.fb.group({
-      enProductName: [data['enProductName']],
-      arProductName: [data['arProductName']],
-      soldType: [data['soldType']],
-      categoryId: [data['categoryId']],
-      type: [data['type']],
-      price: [data['price']],
-      description: [data['description']],
-      arDescription: [data['arDescription']],
+      enProductName: [data.enProductName],
+      arProductName: [data.arProductName],
+      soldType: [data.soldType],
+      categoryId: [data.categoryId],
+      type: [data.type],
+      price: [data.price],
+      description: [data.description],
+      arDescription: [data.arDescription],
       image: '',
     });
   }
@@ -304,9 +334,9 @@ export class BasketComponent implements OnInit, AfterViewInit {
       this.spinner.show();
       const postData = new FormData();
       postData.append('image', this.fileImgUpload);
-      this.authService.s3upload(postData).subscribe((res: any) => {
-        if (res.error == false) {
-          this.iconImg = res.files;
+      this.authService.s3upload(postData).subscribe((res: ApiResponse<unknown>) => {
+        if (res.error === false) {
+          this.iconImg = res.files as string;
           this.imgs3.push(this.iconImg);
           this.basketForm.value.image = JSON.stringify(this.imgs3);
           this.editBasketImage(this.basketForm.value);
@@ -345,9 +375,9 @@ export class BasketComponent implements OnInit, AfterViewInit {
     // }
   }
 
-  editBasketImage(data) {
-    this.authService.editBakset(data, this.baskedId).subscribe((res: any) => {
-      if (res.error == false) {
+  editBasketImage(data: unknown) {
+    this.authService.editBakset(data, this.baskedId as number).subscribe((res: ApiResponse<unknown>) => {
+      if (res.error === false) {
         this.toastr.success('Success ', res.message);
         this.spinner.hide();
         this.submitted = false;
@@ -367,8 +397,8 @@ export class BasketComponent implements OnInit, AfterViewInit {
     const visible = value.active === 1 ? 0 : 1;
     const object = { active: visible };
 
-    this.authService.editProduct(object, value.id).subscribe((res: any) => {
-      if (res.error == false) {
+    this.authService.editProduct(object, value.id).subscribe((res: ApiResponse<unknown>) => {
+      if (res.error === false) {
         this.toastr.success('Success ', res.message);
         this.ngOnInit();
       } else {
@@ -389,31 +419,31 @@ export class BasketComponent implements OnInit, AfterViewInit {
       confirmButtonText: this.translate.instant('YesDeleteIt'),
     }).then((result) => {
       if (result.isConfirmed) {
-        (Swal.fire({
+        Swal.fire({
           title: this.translate.instant('Deleted'),
           text: this.translate.instant('YourFileHasBeenDeleted'),
           icon: 'success',
           confirmButtonText: this.translate.instant('Ok'),
-        }),
-          this.authService.deleteProd(value).subscribe((res: any) => {
-            if (res.error == false) {
-              this.toastr.success('Success ', res.message);
-              this.ngOnInit();
-            } else {
-              this.toastr.error('Error', res.message);
-            }
-          }));
+        });
+        this.authService.deleteProd(value).subscribe((res: ApiResponse<unknown>) => {
+          if (res.error === false) {
+            this.toastr.success('Success ', res.message);
+            this.ngOnInit();
+          } else {
+            this.toastr.error('Error', res.message);
+          }
+        });
       }
     });
   }
 
-  addProductsEle(data, content) {
+  addProductsEle(data: Basket, content: unknown) {
     // console.log("df",data)
     this.filteredProd = [];
     this.modalService.open(content, { centered: true, size: 'xl' });
-    this.baskedId = data['id'];
-    const prod = data['basketProductList'];
-    this.authService.getProductsWithoutParentId1('POULTRY').subscribe((res: any) => {
+    this.baskedId = data.id;
+    const prod = data.basketProductList;
+    this.authService.getProductsWithoutParentId1('POULTRY').subscribe((res: ApiResponse<Product[]>) => {
       this.getProducts = res.data;
       this.selectedProvince = this.getProducts;
       // console.log("ttt", prod)
@@ -424,17 +454,18 @@ export class BasketComponent implements OnInit, AfterViewInit {
     });
   }
 
-  sentProdutId(id) {
+  sentProdutId(id: number) {
     const result = this.getProducts.filter((obj) => {
-      return obj.id == id;
+      return obj.id === id;
     });
 
     this.filteredProd.push(result[0]);
     // console.log("fwe", this.filteredProd)
   }
 
-  onProvinceKey(event) {
-    this.selectedProvince = this.provinceSearch(event.target.value);
+  onProvinceKey(event: Event) {
+    const input = event.target as HTMLInputElement;
+    this.selectedProvince = this.provinceSearch(input.value);
   }
 
   provinceSearch(value: string) {
@@ -442,10 +473,12 @@ export class BasketComponent implements OnInit, AfterViewInit {
     return this.getProducts.filter((option) => option.enProductName.toLowerCase().startsWith(filter));
   }
 
-  removeImg(id) {
+  removeImg(id: number) {
     const findIndex = this.filteredProd.findIndex((a) => a.id === id);
 
-    findIndex !== -1 && this.filteredProd.splice(findIndex, 1);
+    if (findIndex !== -1) {
+      this.filteredProd.splice(findIndex, 1);
+    }
   }
 
   basketProductSubmit() {
@@ -459,8 +492,8 @@ export class BasketComponent implements OnInit, AfterViewInit {
 
     this.basketProdForm.value.basketProductList = JSON.stringify(lastArray);
 
-    this.authService.editBakset(this.basketProdForm.value, this.baskedId).subscribe((res: any) => {
-      if (res.error == false) {
+    this.authService.editBakset(this.basketProdForm.value, (this.baskedId as number)).subscribe((res: ApiResponse<unknown>) => {
+      if (res.error === false) {
         this.toastr.success('Success ', res.message);
         this.basketProdForm.reset();
         lastArray = [];

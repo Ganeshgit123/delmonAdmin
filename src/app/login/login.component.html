@@ -1,12 +1,12 @@
 <section class="img_left">
   <div class="container-fluid">
     <a class="img_logo">
-      <span><img src="assets/images/logo.svg" width="200px" /></span>
+      <span><img src="assets/images/logo.svg" width="200px" alt="Delmon Admin Logo" /></span>
     </a>
     <div class="row">
       <div class="col-md-1"></div>
       <div class="col-lg-5">
-        <img src="assets/images/login_img.svg" class="img-fluid long_illu_img" />
+        <img src="assets/images/login_img.svg" class="img-fluid long_illu_img" alt="Login illustration" />
       </div>
       <div class="col-lg-4 common_sec">
         <form class="form-horizontal" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
@@ -38,16 +38,24 @@
               id="password"
             />
             <i
-              alt="show"
               class="mdi mdi-eye-outline eye_symbol"
+              role="button"
+              tabindex="0"
+              aria-label="Show password"
               (click)="showPassword = !showPassword"
+              (keyup.enter)="showPassword = !showPassword"
+              (keyup.space)="showPassword = !showPassword"
               [class.hide]="showPassword"
             ></i>
 
             <i
-              alt="hide"
               class="mdi mdi-eye-off-outline eye_symbol"
+              role="button"
+              tabindex="0"
+              aria-label="Hide password"
               (click)="showPassword = !showPassword"
+              (keyup.enter)="showPassword = !showPassword"
+              (keyup.space)="showPassword = !showPassword"
               [class.hide]="!showPassword"
             ></i>
             @if (!loginForm.controls.password.valid && submitted) {

@@ -12,6 +12,31 @@ import { MatTableExporterDirective } from '@csmart/mat-table-exporter';
 import * as XLSX from 'xlsx';
 import { NgxSpinnerService } from 'ngx-spinner';
 
+interface ApiResponse<T> {
+  error: boolean;
+  message: string;
+  data: T;
+}
+
+type ColumnType = 'text' | 'number' | 'string' | 'isEdit';
+
+interface ColumnSchema {
+  key: string;
+  type: ColumnType;
+  label: string;
+}
+
+interface ProductPriceRow {
+  id: number;
+  productId?: number;
+  name: string;
+  weight?: string | number;
+  price: number;
+  offer_price?: number;
+  stock: number | string;
+  isEdit?: boolean;
+}
+
 @Component({
   selector: 'app-product-assign',
   templateUrl: './product-assign.component.html',
@@ -19,21 +44,21 @@ import { NgxSpinnerService } from 'ngx-spinner';
 })
 export class ProductAssignComponent implements OnInit, AfterViewInit {
   displayedColumns: string[];
-  dataSource: any;
-  columnsSchema: any;
-  getvalue = [];
-  COLUMNS_SCHEMA = [];
-  USER_DATA = [];
-  params: any;
-  getProdPriceList = [];
+  dataSource: MatTableDataSource<ProductPriceRow>;
+  columnsSchema: ColumnSchema[];
+  getvalue: ProductPriceRow[] = [];
+  COLUMNS_SCHEMA: ColumnSchema[] = [];
+  USER_DATA: ProductPriceRow[] = [];
+  params: string;
+  getProdPriceList: ProductPriceRow[] = [];
   formattedDateTime: string;
-  exportArray = [];
-  fileImgUpload: any;
-  fileUpload: any;
+  exportArray: { id: number; name: string; productId?: number; weight?: string | number; price: number; offer_price?: number; stock: number | string }[] = [];
+  fileImgUpload: File | null = null;
+  fileUpload: string | null = null;
   showAccept = true;
   superAdminRole = false;
-  userType: any;
-  flowType: any;
+  userType: string | null = null;
+  flowType: string;
 
   @ViewChild(MatPaginator) matPaginator: MatPaginator;
   @ViewChild(MatSort) matSort: MatSort;
@@ -51,7 +76,7 @@ export class ProductAssignComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.callRolePermission();
-    if (sessionStorage.getItem('roleName') == 'superAdmin') {
+    if (sessionStorage.getItem('roleName') === 'superAdmin') {
       this.superAdminRole = true;
     } else {
       this.superAdminRole = false;
@@ -63,9 +88,9 @@ export class ProductAssignComponent implements OnInit, AfterViewInit {
       this.params = params.id;
     });
 
-    if (this.userType == 1 || this.userType == 0) {
+    if (Number(this.userType) === 1 || Number(this.userType) === 0) {
       this.flowType = 'POULTRY';
-    } else if (this.userType == 2 || this.userType == 0) {
+    } else if (Number(this.userType) === 2 || Number(this.userType) === 0) {
       this.flowType = 'FEEDING';
     }
 
@@ -73,8 +98,8 @@ export class ProductAssignComponent implements OnInit, AfterViewInit {
     this.getAPICAll(object);
   }
 
-  getAPICAll(object) {
-    this.authService.getProductPriceList(object.type, object.id).subscribe((res: any) => {
+  getAPICAll(object: { type: string; id: string }) {
+    this.authService.getProductPriceList(object.type, object.id).subscribe((res: ApiResponse<ProductPriceRow[]>) => {
       const productListArray = res.data;
       this.getProdPriceList = productListArray.reverse();
 
@@ -110,7 +135,6 @@ export class ProductAssignComponent implements OnInit, AfterViewInit {
 
       this.columnsSchema = this.COLUMNS_SCHEMA;
       this.displayedColumns = this.COLUMNS_SCHEMA.map((col) => col.key);
-      this.dataSource = this.USER_DATA;
       this.dataSource = new MatTableDataSource(this.USER_DATA);
       this.dataSource.paginator = this.matPaginator;
       this.dataSource.sort = this.matSort;
@@ -131,14 +155,14 @@ export class ProductAssignComponent implements OnInit, AfterViewInit {
   callRolePermission() {
     if (sessionStorage.getItem('roleName') !== 'superAdmin') {
       const settingPermssion = JSON.parse(sessionStorage.getItem('permission'));
-      const orderPermission = settingPermssion?.find((ele) => ele.area == 'priceList')?.write == 1;
+      const orderPermission = settingPermssion?.find((ele) => ele.area === 'priceList')?.write === 1;
       // console.log("fef",orderPermission)
       this.showAccept = orderPermission;
     }
   }
 
   ngAfterViewInit(): void {
-    // this.matPaginator._intl.itemsPerPageLabel = this.translate.instant("itemsPerPage");
+    this.matPaginator._intl.itemsPerPageLabel = this.translate.instant('itemsPerPage');
   }
 
   applyFilter(event: Event) {
@@ -146,7 +170,7 @@ export class ProductAssignComponent implements OnInit, AfterViewInit {
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
 
-  updateList(element) {
+  updateList(element: ProductPriceRow) {
     element.isEdit = !element.isEdit;
     if (element.productId) {
       const offerAMt = element.offer_price ? element.offer_price : 0;
@@ -155,7 +179,7 @@ export class ProductAssignComponent implements OnInit, AfterViewInit {
         productId: element.productId,
         price: element.price,
         offerPrice: offerAMt,
-        stock: Number(Math.max(0, element.stock)),
+        stock: Math.max(0, Number(element.stock)),
       };
       // console.log("fffeee", data)
       this.updateOldList(data);
@@ -164,12 +188,12 @@ export class ProductAssignComponent implements OnInit, AfterViewInit {
         productId: element.id,
         price: element.price,
         offerPrice: element.offer_price,
-        stock: Number(Math.max(0, element.stock)),
+        stock: Math.max(0, Number(element.stock)),
         priceListNameId: Number(this.params),
       };
       // console.log("dde", data)
-      this.authService.addProductPriceList(data).subscribe((res: any) => {
-        if (res.error == false) {
+      this.authService.addProductPriceList(data).subscribe((res: ApiResponse<unknown>) => {
+        if (res.error === false) {
           this.toastr.success('Success ', res.message);
           this.ngOnInit();
         } else {
@@ -179,9 +203,9 @@ export class ProductAssignComponent implements OnInit, AfterViewInit {
     }
   }
 
-  updateOldList(data) {
-    this.authService.editProductPriceList(data, this.params).subscribe((res: any) => {
-      if (res.error == false) {
+  updateOldList(data: { id: number; productId: number; price: number; offerPrice: number; stock: number }) {
+    this.authService.editProductPriceList(data, this.params).subscribe((res: ApiResponse<unknown>) => {
+      if (res.error === false) {
         this.toastr.success('Success ', res.message);
         this.ngOnInit();
       } else {
@@ -190,7 +214,7 @@ export class ProductAssignComponent implements OnInit, AfterViewInit {
     });
   }
 
-  onChangeFlowTypeFilter(value) {
+  onChangeFlowTypeFilter(value: string) {
     this.flowType = value;
     const object = { type: this.flowType, id: this.params };
     this.getAPICAll(object);
@@ -223,20 +247,24 @@ export class ProductAssignComponent implements OnInit, AfterViewInit {
     XLSX.writeFile(workbook, fileName);
   }
 
-  importXl(event) {
-    const file = event.target.files && event.target.files[0];
+  importXl(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files && input.files[0];
+    if (!file) {
+      return;
+    }
     const reader = new FileReader();
     reader.readAsDataURL(file);
-    reader.onload = (event: any) => {
-      this.fileUpload = event.target.result;
+    reader.onload = (e: ProgressEvent<FileReader>) => {
+      this.fileUpload = (e.target as FileReader).result as string;
     };
     this.fileImgUpload = file;
     // console.log("upload",this.fileImgUpload)
     this.spinner.show();
     const postData = new FormData();
     postData.append('file', this.fileImgUpload);
-    this.authService.excelUpload(postData, this.params).subscribe((res: any) => {
-      if (res.error == false) {
+    this.authService.excelUpload(postData, this.params).subscribe((res: ApiResponse<unknown>) => {
+      if (res.error === false) {
         this.spinner.hide();
         this.toastr.success('Success ', res.message);
         this.ngOnInit();

@@ -49,21 +49,21 @@
               }
               @case ('text') {
                 <span>
-                  @if (element.weight != null) {
+                  @if (element.weight !== null) {
                     <span>
                       {{ element.name }} / {{ element.weight }}
-                      @if (element.soldType == 1) {
+                      @if (element.soldType === 1) {
                         <span> / {{ 'Pieces' | translate }} </span>
                       }
-                      @if (element.soldType == 2) {
+                      @if (element.soldType === 2) {
                         <span> / {{ 'Cartons' | translate }} </span>
                       }
                     </span>
                   }
-                  @if (element.weight == null && element.isBasket !== 1) {
+                  @if (element.weight === null && element.isBasket !== 1) {
                     <span> {{ element.name }} ({{ 'Main' | translate }}) </span>
                   }
-                  @if (element.isBasket == 1) {
+                  @if (element.isBasket === 1) {
                     <span> {{ element.name }} ({{ 'Baskets' | translate }}) </span>
                   }
                 </span>
@@ -101,21 +101,21 @@
               }
               @case ('text') {
                 <div class="form-input">
-                  @if (element.weight != null) {
+                  @if (element.weight !== null) {
                     <span>
                       {{ element.name }} / {{ element.weight }}
-                      @if (element.soldType == 1) {
+                      @if (element.soldType === 1) {
                         <span> / {{ 'Pieces' | translate }} </span>
                       }
-                      @if (element.soldType == 2) {
+                      @if (element.soldType === 2) {
                         <span> / {{ 'Cartons' | translate }} </span>
                       }
                     </span>
                   }
-                  @if (element.weight == null && element.isBasket !== 1) {
+                  @if (element.weight === null && element.isBasket !== 1) {
                     <span> {{ element.name }} ({{ 'Main' | translate }}) </span>
                   }
-                  @if (element.isBasket == 1) {
+                  @if (element.isBasket === 1) {
                     <span> {{ element.name }} ({{ 'Baskets' | translate }}) </span>
                   }
                 </div>

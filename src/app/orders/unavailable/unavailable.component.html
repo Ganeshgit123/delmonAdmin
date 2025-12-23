@@ -54,10 +54,10 @@
     <ng-container matColumnDef="drivers">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'DriverName' | translate }}</th>
       <td mat-cell *matCellDef="let element">
-        @if (element.deliveryBoyId != null) {
+        @if (element.deliveryBoyId !== null) {
           <span>{{ element.driverName }}</span>
         }
-        @if (element.deliveryBoyId == null) {
+        @if (element.deliveryBoyId === null) {
           <span>{{ 'DriverNotAssigned' | translate }}</span>
         }
       </td>
@@ -81,10 +81,10 @@
     <ng-container matColumnDef="deliveryDate">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'DeliveryDate' | translate }}</th>
       <td mat-cell *matCellDef="let element">
-        @if (element.newDeliveryDate == null) {
+        @if (element.newDeliveryDate === null) {
           <span>{{ element.deliveryDate | date: 'dd/MM/yyyy' }}</span>
         }
-        @if (element.newDeliveryDate != null) {
+        @if (element.newDeliveryDate !== null) {
           <span>{{ element.newDeliveryDate }}</span>
         }
       </td>

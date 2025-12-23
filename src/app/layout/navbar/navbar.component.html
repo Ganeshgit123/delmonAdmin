@@ -1,5 +1,10 @@
 <nav class="navbar">
-  <a href="" class="sidebar-toggler" (click)="toggleSidebar($event)">
+  <a
+    href=""
+    class="sidebar-toggler"
+    (click)="toggleSidebar($event)"
+    aria-label="Toggle sidebar"
+  >
     <i class="feather icon-menu"></i>
   </a>
   <div class="navbar-content">
@@ -29,7 +34,11 @@
             ngbDropdownToggle
             id="languageDropdown"
             role="button"
+            tabindex="0"
+            aria-label="Switch language to Arabic"
             (click)="switchLang('ar')"
+            (keyup.enter)="switchLang('ar')"
+            (keyup.space)="switchLang('ar')"
           >
             <i class="flag-icon flag-icon-us mt-1" title="us"></i>
             <span class="font-weight-medium ml-1 mr-1 d-none d-md-inline-block">العربية</span>
@@ -43,7 +52,11 @@
             ngbDropdownToggle
             id="languageDropdown"
             role="button"
+            tabindex="0"
+            aria-label="Switch language to English"
             (click)="switchLang('en')"
+            (keyup.enter)="switchLang('en')"
+            (keyup.space)="switchLang('en')"
           >
             <i class="flag-icon flag-icon-us mt-1" title="us"></i>
             <span class="font-weight-medium ml-1 mr-1 d-none d-md-inline-block">English</span>
@@ -76,7 +89,7 @@
 </div>
 </li> -->
       <li class="nav-item nav-profile" ngbDropdown>
-        <a class="nav-link" ngbDropdownToggle id="profileDropdown">
+        <a class="nav-link" ngbDropdownToggle id="profileDropdown" aria-label="Open profile menu">
           <img src="assets/images/avatar.jpg" alt="profile" />
           <span class="d-none d-xl-inline-block ml-1">{{ roleName }}</span>
           <i class="mdi mdi-chevron-down d-none d-xl-inline-block"></i>
@@ -100,7 +113,15 @@
       </a>
     </li> -->
               <li class="nav-item">
-                <a (click)="onLogout()" class="nav-link">
+                <a
+                  (click)="onLogout()"
+                  class="nav-link"
+                  role="button"
+                  tabindex="0"
+                  aria-label="Log out"
+                  (keyup.enter)="onLogout()"
+                  (keyup.space)="onLogout()"
+                >
                   <i class="feather icon-log-out"></i>
                   <span>{{ 'Log Out' | translate }}</span>
                 </a>
@@ -122,22 +143,22 @@
   <div class="modal-body">
     <form [formGroup]="passwordData">
       <div class="form-group">
-        <label>{{ 'Email Id' | translate }}</label>
-        <input type="email" class="form-control" formControlName="email" />
+        <label for="emailIdInput">{{ 'Email Id' | translate }}</label>
+        <input id="emailIdInput" type="email" class="form-control" formControlName="email" />
         @if (submitted) {
           <p class="text_error">{{ 'Please enter your emailId' | translate }}</p>
         }
       </div>
       <div class="form-group">
-        <label>{{ 'Old Password' | translate }}</label>
-        <input type="text" class="form-control" formControlName="oldPassword" />
+        <label for="oldPasswordInput">{{ 'Old Password' | translate }}</label>
+        <input id="oldPasswordInput" type="text" class="form-control" formControlName="oldPassword" />
         @if (submitted) {
           <p class="text_error">{{ 'Please enter your old Password' | translate }}</p>
         }
       </div>
       <div class="form-group">
-        <label>{{ 'New Password' | translate }}</label>
-        <input type="text" class="form-control" formControlName="newPassword" />
+        <label for="newPasswordInput">{{ 'New Password' | translate }}</label>
+        <input id="newPasswordInput" type="text" class="form-control" formControlName="newPassword" />
         @if (submitted) {
           <p class="text_error">{{ 'Please enter your New Password' | translate }}</p>
         }

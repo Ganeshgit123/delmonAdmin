@@ -2,11 +2,20 @@
   <div class="sidebar-header">
     <!--- Logo -->
     <a class="sidebar-brand">
-      <span><img src="assets/images/logo.svg" width="150px" /></span>
+      <span><img src="assets/images/logo.svg" width="150px" alt="Delmon Admin Logo" /></span>
     </a>
 
     <!--- Toggler -->
-    <div class="sidebar-toggler not-active" #sidebarToggler (click)="toggleSidebar($event)">
+    <div
+      class="sidebar-toggler not-active"
+      #sidebarToggler
+      (click)="toggleSidebar($event)"
+      role="button"
+      tabindex="0"
+      aria-label="Toggle sidebar"
+      (keyup.enter)="toggleSidebar($event)"
+      (keyup.space)="toggleSidebar($event)"
+    >
       <span></span>
       <span></span>
       <span></span>
@@ -17,7 +26,7 @@
 
     <ul class="sidebar-nav metismenu" id="sidebar-menu" #sidebarMenu>
       @for (item of menuItems; track item) {
-        @if (item == false) {
+        @if (item === false) {
           <span> </span>
         } @else {
           @if (item.isTitle) {
@@ -49,7 +58,7 @@
                 <ul class="sidebar-nav sub-menu nav-second-level" aria-expanded="false">
                   @for (subitem of item.subItems; track subitem) {
                     <li class="nav-item" [ngClass]="{ 'side-nav-item': hasItems(subitem) }">
-                      @if (subitem == false) {
+                      @if (subitem === false) {
                         <span> </span>
                       } @else {
                         @if (hasItems(subitem)) {
