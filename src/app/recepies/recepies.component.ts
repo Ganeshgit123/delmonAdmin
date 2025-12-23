@@ -289,7 +289,7 @@ export class RecepiesComponent implements OnInit, AfterViewInit {
 
   receipeEditService(data) {
     if (this.fileImgUpload && this.fileVideoUpload) {
-      var postData = new FormData();
+      const postData = new FormData();
       postData.append('image', this.fileVideoUpload);
       this.authService.s3upload(postData).subscribe((res: any) => {
         if (res.error == false) {
@@ -322,7 +322,7 @@ export class RecepiesComponent implements OnInit, AfterViewInit {
       });
     } else if (this.fileImgUpload) {
       this.spinner.show();
-      var postData = new FormData();
+      const postData = new FormData();
       postData.append('image', this.fileImgUpload);
       this.authService.s3upload(postData).subscribe((res: any) => {
         if (res.error == false) {
@@ -348,7 +348,7 @@ export class RecepiesComponent implements OnInit, AfterViewInit {
       });
     } else if (this.fileVideoUpload) {
       this.spinner.show();
-      var postData = new FormData();
+      const postData = new FormData();
       postData.append('image', this.fileVideoUpload);
       this.authService.s3upload(postData).subscribe((res: any) => {
         if (res.error == false) {
@@ -394,11 +394,7 @@ export class RecepiesComponent implements OnInit, AfterViewInit {
   }
 
   changeStatus(value) {
-    if (value.active === 1) {
-      var visible = 0;
-    } else {
-      var visible = 1;
-    }
+    const visible = value.active === 1 ? 0 : 1;
     const object = { active: visible };
 
     this.authService.editReceipes(object, value.id).subscribe((res: any) => {

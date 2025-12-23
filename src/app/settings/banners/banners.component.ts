@@ -253,7 +253,7 @@ export class BannersComponent implements OnInit, AfterViewInit {
   bannerEditService(data) {
     if (this.fileImgUpload && this.arfileImgUpload) {
       this.spinner.show();
-      var postData = new FormData();
+      const postData = new FormData();
       postData.append('image', this.fileImgUpload);
       this.authService.s3upload(postData).subscribe((res: any) => {
         if (res.error == false) {
@@ -286,7 +286,7 @@ export class BannersComponent implements OnInit, AfterViewInit {
       });
     } else if (this.fileImgUpload) {
       this.spinner.show();
-      var postData = new FormData();
+      const postData = new FormData();
       postData.append('image', this.fileImgUpload);
       this.authService.s3upload(postData).subscribe((res: any) => {
         if (res.error == false) {
@@ -312,7 +312,7 @@ export class BannersComponent implements OnInit, AfterViewInit {
       });
     } else if (this.arfileImgUpload) {
       this.spinner.show();
-      var postData = new FormData();
+      const postData = new FormData();
       postData.append('image', this.arfileImgUpload);
       this.authService.s3upload(postData).subscribe((res: any) => {
         if (res.error == false) {
@@ -388,11 +388,7 @@ export class BannersComponent implements OnInit, AfterViewInit {
   }
 
   changeStatus(value) {
-    if (value.active === 1) {
-      var visible = 0;
-    } else {
-      var visible = 1;
-    }
+    const visible = value.active === 1 ? 0 : 1;
     const object = { active: visible };
 
     this.authService.editBanner(object, value.id).subscribe((res: any) => {

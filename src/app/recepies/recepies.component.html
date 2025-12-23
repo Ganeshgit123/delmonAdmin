@@ -43,11 +43,12 @@
       <div class="row">
         <div class="col-md-4">
           <div class="form-group">
-            <label for="name">{{ 'Select Category' | translate }}</label>
+            <label for="categoryId">{{ 'Select Category' | translate }}</label>
             <select
               class="form-control"
               class="form-control"
               formControlName="categoryId"
+              id="categoryId"
               [ngClass]="{ 'is-invalid': submitted && f.categoryId.errors }"
             >
               <option value="null" disabled>{{ 'Select Category' | translate }}</option>
@@ -72,6 +73,7 @@
               class="form-control"
               placeholder="{{ 'Recipe Name' | translate }}"
               formControlName="name"
+              id="name"
               [ngClass]="{ 'is-invalid': submitted && f.name.errors }"
             />
             @if (submitted && f.name.errors) {
@@ -85,12 +87,13 @@
         </div>
         <div class="col-md-4">
           <div class="form-group">
-            <label for="name">{{ 'RecipeNameAr' | translate }}</label>
+            <label for="arName">{{ 'RecipeNameAr' | translate }}</label>
             <input
               type="text"
               class="form-control"
               placeholder="{{ 'Recipe Name' | translate }}"
               formControlName="arName"
+              id="arName"
               [ngClass]="{ 'is-invalid': submitted && f.arName.errors }"
             />
             @if (submitted && f.arName.errors) {
@@ -106,7 +109,7 @@
       <div class="row">
         <div class="col-md-6">
           <div class="form-group">
-            <label for="name">{{ 'Ingredients' | translate }}</label>
+            <span class="form-label">{{ 'Ingredients' | translate }}</span>
             <div class="bord_line" [ngClass]="{ 'is-invalid': submitted && f.ingredients.errors }">
               <angular-editor id="editor1" formControlName="ingredients" [config]="editorConfig"></angular-editor>
             </div>
@@ -119,7 +122,7 @@
             }
           </div>
           <div class="form-group">
-            <label for="name">{{ 'Steps' | translate }}</label>
+            <span class="form-label">{{ 'Steps' | translate }}</span>
             <div class="bord_line" [ngClass]="{ 'is-invalid': submitted && f.steps.errors }">
               <angular-editor id="editor2" formControlName="steps" [config]="editorConfig"> </angular-editor>
             </div>
@@ -132,14 +135,14 @@
             }
           </div>
           <div class="form-group">
-            <label for="name">{{ 'Recipe Video' | translate }}</label>
+            <label for="customFile">{{ 'Recipe Video' | translate }}</label>
             <div class="img_upload">
               <label for="customFile">
                 @if (videoUpp) {
                   <video [src]="videoUpp" width="300" height="200" controls></video>
                 }
                 @if (!videoUpp) {
-                  <img class="upload-img" src="assets/images/upload_img.png" />
+                  <img class="upload-img" src="assets/images/upload_img.png" alt="Upload placeholder" />
                 }
                 <!-- <img class="upload-img" *ngIf="iconImg" src="{{iconImg}}" *ngIf="format==='image' && url" /> -->
               </label>
@@ -158,7 +161,7 @@
         </div>
         <div class="col-md-6">
           <div class="form-group">
-            <label for="name">{{ 'IngredientsAR' | translate }}</label>
+            <span class="form-label">{{ 'IngredientsAR' | translate }}</span>
             <div class="bord_line" [ngClass]="{ 'is-invalid': submitted && f.arIngredients.errors }">
               <angular-editor id="editor1" formControlName="arIngredients" [config]="editorConfig"></angular-editor>
             </div>
@@ -171,7 +174,7 @@
             }
           </div>
           <div class="form-group">
-            <label for="name">{{ 'StepsAr' | translate }}</label>
+            <span class="form-label">{{ 'StepsAr' | translate }}</span>
             <div class="bord_line" [ngClass]="{ 'is-invalid': submitted && f.arSteps.errors }">
               <angular-editor id="editor2" formControlName="arSteps" [config]="editorConfig"> </angular-editor>
             </div>
@@ -184,14 +187,14 @@
             }
           </div>
           <div class="form-group">
-            <label for="name">{{ 'Thumbnail Image' | translate }}</label>
+            <label for="imageFile">{{ 'Thumbnail Image' | translate }}</label>
             <div class="img_upload">
               <label for="imageFile">
                 @if (!iconImg) {
-                  <img class="upload-img" src="assets/images/upload_img.png" />
+                  <img class="upload-img" src="assets/images/upload_img.png" alt="Upload placeholder" />
                 }
                 @if (iconImg) {
-                  <img class="upload-img" src="{{ iconImg }}" />
+                  <img class="upload-img" src="{{ iconImg }}" alt="Thumbnail preview" />
                 }
               </label>
               @if (iconImg) {
@@ -270,15 +273,15 @@
       <th mat-header-cell *matHeaderCellDef>{{ 'Status' | translate }}</th>
       <td mat-cell *matCellDef="let element" class="text-center">
         <button (change)="changeStatus(element)" class="tog_btn">
-          <label class="switch">
+          <span class="switch">
             @if (element.active !== 1) {
               <input unchecked type="checkbox" />
             }
-            @if (element.active == 1) {
+            @if (element.active === 1) {
               <input checked type="checkbox" />
             }
             <span class="slider"></span>
-          </label>
+          </span>
         </button>
       </td>
     </ng-container>
@@ -291,6 +294,7 @@
             src="assets/images/edit_icon.svg"
             onmouseover="this.src = 'assets/images/edit_hover_icon.svg'"
             onmouseout="this.src = 'assets/images/edit_icon.svg'"
+            alt="Edit"
           />
         </button>
         <button mat-button (click)="deleteReceipe(element.id)" class="dele_btn">
@@ -298,6 +302,7 @@
             src="assets/images/delete_icon.svg"
             onmouseover="this.src = 'assets/images/delete_hover_icon.svg'"
             onmouseout="this.src = 'assets/images/delete_icon.svg'"
+            alt="Delete"
           />
         </button>
       </td>

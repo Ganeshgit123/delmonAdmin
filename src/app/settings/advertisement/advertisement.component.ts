@@ -110,7 +110,7 @@ export class AdvertisementComponent implements OnInit {
     // console.log("id",this.prodId)
     if (this.fileImgUpload && this.arfileImgUpload) {
       this.spinner.show();
-      var postData = new FormData();
+      const postData = new FormData();
       postData.append('image', this.fileImgUpload);
       this.authService.s3upload(postData).subscribe((res: any) => {
         if (res.error == false) {
@@ -141,7 +141,7 @@ export class AdvertisementComponent implements OnInit {
       });
     } else if (this.fileImgUpload) {
       this.spinner.show();
-      var postData = new FormData();
+      const postData = new FormData();
       postData.append('image', this.fileImgUpload);
       this.authService.s3upload(postData).subscribe((res: any) => {
         if (res.error == false) {
@@ -165,7 +165,7 @@ export class AdvertisementComponent implements OnInit {
       });
     } else if (this.arfileImgUpload) {
       this.spinner.show();
-      var postData = new FormData();
+      const postData = new FormData();
       postData.append('image', this.arfileImgUpload);
       this.authService.s3upload(postData).subscribe((res: any) => {
         if (res.error == false) {

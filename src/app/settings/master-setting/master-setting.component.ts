@@ -357,11 +357,7 @@ export class MasterSettingComponent implements OnInit {
   }
 
   changeStatus(value) {
-    if (value.enValue === 'true') {
-      var visible = 'false';
-    } else {
-      var visible = 'true';
-    }
+    const visible = value.enValue === 'true' ? 'false' : 'true';
     const object = { enValue: visible };
 
     this.authService.updateSetting(object, value.id).subscribe((res: any) => {
@@ -376,11 +372,7 @@ export class MasterSettingComponent implements OnInit {
 
   changeValues(value) {
     // console.log("value",value)
-    if (value.enValue === '1') {
-      var visible = '0';
-    } else {
-      var visible = '1';
-    }
+    const visible = value.enValue === '1' ? '0' : '1';
     const object = { key: value.key, enValue: visible };
 
     // console.log("obj",object)

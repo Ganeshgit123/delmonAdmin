@@ -162,11 +162,7 @@ export class EmployeesComponent implements OnInit, AfterViewInit {
   }
 
   changeActiveStatus(value) {
-    if (value.active === 1) {
-      var visible = 0;
-    } else {
-      var visible = 1;
-    }
+    const visible = value.active === 1 ? 0 : 1;
     const object = { active: visible };
     this.authService.updateUserType(object, value.id).subscribe((res: any) => {
       if (res.error == false) {
