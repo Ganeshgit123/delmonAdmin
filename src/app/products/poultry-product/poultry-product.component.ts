@@ -15,6 +15,20 @@ interface ApiResponse<T> {
   error: boolean;
   data: T;
   message: string;
+  files?: string | string[];
+}
+
+interface ProductRow {
+  id: number;
+  categoryId: number;
+  enProductName: string;
+  arProductName: string;
+  soldType: number;
+  image: string;
+  mostWantedProduct: number;
+  offers: number;
+  newProduct: number;
+  active: number;
 }
 
 @Component({
@@ -24,29 +38,29 @@ interface ApiResponse<T> {
 })
 export class PoultryProductComponent implements OnInit, AfterViewInit {
   displayedColumns: string[];
-  dataSource: MatTableDataSource<any>;
-  getvalue = [];
+  dataSource: MatTableDataSource<ProductRow>;
+  getvalue: ProductRow[] = [];
   isEdit = false;
   productForm: FormGroup;
   submitted = false;
-  fileImgUpload: any;
-  getCategory = [];
-  imgs3 = [];
-  uploadFiles = [];
+  fileImgUpload: File | '';
+  getCategory: unknown[] = [];
+  imgs3: string[] = [];
+  uploadFiles: File[] = [];
   imageNeed = false;
-  previews = [];
-  productId: any;
-  newUploadImg = [];
-  pushedImage = [];
+  previews: string[] = [];
+  productId: number;
+  newUploadImg: string[] = [];
+  pushedImage: string[] = [];
   isRelated = false;
-  productRelId: any;
+  productRelId: number;
   filteredProd = [];
-  recipeId: any;
-  getReceipeList = [];
-  checkPieceValue: any;
-  checkCartonValue: any;
-  prodImg: any;
-  iconImg: any;
+  recipeId: number;
+  getReceipeList: { id: number }[] = [];
+  checkPieceValue: boolean;
+  checkCartonValue: boolean;
+  prodImg: string;
+  iconImg: string;
   showAccept = true;
   superAdminRole = false;
 
@@ -99,14 +113,14 @@ export class PoultryProductComponent implements OnInit, AfterViewInit {
       ];
     }
 
-    this.authService.getProductsWithParentOnly('POULTRY').subscribe((res: ApiResponse<unknown>) => {
+    this.authService.getProductsWithParentOnly('POULTRY').subscribe((res: ApiResponse<ProductRow[]>) => {
       this.getvalue = res.data;
       this.dataSource = new MatTableDataSource(this.getvalue);
       this.dataSource.paginator = this.matPaginator;
       this.dataSource.sort = this.matSort;
     });
 
-    this.authService.getCategory('POULTRY').subscribe((res: ApiResponse<unknown>) => {
+    this.authService.getCategory('POULTRY').subscribe((res: ApiResponse<unknown[]>) => {
       this.getCategory = res.data;
     });
 
@@ -221,9 +235,9 @@ export class PoultryProductComponent implements OnInit, AfterViewInit {
       this.spinner.show();
       const postData = new FormData();
       postData.append('image', this.fileImgUpload);
-      this.authService.s3upload(postData).subscribe((res: ApiResponse<unknown>) => {
+      this.authService.s3upload(postData).subscribe((res: ApiResponse<string>) => {
         if (res.error === false) {
-          this.iconImg = res.files;
+          this.iconImg = (res.files as string) ?? '';
           this.imgs3.push(this.iconImg);
           this.productForm.value.image = JSON.stringify(this.imgs3);
           this.onSubmitProductImage(this.productForm.value);
@@ -347,9 +361,9 @@ export class PoultryProductComponent implements OnInit, AfterViewInit {
       this.spinner.show();
       const postData = new FormData();
       postData.append('image', this.fileImgUpload);
-      this.authService.s3upload(postData).subscribe((res: ApiResponse<unknown>) => {
+      this.authService.s3upload(postData).subscribe((res: ApiResponse<string>) => {
         if (res.error === false) {
-          this.iconImg = res.files;
+          this.iconImg = (res.files as string) ?? '';
           this.imgs3.push(this.iconImg);
           this.productForm.value.image = JSON.stringify(this.imgs3);
           this.editProductImage(this.productForm.value);
@@ -420,7 +434,7 @@ export class PoultryProductComponent implements OnInit, AfterViewInit {
   }
 
   getRelatedProduct() {
-    this.authService.getProductsDetails('POULTRY', this.productId).subscribe((res: ApiResponse<unknown>) => {
+    this.authService.getProductsDetails('POULTRY', this.productId).subscribe((res: ApiResponse<Array<{ id: number }>>) => {
       const filteredData = res.data.filter((item) => item.id !== this.productId);
       const updatedData = filteredData.map((obj) => ({
         id: obj.id,
@@ -490,7 +504,7 @@ export class PoultryProductComponent implements OnInit, AfterViewInit {
     this.modalService.open(receipe, { centered: true, size: 'xl' });
     this.productId = data['id'];
     const prod = data['recipiesId'] || [];
-    this.authService.getReceipes().subscribe((res: any) => {
+    this.authService.getReceipes().subscribe((res: ApiResponse<Array<{ id: number }>>) => {
       this.getReceipeList = res.data;
       // console.log("Vv", this.getProducts)
       // console.log("ttt", prod)
