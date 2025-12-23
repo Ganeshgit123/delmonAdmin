@@ -107,7 +107,7 @@
       <td mat-cell *matCellDef="let element" class="text-center">
         @if (element.isApprove !== 2) {
           <button (change)="changeActiveStatus(element)" class="tog_btn">
-            <label class="switch">
+            <span class="switch">
               @if (element.active !== 1) {
                 <input unchecked type="checkbox" />
               }
@@ -115,7 +115,7 @@
                 <input checked type="checkbox" />
               }
               <span class="slider"></span>
-            </label>
+            </span>
           </button>
         }
         @if (element.isApprove === 2) {

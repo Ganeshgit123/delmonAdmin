@@ -73,7 +73,7 @@
 
           @if (emailForm.get('recipientType')?.value === 'single') {
             <div class="form-group">
-              <label>{{ 'Users' | translate }}</label>
+              <span class="form-label">{{ 'Users' | translate }}</span>
               <mat-form-field appearance="outline" class="w-100">
                 <mat-chip-list #chipList>
                   @for (user of selectedUsers; track user; let i = $index) {
