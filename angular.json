@@ -32,12 +32,11 @@
               "src/styles.scss",
               "src/assets/scss/style.scss"
             ],
-            "scripts": [
-            ],
+            "scripts": [],
             "allowedCommonJsDependencies": [
               "lodash",
               "xlsx"
-           ],
+            ],
             "vendorChunk": true,
             "extractLicenses": false,
             "buildOptimizer": false,
@@ -127,7 +126,6 @@
       }
     }
   },
-  "defaultProject": "delmon-angular",
   "cli": {
     "analytics": false
   }
