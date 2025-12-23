@@ -20,7 +20,7 @@ if (environment.production) {
   enableProdMode();
 }
 
-export function createTranslateLoader(http: HttpClient): any {
+export function createTranslateLoader(http: HttpClient): TranslateLoader {
   return new TranslateHttpLoader(http, 'assets/i18n/', '.json');
 }
 

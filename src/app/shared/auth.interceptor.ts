@@ -1,9 +1,8 @@
-import { HTTP_INTERCEPTORS, HttpEvent } from '@angular/common/http';
+import { HttpEvent } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { HttpInterceptor, HttpHandler, HttpRequest } from '@angular/common/http';
 import { AuthService } from './auth.service';
 import { Observable } from 'rxjs';
-const TOKEN_HEADER_KEY = 'Authorization';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
@@ -12,14 +11,14 @@ export class AuthInterceptor implements HttpInterceptor {
     let authReq = req;
     const token = this.authService.getToken();
     const langkey = this.authService.getLanguage();
-    const webflow = this.authService.getWebFlow();
+    const _webflow = this.authService.getWebFlow();
     if (token) {
       authReq = req.clone({
         setHeaders: {
           Authorization: `${token}`,
           language: `${langkey}`,
         },
-        // headers: req.headers.set(TOKEN_HEADER_KEY, token),
+        // headers: req.headers.set('Authorization', token),
       });
     }
     // console.log("auth",authReq)

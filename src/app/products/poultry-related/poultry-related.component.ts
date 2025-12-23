@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, FormArray } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -83,8 +83,8 @@ export class PoultryRelatedComponent implements OnInit {
       const dropDownArray = [];
 
       if (dropDownValue.length > 0) {
-        for (var i = 0; i < dropDownValue.length; i++) {
-          dropDownArray.push(this.getPiecesValue(dropDownValue[i]));
+        for (const item of dropDownValue) {
+          dropDownArray.push(this.getPiecesValue(item));
         }
       }
       this.pieceForm = this.fb.group({
@@ -101,8 +101,8 @@ export class PoultryRelatedComponent implements OnInit {
       const cartonArray = [];
 
       if (cartonDropdown.length > 0) {
-        for (var i = 0; i < cartonDropdown.length; i++) {
-          cartonArray.push(this.getCartonsValue(cartonDropdown[i]));
+        for (const item of cartonDropdown) {
+          cartonArray.push(this.getCartonsValue(item));
         }
       }
       this.cartonForm = this.fb.group({
@@ -245,11 +245,7 @@ export class PoultryRelatedComponent implements OnInit {
   }
 
   changePieceStatus(value) {
-    if (value.piecesActive === 1) {
-      var visible = 0;
-    } else {
-      var visible = 1;
-    }
+    const visible = value.piecesActive === 1 ? 0 : 1;
     const object = { piecesActive: visible };
     // console.log("fef",object,value.id)
 
@@ -264,11 +260,7 @@ export class PoultryRelatedComponent implements OnInit {
   }
 
   changeCartonStatus(value) {
-    if (value.cartonActive === 1) {
-      var visible = 0;
-    } else {
-      var visible = 1;
-    }
+    const visible = value.cartonActive === 1 ? 0 : 1;
     const object = { cartonActive: visible };
     // console.log("fef",object,value.id)
 
@@ -307,11 +299,7 @@ export class PoultryRelatedComponent implements OnInit {
   }
 
   changeProdStatus(value) {
-    if (value.active === 1) {
-      var visible = 0;
-    } else {
-      var visible = 1;
-    }
+    const visible = value.active === 1 ? 0 : 1;
     const object = { active: visible };
     // console.log("fef",object,value.id)
 

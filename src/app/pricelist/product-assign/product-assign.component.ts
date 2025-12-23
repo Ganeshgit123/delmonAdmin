@@ -149,11 +149,7 @@ export class ProductAssignComponent implements OnInit, AfterViewInit {
   updateList(element) {
     element.isEdit = !element.isEdit;
     if (element.productId) {
-      if (element.offer_price) {
-        var offerAMt = element.offer_price;
-      } else {
-        offerAMt = 0;
-      }
+      const offerAMt = element.offer_price ? element.offer_price : 0;
       const data = {
         id: element.id,
         productId: element.productId,

@@ -435,11 +435,7 @@ export class PoultryProductComponent implements OnInit, AfterViewInit {
   }
 
   changeStatus(value) {
-    if (value.active === 1) {
-      var visible = 0;
-    } else {
-      var visible = 1;
-    }
+    const visible = value.active === 1 ? 0 : 1;
     const object = { active: visible };
 
     this.authService.editProduct(object, value.id).subscribe((res: any) => {
@@ -544,11 +540,7 @@ export class PoultryProductComponent implements OnInit, AfterViewInit {
   }
 
   changeMostWantedProduct(value) {
-    if (value.mostWantedProduct === 1) {
-      var visible = 0;
-    } else {
-      var visible = 1;
-    }
+    const visible = value.mostWantedProduct === 1 ? 0 : 1;
     const object = { mostWantedProduct: visible };
 
     this.authService.editProduct(object, value.id).subscribe((res: any) => {
@@ -562,11 +554,7 @@ export class PoultryProductComponent implements OnInit, AfterViewInit {
   }
 
   changeOffers(value) {
-    if (value.offers === 1) {
-      var visible = 0;
-    } else {
-      var visible = 1;
-    }
+    const visible = value.offers === 1 ? 0 : 1;
     const object = { offers: visible };
 
     this.authService.editProduct(object, value.id).subscribe((res: any) => {
@@ -579,11 +567,7 @@ export class PoultryProductComponent implements OnInit, AfterViewInit {
     });
   }
   changeNewProduct(value) {
-    if (value.newProduct === 1) {
-      var visible = 0;
-    } else {
-      var visible = 1;
-    }
+    const visible = value.newProduct === 1 ? 0 : 1;
     const object = { newProduct: visible };
 
     this.authService.editProduct(object, value.id).subscribe((res: any) => {

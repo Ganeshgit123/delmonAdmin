@@ -168,11 +168,7 @@ export class FeedingRelatedComponent implements OnInit {
   }
 
   changePieceStatus(value) {
-    if (value.piecesActive === 1) {
-      var visible = 0;
-    } else {
-      var visible = 1;
-    }
+    const visible = value.piecesActive === 1 ? 0 : 1;
     const object = { piecesActive: visible };
     // console.log("fef",object,value.id)
 
@@ -209,11 +205,7 @@ export class FeedingRelatedComponent implements OnInit {
   }
 
   changeProdStatus(value) {
-    if (value.active === 1) {
-      var visible = 0;
-    } else {
-      var visible = 1;
-    }
+    const visible = value.active === 1 ? 0 : 1;
     const object = { active: visible };
     // console.log("fef",object,value.id)
 

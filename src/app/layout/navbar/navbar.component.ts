@@ -129,11 +129,7 @@ export class NavbarComponent implements OnInit {
   }
 
   switchLang(lang: any) {
-    if (lang == 'ar') {
-      var dir = 'rtl';
-    } else {
-      var dir = 'ltr';
-    }
+    const dir = lang === 'ar' ? 'rtl' : 'ltr';
     localStorage.setItem('lang', lang);
     localStorage.setItem('dir', dir);
     // console.log("lang",localStorage)
