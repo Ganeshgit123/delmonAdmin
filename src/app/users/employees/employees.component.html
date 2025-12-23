@@ -83,18 +83,18 @@
     <ng-container matColumnDef="status">
       <th mat-header-cell *matHeaderCellDef>{{ 'Status' | translate }}</th>
       <td mat-cell *matCellDef="let element" class="text-center">
-        @if (element.isApprove == 1) {
+        @if (element.isApprove === 1) {
           <p style="color: green">{{ 'Approved' | translate }}</p>
         }
-        @if (element.isApprove == 2) {
+        @if (element.isApprove === 2) {
           <p style="color: red">{{ 'Rejected' | translate }}</p>
         }
-        @if (element.isApprove == 0) {
+        @if (element.isApprove === 0) {
           <button mat-button class="view_btn" (click)="approve(element.id)">
             {{ 'approoo' | translate }}
           </button>
         }
-        @if (element.isApprove == 0) {
+        @if (element.isApprove === 0) {
           <button mat-button class="red_btn" (click)="reject(element.id)">
             {{ 'Reject' | translate }}
           </button>
@@ -111,14 +111,14 @@
               @if (element.active !== 1) {
                 <input unchecked type="checkbox" />
               }
-              @if (element.active == 1) {
+              @if (element.active === 1) {
                 <input checked type="checkbox" />
               }
               <span class="slider"></span>
             </label>
           </button>
         }
-        @if (element.isApprove == 2) {
+        @if (element.isApprove === 2) {
           <button mat-button class="view_btn" (click)="approve(element.id)">
             {{ 'approoo' | translate }}
           </button>

@@ -11,17 +11,17 @@
         <div class="row">
           <div class="col-md-9">
             <div class="form-group mb-0">
-              <label for="name">{{ 'CardPayment' | translate }}</label>
+              <span class="form-label">{{ 'CardPayment' | translate }}</span>
             </div>
           </div>
           <div class="col-md-3">
             @if (showAccept) {
               <button (change)="changeValues(data)" class="tog_btn mb-0 mt-1">
                 <label class="switch">
-                  @if (data.enValue == '0') {
+                  @if (data.enValue === '0') {
                     <input unchecked type="checkbox" />
                   }
-                  @if (data.enValue == '1') {
+                  @if (data.enValue === '1') {
                     <input checked type="checkbox" />
                   }
                   <span class="slider"></span>
@@ -38,17 +38,17 @@
         <div class="row">
           <div class="col-md-9">
             <div class="form-group mb-0">
-              <label for="name">{{ 'HomeDelivery' | translate }}</label>
+              <span class="form-label">{{ 'HomeDelivery' | translate }}</span>
             </div>
           </div>
           <div class="col-md-3">
             @if (showAccept) {
               <button (change)="changeValues(data)" class="tog_btn mb-0 mt-1">
                 <label class="switch">
-                  @if (data.enValue == '0') {
+                  @if (data.enValue === '0') {
                     <input unchecked type="checkbox" />
                   }
-                  @if (data.enValue == '1') {
+                  @if (data.enValue === '1') {
                     <input checked type="checkbox" />
                   }
                   <span class="slider"></span>
@@ -67,17 +67,17 @@
         <div class="row">
           <div class="col-md-9">
             <div class="form-group mb-0">
-              <label for="name">{{ 'CodPayment' | translate }}</label>
+              <span class="form-label">{{ 'CodPayment' | translate }}</span>
             </div>
           </div>
           <div class="col-md-3">
             @if (showAccept) {
               <button (change)="changeValues(data)" class="tog_btn mb-0 mt-1">
                 <label class="switch">
-                  @if (data.enValue == '0') {
+                  @if (data.enValue === '0') {
                     <input unchecked type="checkbox" />
                   }
-                  @if (data.enValue == '1') {
+                  @if (data.enValue === '1') {
                     <input checked type="checkbox" />
                   }
                   <span class="slider"></span>
@@ -94,7 +94,7 @@
         <div class="row">
           <div class="col-md-9">
             <div class="form-group mb-0">
-              <label for="name">{{ 'calenderShowDelivery' | translate }}</label>
+              <span class="form-label">{{ 'calenderShowDelivery' | translate }}</span>
             </div>
           </div>
           <div class="col-md-3">
@@ -123,17 +123,17 @@
         <div class="row">
           <div class="col-md-9">
             <div class="form-group mb-0">
-              <label for="name">{{ 'Self PickUp' | translate }}</label>
+              <span class="form-label">{{ 'Self PickUp' | translate }}</span>
             </div>
           </div>
           <div class="col-md-3">
             @if (showAccept) {
               <button (change)="changeValues(data)" class="tog_btn mb-0 mt-1">
                 <label class="switch">
-                  @if (data.enValue == '0') {
+                  @if (data.enValue === '0') {
                     <input unchecked type="checkbox" />
                   }
-                  @if (data.enValue == '1') {
+                  @if (data.enValue === '1') {
                     <input checked type="checkbox" />
                   }
                   <span class="slider"></span>
