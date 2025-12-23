@@ -50,8 +50,8 @@ export class FeedingComponent implements OnInit {
     }
 
     if (this.showAccept == true) {
-    this.displayedColumns = ['index', 'enName', 'arName', 'image', 'colorCode', 'vat', 'rowActionToggle', 'actionUser', 'actionEmployee', 'rowActionIcon'];
-    }else if(this.showAccept == false){
+      this.displayedColumns = ['index', 'enName', 'arName', 'image', 'colorCode', 'vat', 'rowActionToggle', 'actionUser', 'actionEmployee', 'rowActionIcon'];
+    } else if (this.showAccept == false) {
       this.displayedColumns = ['index', 'enName', 'arName', 'image', 'colorCode', 'vat'];
     }
     this.authService.getCategory('FEEDING').subscribe(
@@ -136,9 +136,8 @@ export class FeedingComponent implements OnInit {
 
   colorClicked(colorvalue) {
     const cvalue = colorvalue;
-
-    this.categoryForm.value.colorCode = cvalue;
-    // console.log("color", cvalue);
+    this.color = cvalue;
+    this.categoryForm.patchValue({ colorCode: cvalue });
   }
 
   editCategory(data, content) {
@@ -311,7 +310,7 @@ export class FeedingComponent implements OnInit {
     let stat: number;
     if (value.userType == 0) {
       stat = 1
-    } else if (value.userType == 1){
+    } else if (value.userType == 1) {
       stat = 0
     }
     const object = { userType: stat }
@@ -331,7 +330,7 @@ export class FeedingComponent implements OnInit {
     let stat: number;
     if (value.employeeType == 0) {
       stat = 1
-    } else if (value.employeeType == 1){
+    } else if (value.employeeType == 1) {
       stat = 0
     }
 

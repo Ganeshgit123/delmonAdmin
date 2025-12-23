@@ -1,108 +1,126 @@
 <div class="d-flex justify-content-between align-items-center flex-wrap grid-margin">
-    <div>
-        <h2 class="mb-3 mb-md-0">{{"Add Related Product " | translate}}</h2>
-    </div>
+  <div>
+    <h2 class="mb-3 mb-md-0">{{"Add Related Product " | translate}}</h2>
+  </div>
 </div>
 
 <form [formGroup]="oldValue">
-    <div class="form-group">
-        <div class="row">
-            <div class="col-md-4">
-                <label for="name">{{"Select Category" | translate}}</label>
-                <select #teams class="form-control" formControlName="categoryId" class="form-control">
-                    <option selected disabled *ngFor="let item of getCategory" value="{{item.id}}">
-                        {{item.enName}} / {{item.arName}}</option>
-                </select>
-            </div>
-            <div class="col-md-4">
-                <label for="name">{{"ProductNameEN" | translate}}</label>
-                <input type="text" class="form-control" formControlName="enProductName"
-                    placeholder="{{'ProductNameEN' |translate}}" readonly>
-            </div>
-            <div class="col-md-4">
-                <label for="name">{{"ProductNameAR" | translate}}</label>
-                <input type="text" class="form-control" formControlName="arProductName"
-                    placeholder="{{'ProductNameAR' |translate}}" readonly>
-            </div>
-        </div>
+  <div class="form-group">
+    <div class="row">
+      <div class="col-md-4">
+        <label for="name">{{"Select Category" | translate}}</label>
+        <select #teams class="form-control" formControlName="categoryId" class="form-control">
+          @for (item of getCategory; track item) {
+            <option selected disabled value="{{item.id}}">
+            {{item.enName}} / {{item.arName}}</option>
+          }
+        </select>
+      </div>
+      <div class="col-md-4">
+        <label for="name">{{"ProductNameEN" | translate}}</label>
+        <input type="text" class="form-control" formControlName="enProductName"
+          placeholder="{{'ProductNameEN' |translate}}" readonly>
+      </div>
+      <div class="col-md-4">
+        <label for="name">{{"ProductNameAR" | translate}}</label>
+        <input type="text" class="form-control" formControlName="arProductName"
+          placeholder="{{'ProductNameAR' |translate}}" readonly>
+      </div>
     </div>
+  </div>
 </form>
 <br>
-<div class="bord_line" *ngIf="piecesActive == 1">
-    <div class="row">
+  @if (piecesActive == 1) {
+    <div class="bord_line">
+      <div class="row">
         <div class="col-md-12">
-            <div class="weight_box">
-                <div class="row">
-                    <div class="col-md-10">
-                        <h3 class="mb-3">{{"Pieces" | translate}}</h3>
-                    </div>
-                    <div class="col-md-2">
-                        <!-- <button (change)="changePieceStatus(this.getvalue)" class="tog_btn top">
-                            <label class="switch">
-                                <input unchecked type="checkbox" *ngIf="piecesActive !== 1">
-                                <input checked type="checkbox" *ngIf="piecesActive == 1">
-                                <span class="slider"></span>
-                            </label>
-                        </button> -->
-                    </div>
-                </div>
+          <div class="weight_box">
+            <div class="row">
+              <div class="col-md-10">
+                <h3 class="mb-3">{{"Pieces" | translate}}</h3>
+              </div>
+              <div class="col-md-2">
+                <!-- <button (change)="changePieceStatus(this.getvalue)" class="tog_btn top">
+                <label class="switch">
+                  <input unchecked type="checkbox" *ngIf="piecesActive !== 1">
+                  <input checked type="checkbox" *ngIf="piecesActive == 1">
+                  <span class="slider"></span>
+                </label>
+              </button> -->
             </div>
-            <form [formGroup]="pieceForm">
-                <div class="desc_box">
-                    <button class="simi_btn mb-4" (click)="addPieces()" *ngIf="showAccept">{{"Add" |
-                        translate}}</button>
-                    <div formArrayName="product">
-                        <div class="row" *ngFor="let comp of pieceForm['controls'].product['controls']; let i=index;">
-                            <div class="col-md-12" [formGroupName]="i">
-                                <div class="row mb-3">
-                                    <div class="col-md-3">
-                                        <div class="form-group">
-                                            <label for="name">{{"Weight" | translate}} ({{"ShouldinGrams" |
-                                                translate}})</label>
-                                            <input type="text" pattern="\d*" class="form-control"
-                                                formControlName="weight" inputmode="numeric"
-                                                oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
-                                        </div>
-                                    </div>
-                                    <div class="col-md-2">
-                                        <div class="form-group">
-                                            <label for="name">{{"No. of Pieces" | translate}}</label>
-                                            <input type="number" class="form-control" formControlName="noOfPieces" />
-                                        </div>
-                                    </div>
-                                    <!-- <div class="col-md-2"> 
-                                        <div class="form-group">
-                                            <label for="name">{{"Stock" | translate}}</label>
-                                            <input type="number" class="form-control" formControlName="isStock" />
-                                        </div>
-                                    </div> -->
-                                    <!-- <div class="col-md-4">
-                                        <label for="name">{{"Description" | translate}}</label>
-                                        <textarea class="form-control" placeholder="{{'Description' |translate}}"
-                                            formControlName="description"></textarea>
-                                    </div> -->
-                                    <ng-container *ngIf="showAccept">
-                                        <div class="col-md-1" *ngIf="comp.value.isEdit">
-                                            <label class="switch inner" (change)="changeProdStatus(comp.value)">
-                                                <input unchecked type="checkbox" *ngIf="comp.value.active !== 1">
-                                                <input checked type="checkbox" *ngIf="comp.value.active == 1">
-                                                <span class="slider"></span>
-                                            </label>
-                                        </div>
-                                        <div class="col-md-2" *ngIf="comp.value.isEdit">
-                                            <button class="save_btn" (click)="updateProduct(comp.value)">
-                                                {{"Save" | translate}}</button>
-                                        </div>
-                                    </ng-container>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </form>
+          </div>
         </div>
-    </div>
+        <form [formGroup]="pieceForm">
+          <div class="desc_box">
+            @if (showAccept) {
+              <button class="simi_btn mb-4" (click)="addPieces()">{{"Add" |
+              translate}}</button>
+            }
+            <div formArrayName="product">
+              @for (comp of pieceForm['controls'].product['controls']; track comp; let i = $index) {
+                <div class="row">
+                  <div class="col-md-12" [formGroupName]="i">
+                    <div class="row mb-3">
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <label for="name">{{"Weight" | translate}} ({{"ShouldinGrams" |
+                          translate}})</label>
+                          <input type="text" pattern="\d*" class="form-control"
+                            formControlName="weight" inputmode="numeric"
+                            oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
+                        </div>
+                      </div>
+                      <div class="col-md-2">
+                        <div class="form-group">
+                          <label for="name">{{"No. of Pieces" | translate}}</label>
+                          <input type="number" class="form-control" formControlName="noOfPieces" />
+                        </div>
+                      </div>
+                      <!-- <div class="col-md-2">
+                      <div class="form-group">
+                        <label for="name">{{"Stock" | translate}}</label>
+                        <input type="number" class="form-control" formControlName="isStock" />
+                      </div>
+                    </div> -->
+                    <!-- <div class="col-md-4">
+                    <label for="name">{{"Description" | translate}}</label>
+                    <textarea class="form-control" placeholder="{{'Description' |translate}}"
+                    formControlName="description"></textarea>
+                  </div> -->
+                  @if (showAccept) {
+                    @if (comp.value.isEdit) {
+                      <div class="col-md-1">
+                        <label class="switch inner" (change)="changeProdStatus(comp.value)">
+                          @if (comp.value.active !== 1) {
+                            <input unchecked type="checkbox">
+                          }
+                          @if (comp.value.active == 1) {
+                            <input checked type="checkbox">
+                          }
+                          <span class="slider"></span>
+                        </label>
+                      </div>
+                    }
+                    @if (comp.value.isEdit) {
+                      <div class="col-md-2">
+                        <button class="save_btn" (click)="updateProduct(comp.value)">
+                        {{"Save" | translate}}</button>
+                      </div>
+                    }
+                  }
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </form>
+  </div>
 </div>
-<div class="text-right" *ngIf="showAccept">
+</div>
+}
+@if (showAccept) {
+  <div class="text-right">
     <button type="submit" class="btn btn-own" (click)="onSubmitData()">{{"Add Product" | translate}}</button>
-</div>
+  </div>
+}

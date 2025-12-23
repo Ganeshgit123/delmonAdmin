@@ -1,81 +1,83 @@
 <div class="d-flex justify-content-between align-items-center flex-wrap grid-margin">
-    <div class="row">
-        <h2 class="mb-3 mb-md-0">{{"Spin and Wheel" | translate}}</h2>
-    </div>
+  <div class="row">
+    <h2 class="mb-3 mb-md-0">{{"Spin and Wheel" | translate}}</h2>
+  </div>
 </div>
 
 <div class="row">
-    <div class="col-md-2 date_col">
-        <mat-form-field>
-            <input matInput [matDatepicker]="picker" placeholder="{{'Start date' | translate}}"
-                (dateInput)="startEvent($event)">
-            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-            <mat-datepicker #picker></mat-datepicker>
-        </mat-form-field>
+  <div class="col-md-2 date_col">
+    <mat-form-field>
+      <input matInput [matDatepicker]="picker" placeholder="{{'Start date' | translate}}"
+        (dateInput)="startEvent($event)">
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+  </div>
+  <div class="col-md-2 date_col">
+    <mat-form-field>
+      <input matInput [matDatepicker]="picker1" placeholder="{{'End date' | translate}}"
+        (dateInput)="endEvent($event)">
+      <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+      <mat-datepicker #picker1></mat-datepicker>
+    </mat-form-field>
+  </div>
+  <div class="col-md-2 input_col">
+    <mat-form-field>
+      <input #inputValue matInput type="text" class="form-control" placeholder="{{'Price' |translate}}"
+        (keypress)="restrictNumeric($event)">
+    </mat-form-field>
+  </div>
+  <div class="col-md-2 text-center">
+    <button (click)="getList(inputValue.value)" class="export_btn">{{"GetOrderList" | translate}}</button>
+  </div>
+  <div class="col-md-1">
+  </div>
+  @if (getOrders.length) {
+    <div class="col-md-3 text-center">
+      <p class="exp_btn_righ"><button (click)="addSpinUsers()" class="export_btn">{{"EnableSpinnerUSer" | translate}}</button></p>
     </div>
-    <div class="col-md-2 date_col">
-        <mat-form-field>
-            <input matInput [matDatepicker]="picker1" placeholder="{{'End date' | translate}}"
-                (dateInput)="endEvent($event)">
-            <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
-            <mat-datepicker #picker1></mat-datepicker>
-        </mat-form-field>
-    </div>
-    <div class="col-md-2 input_col">
-        <mat-form-field>
-            <input #inputValue matInput type="text" class="form-control" placeholder="{{'Price' |translate}}"
-            (keypress)="restrictNumeric($event)">
-        </mat-form-field>
-    </div>
-    <div class="col-md-2 text-center">
-        <button (click)="getList(inputValue.value)" class="export_btn">{{"GetOrderList" | translate}}</button>
-    </div>
-    <div class="col-md-1">
-    </div>
-    <div class="col-md-3 text-center" *ngIf="getOrders.length">
-        <p class="exp_btn_righ"><button (click)="addSpinUsers()" class="export_btn">{{"EnableSpinnerUSer" | translate}}</button></p>
-    </div>
+  }
 </div>
 <ngx-spinner bdColor="rgba(51,51,51,0.8)" size="medium" color="#fff" type="ball-scale-multiple">
-    <p style="font-size: 20px; color: white"> {{"Loading" | translate}}...</p>
+  <p style="font-size: 20px; color: white"> {{"Loading" | translate}}...</p>
 </ngx-spinner>
 
 <div class="mat-elevation-z8">
-    <table class="table" mat-table [dataSource]="dataSource" matSort>
+  <table class="table" mat-table [dataSource]="dataSource" matSort>
 
-        <ng-container matColumnDef="index">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>{{"S.No" | translate}}</th>
-            <td mat-cell *matCellDef="let element; let i = index;"> {{matPaginator.pageSize * matPaginator.pageIndex + i
-                + 1}} </td>
-        </ng-container>
+    <ng-container matColumnDef="index">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>{{"S.No" | translate}}</th>
+      <td mat-cell *matCellDef="let element; let i = index;"> {{matPaginator.pageSize * matPaginator.pageIndex + i
+      + 1}} </td>
+    </ng-container>
 
-        <ng-container matColumnDef="userID">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"UserId" | translate}} </th>
-            <td mat-cell *matCellDef="let element"> {{element.userID}} </td>
-        </ng-container>
+    <ng-container matColumnDef="userID">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"UserId" | translate}} </th>
+      <td mat-cell *matCellDef="let element"> {{element.userID}} </td>
+    </ng-container>
 
-        <ng-container matColumnDef="user_name">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"User Name" | translate}} </th>
-            <td mat-cell *matCellDef="let element"> {{element.user_name}} </td>
-        </ng-container>
+    <ng-container matColumnDef="user_name">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"User Name" | translate}} </th>
+      <td mat-cell *matCellDef="let element"> {{element.user_name}} </td>
+    </ng-container>
 
-        <ng-container matColumnDef="mobile_number">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"Mobile Number" | translate}} </th>
-            <td mat-cell *matCellDef="let element"> {{element.mobile_number}} </td>
-        </ng-container>
+    <ng-container matColumnDef="mobile_number">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"Mobile Number" | translate}} </th>
+      <td mat-cell *matCellDef="let element"> {{element.mobile_number}} </td>
+    </ng-container>
 
-        <ng-container matColumnDef="totalAmount">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"TotalPrice" | translate}} </th>
-            <td mat-cell *matCellDef="let element"> {{element.totalAmount}} </td>
-        </ng-container>
+    <ng-container matColumnDef="totalAmount">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"TotalPrice" | translate}} </th>
+      <td mat-cell *matCellDef="let element"> {{element.totalAmount}} </td>
+    </ng-container>
 
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
 
-        <tr class="mat-row" *matNoDataRow>
-            <td class="mat-cell text-center" colspan="9">{{"No data found" | translate}}</td>
-        </tr>
-    </table>
-    <mat-paginator [pageSizeOptions]="[10, 20, 25]" showFirstLastButtons></mat-paginator>
+    <tr class="mat-row" *matNoDataRow>
+      <td class="mat-cell text-center" colspan="9">{{"No data found" | translate}}</td>
+    </tr>
+  </table>
+  <mat-paginator [pageSizeOptions]="[10, 20, 25]" showFirstLastButtons></mat-paginator>
 
 </div>

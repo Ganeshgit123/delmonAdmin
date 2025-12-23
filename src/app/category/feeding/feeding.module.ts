@@ -4,7 +4,6 @@ import { FeedingComponent } from './feeding.component';
 import { RouterModule } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { NgMaterialModule } from '../../ng-material.module';
-import { ColorPickerModule } from 'ngx-color-picker';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgxSpinnerModule } from 'ngx-spinner';
 
@@ -16,16 +15,15 @@ import { NgxSpinnerModule } from 'ngx-spinner';
     CommonModule,
     RouterModule.forChild([
       {
-        path:"",
+        path: "",
         component: FeedingComponent
       }
     ]),
     NgMaterialModule,
     TranslateModule,
-    FormsModule, 
+    FormsModule,
     ReactiveFormsModule,
     NgxSpinnerModule,
-    ColorPickerModule
   ]
 })
 export class FeedingModule { }

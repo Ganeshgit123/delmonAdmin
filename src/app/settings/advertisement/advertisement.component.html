@@ -1,38 +1,52 @@
 <div class="d-flex justify-content-between align-items-center flex-wrap grid-margin">
-    <div>
-        <h2 class="mb-3 mb-md-0">{{"popupAds" | translate}}</h2>
-    </div>
+  <div>
+    <h2 class="mb-3 mb-md-0">{{"popupAds" | translate}}</h2>
+  </div>
 </div>
 
 <div class="row">
-    <div class="col-md-6">
-        <p class="text-center"><label for="name">{{"English Side Image" | translate}}</label></p>
-        <div class="img_upload">
-            <label for="customFile">
-                <img class="upload-img" *ngIf="!iconImg" src="assets/images/upload_img.png" />
-                <img class="upload-img" *ngIf="iconImg" src="{{iconImg}}" />
-            </label>
-            <button *ngIf="iconImg" class="btn btn-primary del_btn" (click)=removeImg()>{{"Delete" |
-                translate}}</button>
-            <input type="file" class="custom-file-input" id="customFile"
-                (change)="uploadImageFile($event)">
-        </div>
+  <div class="col-md-6">
+    <p class="text-center"><label for="name">{{"English Side Image" | translate}}</label></p>
+    <div class="img_upload">
+      <label for="customFile">
+        @if (!iconImg) {
+          <img class="upload-img" src="assets/images/upload_img.png" />
+        }
+        @if (iconImg) {
+          <img class="upload-img" src="{{iconImg}}" />
+        }
+      </label>
+      @if (iconImg) {
+        <button class="btn btn-primary del_btn" (click)=removeImg()>{{"Delete" |
+        translate}}</button>
+      }
+      <input type="file" class="custom-file-input" id="customFile"
+        (change)="uploadImageFile($event)">
     </div>
-    <div class="col-md-6">
-        <p class="text-center"><label for="name">{{"Arabic Side Image" | translate}}</label></p>
-        <div class="img_upload">
-            <label for="customFile1">
-                <img class="upload-img" *ngIf="!ariconImg" src="assets/images/upload_img.png" />
-                <img class="upload-img" *ngIf="ariconImg" src="{{ariconImg}}" />
-            </label>
-            <button *ngIf="ariconImg" class="btn btn-primary del_btn" (click)=removearImg()>{{"Delete" |
-                translate}}</button>
-            <input type="file" class="custom-file-input" id="customFile1"
-                (change)="uploadarImageFile($event)">
-        </div>
+  </div>
+  <div class="col-md-6">
+    <p class="text-center"><label for="name">{{"Arabic Side Image" | translate}}</label></p>
+    <div class="img_upload">
+      <label for="customFile1">
+        @if (!ariconImg) {
+          <img class="upload-img" src="assets/images/upload_img.png" />
+        }
+        @if (ariconImg) {
+          <img class="upload-img" src="{{ariconImg}}" />
+        }
+      </label>
+      @if (ariconImg) {
+        <button class="btn btn-primary del_btn" (click)=removearImg()>{{"Delete" |
+        translate}}</button>
+      }
+      <input type="file" class="custom-file-input" id="customFile1"
+        (change)="uploadarImageFile($event)">
     </div>
-    <div class="col-md-12" *ngIf="showAccept">
-        <p class="text-center"><button type="submit" class="btn btn-own" (click)="onSubmitData()">{{"Update" | translate}}</button>
-        </p>
-    </div>
+  </div>
+  @if (showAccept) {
+    <div class="col-md-12">
+      <p class="text-center"><button type="submit" class="btn btn-own" (click)="onSubmitData()">{{"Update" | translate}}</button>
+    </p>
+  </div>
+}
 </div>

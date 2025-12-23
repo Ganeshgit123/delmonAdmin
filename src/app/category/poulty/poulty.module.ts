@@ -6,7 +6,6 @@ import { NgMaterialModule } from '../../ng-material.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgxSpinnerModule } from 'ngx-spinner';
 import { TranslateModule } from '@ngx-translate/core';
-import { ColorPickerModule } from 'ngx-color-picker';
 
 @NgModule({
   declarations: [
@@ -16,16 +15,15 @@ import { ColorPickerModule } from 'ngx-color-picker';
     CommonModule,
     RouterModule.forChild([
       {
-        path:"",
+        path: "",
         component: PoultyComponent
       }
     ]),
     NgMaterialModule,
     TranslateModule,
-    FormsModule, 
+    FormsModule,
     ReactiveFormsModule,
-    NgxSpinnerModule,
-    ColorPickerModule
+    NgxSpinnerModule
   ]
 })
 export class PoultyModule { }

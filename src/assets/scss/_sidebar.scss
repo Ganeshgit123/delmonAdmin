@@ -1,3 +1,5 @@
+@use "sass:color";
+
 .sidebar {
   width: $sidebar-width-lg;
   height: 100%;
@@ -22,6 +24,7 @@
     width: $sidebar-width-lg;
     -webkit-transition: width .1s ease;
     transition: width .1s ease;
+
     .sidebar-open & {
       border-bottom: 1px solid $border-color;
       ;
@@ -52,6 +55,7 @@
       cursor: pointer;
       width: 15px;
       margin-top: 20px;
+
       span {
         display: block;
         width: 100%;
@@ -322,6 +326,8 @@
     position: relative;
     // border-right: 1px solid $sidebar-light-border-color;
     height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
     // -webkit-box-shadow: 0 20px 20px 0 rgb(183 192 206 / 45%);
     box-shadow: -9px 10px 10px 0 rgb(183 192 206 / 20%);
     background: #ffffff;
@@ -332,6 +338,7 @@
 
       .nav-item {
         position: relative;
+
         // margin-bottom: 10px;
         >.nav-link {
           display: flex;
@@ -459,7 +466,7 @@
               height: 6px;
               border-radius: 50%;
               background: transparent;
-              border: 1px solid darken($border-color, 20%);
+              border: 1px solid color.adjust($border-color, $lightness: -20%);
               position: absolute;
               left: -10px;
               top: 15px;
@@ -472,6 +479,7 @@
               color: theme-color(secondary);
               background: transparent;
               margin: 5px 0;
+
               &::before {
                 border: 1px solid theme-color(secondary);
                 background: theme-color(secondary);
@@ -667,7 +675,7 @@
         }
 
         &.active {
-          border: 3px solid lighten(theme-color(primary), 15%);
+          border: 3px solid color.adjust(theme-color(primary), $lightness: 15%);
         }
 
         img {

@@ -1,6 +1,8 @@
+@use "sass:color";
+
 // Breadcrumb color variations
 @mixin breadcrumb-inverse-variant($color) {
-  background: lighten($color, 25%);
+  background: color.adjust($color, $lightness: 25%);
   border-color: $color;
 
   .breadcrumb-item {

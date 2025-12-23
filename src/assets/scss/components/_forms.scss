@@ -1,3 +1,5 @@
+@use "sass:color";
+
 /* Forms */
 
 .input-group-append,
@@ -12,10 +14,12 @@
     color: $input-placeholder-color;
   }
 }
+
 .form-control {
-  border: 1px solid darken($border-color, 2%);
+  border: 1px solid color.adjust($border-color, $lightness: -2%);
   font-weight: 400;
   font-size: $input-font-size;
+
   &.form-control-sm {
     padding: .25rem .75rem;
   }
@@ -24,15 +28,18 @@
 select {
   @extend .form-control;
   border-radius: 0;
+
   &.form-control {
     padding: 0 .75rem;
     border: 1px solid $border-color;
     border-radius: 0;
     outline: none;
     color: $input-placeholder-color;
+
     @each $color, $value in $theme-colors {
       &.border-#{$color} {
         outline: 1px solid $value;
+
         &:focus {
           outline: 1px solid $value;
         }
@@ -40,6 +47,7 @@ select {
     }
   }
 }
+
 .form-group {
   label {
     font-size: $default-font-size;
@@ -47,15 +55,18 @@ select {
     vertical-align: top;
     margin-bottom: .5rem;
   }
+
   &.has-danger {
     .form-control {
       border-color: theme-color(danger);
     }
   }
+
   .file-upload-default {
     visibility: hidden;
     position: absolute;
   }
+
   .file-upload-info {
     background: transparent;
   }

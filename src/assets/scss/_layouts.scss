@@ -1,3 +1,5 @@
+@use "sass:selector";
+
 .sidebar-folded {
   .sidebar {
     .sidebar-header {
@@ -104,7 +106,7 @@
       left: auto;
 
       @media(max-width: 991px) {
-        @at-root #{selector-append(".sidebar-open", &)} {
+        @at-root #{selector.append(".sidebar-open", &)} {
           margin-right: 0;
         }
 
@@ -119,7 +121,7 @@
         border-right: 0;
         border-left: 1px solid $sidebar-light-border-color;
 
-        @at-root #{selector-append(".sidebar-dark", &)} {
+        @at-root #{selector.append(".sidebar-dark", &)} {
           border-left: 1px solid $sidebar-dark-border-color;
         }
       }
@@ -206,7 +208,7 @@
         margin-left: 0;
         margin-right: $sidebar-width-lg;
 
-        @at-root #{selector-append(".sidebar-folded", &)} {
+        @at-root #{selector.append(".sidebar-folded", &)} {
           margin-right: $sidebar-folded-width;
         }
       }
@@ -231,7 +233,7 @@
           -webkit-transition: width .1s ease, right .1s ease;
           transition: width .1s ease, right .1s ease;
 
-          @at-root #{selector-append(".sidebar-folded", &)} {
+          @at-root #{selector.append(".sidebar-folded", &)} {
             right: $sidebar-folded-width;
             width: calc(100% - #{$sidebar-folded-width});
           }

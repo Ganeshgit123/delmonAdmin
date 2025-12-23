@@ -138,9 +138,8 @@ export class PoultyComponent implements OnInit {
 
   colorClicked(colorvalue) {
     const cvalue = colorvalue;
-
-    this.categoryForm.value.colorCode = cvalue;
-    // console.log("color", cvalue);
+    this.color = cvalue;
+    this.categoryForm.patchValue({ colorCode: cvalue });
   }
 
   editCategory(data, content) {

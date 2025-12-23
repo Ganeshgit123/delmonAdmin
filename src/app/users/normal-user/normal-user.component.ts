@@ -9,7 +9,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { ExportType, MatTableExporterDirective } from 'mat-table-exporter';
+import { ExportType, MatTableExporterDirective } from '@csmart/mat-table-exporter';
 
 @Component({
   selector: 'app-normal-user',

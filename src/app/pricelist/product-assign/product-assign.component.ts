@@ -8,7 +8,7 @@ import { Router } from '@angular/router';
 import { AuthService } from 'src/app/shared/auth.service';
 import { ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { MatTableExporterDirective } from 'mat-table-exporter';
+import { MatTableExporterDirective } from '@csmart/mat-table-exporter';
 import * as XLSX from 'xlsx';
 import { NgxSpinnerService } from 'ngx-spinner';
 
@@ -67,7 +67,7 @@ export class ProductAssignComponent implements OnInit {
     this.getAPICAll(object);
   }
 
-  getAPICAll(object){
+  getAPICAll(object) {
     this.authService.getProductPriceList(object.type, object.id).subscribe(
       (res: any) => {
         var productListArray = res.data;
@@ -182,8 +182,8 @@ export class ProductAssignComponent implements OnInit {
       });
   }
 
-  onChangeFlowTypeFilter(value){
-    this.flowType  = value;
+  onChangeFlowTypeFilter(value) {
+    this.flowType = value;
     const object = { type: this.flowType, id: this.params }
     this.getAPICAll(object)
   }

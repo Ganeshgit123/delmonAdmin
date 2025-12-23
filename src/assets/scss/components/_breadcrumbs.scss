@@ -1,14 +1,27 @@
+@use "sass:color";
+
 .breadcrumb {
-  &.bg-success,&.bg-dark,&.bg-danger,&.bg-warning,&.bg-primary,&.bg-info{
+
+  &.bg-success,
+  &.bg-dark,
+  &.bg-danger,
+  &.bg-warning,
+  &.bg-primary,
+  &.bg-info {
     border: none;
+
     .breadcrumb-item {
       color: rgba($white, .8);
-      &:before{
+
+      &:before {
         color: inherit;
       }
-      a,span{
+
+      a,
+      span {
         color: inherit;
       }
+
       &.active {
         color: $white;
       }
@@ -20,8 +33,9 @@
 @each $color, $value in $theme-colors {
   .bg-inverse-#{$color} {
     @include breadcrumb-inverse-variant($value);
+
     &.bg-inverse-dark {
-      background: darken($white, 25%);
+      background: color.adjust($white, $lightness: -25%);
     }
   }
 }
@@ -30,10 +44,12 @@
   .breadcrumb {
     .breadcrumb-item {
       padding-left: $breadcrumb-item-padding;
+
       &:last-child {
         padding-left: 0;
       }
-      + .breadcrumb-item {
+
+      +.breadcrumb-item {
         &::before {
           padding-right: 0;
           padding-left: $breadcrumb-item-padding;

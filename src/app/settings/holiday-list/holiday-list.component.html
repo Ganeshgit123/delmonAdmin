@@ -1,17 +1,21 @@
 <div class="d-flex justify-content-between align-items-center flex-wrap grid-margin">
-    <div>
-        <h2 class="mb-3 mb-md-0">{{"Holiday List" | translate}}</h2>
-    </div>
+  <div>
+    <h2 class="mb-3 mb-md-0">{{"Holiday List" | translate}}</h2>
+  </div>
 </div>
 
 <form [formGroup]="holidayForm" (ngSubmit)="submit()">
-    <div formArrayName="dates">
-        <div *ngFor="let dateCtrl of dates.controls; let i = index" class="mb-2">
-            <input type="date" [formControlName]="i" class="form-control" [min]="today" />
-            <button type="button" class="btn btn-own-cancel mt-1" (click)="removeDate(i)"
-                *ngIf="dates.length > 1">{{"Remove" | translate}}</button>
-        </div>
-    </div>
-    <button type="button" (click)="addDate()" class="btn btn-own">{{"AddDate" | translate}}</button>
-    <button type="submit" class="btn btn-own">{{"Submit" | translate}}</button>
+  <div formArrayName="dates">
+    @for (dateCtrl of dates.controls; track dateCtrl; let i = $index) {
+      <div class="mb-2">
+        <input type="date" [formControlName]="i" class="form-control" [min]="today" />
+        @if (dates.length > 1) {
+          <button type="button" class="btn btn-own-cancel mt-1" (click)="removeDate(i)"
+          >{{"Remove" | translate}}</button>
+        }
+      </div>
+    }
+  </div>
+  <button type="button" (click)="addDate()" class="btn btn-own">{{"AddDate" | translate}}</button>
+  <button type="submit" class="btn btn-own">{{"Submit" | translate}}</button>
 </form>

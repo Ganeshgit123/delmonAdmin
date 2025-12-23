@@ -1,93 +1,108 @@
 <div class="row">
-    <div class="col-md-12">
-        <h2 class="mb-3 mb-md-0">{{"Push Emails" | translate}}</h2>
-        <br>
-        <div class="card">
-            <div class="card-body">
-                <form [formGroup]="emailForm">
-                    <div class="form-group">
-                        <label for="name">{{"Subject" | translate}}</label>
-                        <input type="text" class="form-control" placeholder="{{'EnterSubject' | translate}}"
-                            formControlName="subject"
-                            [ngClass]="{ 'is-invalid': submittedEmail && fEmail.subject.errors }">
-                        <div *ngIf="submittedEmail && fEmail.subject.errors" class="invalid-feedback">
-                            <div *ngIf="fEmail.subject.errors.required">{{"SubjectRequire" | translate}}</div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="name">{{"EmailBody" | translate}}:</label>
-                        <textarea class="form-control" formControlName="body" rows="4" cols="50"
-                            placeholder="{{'EnterBody' | translate}}"
-                            [ngClass]="{ 'is-invalid': submittedEmail && fEmail.body.errors }"></textarea>
-                        <div *ngIf="submittedEmail && fEmail.body.errors" class="invalid-feedback">
-                            <div *ngIf="fEmail.body.errors.required">{{"BodyRequired" | translate}}</div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="recipientType">{{"RecipientType" | translate}}</label>
-                        <select class="form-control" formControlName="recipientType"
-                            [ngClass]="{ 'is-invalid': submittedEmail && fEmail.recipientType.errors }">
-                            <option value="group">{{'UserGroup' | translate}}</option>
-                            <option value="single">{{'SingleUsers' | translate}}</option>
-                        </select>
-                        <div *ngIf="submittedEmail && fEmail.recipientType.errors" class="invalid-feedback">
-                            <div *ngIf="fEmail.recipientType.errors.required">{{"RecipientTypeRequired" | translate}}
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- show group dropdown when 'group' selected -->
-                    <div class="form-group" *ngIf="emailForm.get('recipientType')?.value === 'group'">
-                        <label for="group">{{"UserGroup" | translate}}</label>
-                        <select class="form-control" formControlName="groupId">
-                            <option *ngFor="let g of userGroups" [value]="g.id">{{ g.name }}</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group" *ngIf="emailForm.get('recipientType')?.value === 'single'">
-                        <label>{{ "Users" | translate }}</label>
-
-                        <mat-form-field appearance="outline" class="w-100">
-
-                            <mat-chip-list #chipList>
-
-                                <mat-chip *ngFor="let user of selectedUsers; let i = index" [removable]="true"
-                                    (removed)="removeUser(i)">
-                                    {{ user.text }}
-                                    <mat-icon matChipRemove>cancel</mat-icon>
-                                </mat-chip>
-
-                                <input placeholder="Type number or select from list" matInput [formControl]="userCtrl"
-                                    [matAutocomplete]="auto" [matChipInputFor]="chipList"
-                                    (keydown.enter)="handleEnter($event)" (keypress)="allowOnlyNumber($event)" />
-
-                            </mat-chip-list>
-
-                            <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selectUser($event.option.value)"
-                                [displayWith]="displayFn">
-
-                                <!-- Show list -->
-                                <mat-option *ngFor="let option of filteredUsers | async" [value]="option">
-                                    {{ option.text }}
-                                </mat-option>
-
-                                <!-- Show when no match -->
-                                <mat-option *ngIf="(filteredUsers | async)?.length === 0" disabled>
-                                    No users found
-                                </mat-option>
-
-                            </mat-autocomplete>
-
-                        </mat-form-field>
-
-                    </div>
-
-                    <div class="text-right" *ngIf="showAccept">
-                        <button type="submit" class="btn btn-own" (click)="sendEmailNotification()">{{"Send"
-                            | translate}}</button>
-                    </div>
-                </form>
+  <div class="col-md-12">
+    <h2 class="mb-3 mb-md-0">{{"Push Emails" | translate}}</h2>
+    <br>
+      <div class="card">
+        <div class="card-body">
+          <form [formGroup]="emailForm">
+            <div class="form-group">
+              <label for="name">{{"Subject" | translate}}</label>
+              <input type="text" class="form-control" placeholder="{{'EnterSubject' | translate}}"
+                formControlName="subject"
+                [ngClass]="{ 'is-invalid': submittedEmail && fEmail.subject.errors }">
+              @if (submittedEmail && fEmail.subject.errors) {
+                <div class="invalid-feedback">
+                  @if (fEmail.subject.errors.required) {
+                    <div>{{"SubjectRequire" | translate}}</div>
+                  }
+                </div>
+              }
             </div>
+            <div class="form-group">
+              <label for="name">{{"EmailBody" | translate}}:</label>
+              <textarea class="form-control" formControlName="body" rows="4" cols="50"
+                placeholder="{{'EnterBody' | translate}}"
+              [ngClass]="{ 'is-invalid': submittedEmail && fEmail.body.errors }"></textarea>
+              @if (submittedEmail && fEmail.body.errors) {
+                <div class="invalid-feedback">
+                  @if (fEmail.body.errors.required) {
+                    <div>{{"BodyRequired" | translate}}</div>
+                  }
+                </div>
+              }
+            </div>
+            <div class="form-group">
+              <label for="recipientType">{{"RecipientType" | translate}}</label>
+              <select class="form-control" formControlName="recipientType"
+                [ngClass]="{ 'is-invalid': submittedEmail && fEmail.recipientType.errors }">
+                <option value="group">{{'UserGroup' | translate}}</option>
+                <option value="single">{{'SingleUsers' | translate}}</option>
+              </select>
+              @if (submittedEmail && fEmail.recipientType.errors) {
+                <div class="invalid-feedback">
+                  @if (fEmail.recipientType.errors.required) {
+                    <div>{{"RecipientTypeRequired" | translate}}
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+
+            <!-- show group dropdown when 'group' selected -->
+            @if (emailForm.get('recipientType')?.value === 'group') {
+              <div class="form-group">
+                <label for="group">{{"UserGroup" | translate}}</label>
+                <select class="form-control" formControlName="groupId">
+                  @for (g of userGroups; track g) {
+                    <option [value]="g.id">{{ g.name }}</option>
+                  }
+                </select>
+              </div>
+            }
+
+            @if (emailForm.get('recipientType')?.value === 'single') {
+              <div class="form-group">
+                <label>{{ "Users" | translate }}</label>
+                <mat-form-field appearance="outline" class="w-100">
+                  <mat-chip-list #chipList>
+                    @for (user of selectedUsers; track user; let i = $index) {
+                      <mat-chip [removable]="true"
+                        (removed)="removeUser(i)">
+                        {{ user.text }}
+                        <mat-icon matChipRemove>cancel</mat-icon>
+                      </mat-chip>
+                    }
+                    <input placeholder="Type number or select from list" matInput [formControl]="userCtrl"
+                      [matAutocomplete]="auto" [matChipInputFor]="chipList"
+                      (keydown.enter)="handleEnter($event)" (keypress)="allowOnlyNumber($event)" />
+                  </mat-chip-list>
+                  <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selectUser($event.option.value)"
+                    [displayWith]="displayFn">
+                    <!-- Show list -->
+                    @for (option of filteredUsers | async; track option) {
+                      <mat-option [value]="option">
+                        {{ option.text }}
+                      </mat-option>
+                    }
+                    <!-- Show when no match -->
+                    @if ((filteredUsers | async)?.length === 0) {
+                      <mat-option disabled>
+                        No users found
+                      </mat-option>
+                    }
+                  </mat-autocomplete>
+                </mat-form-field>
+              </div>
+            }
+
+            @if (showAccept) {
+              <div class="text-right">
+                <button type="submit" class="btn btn-own" (click)="sendEmailNotification()">{{"Send"
+                | translate}}</button>
+              </div>
+            }
+          </form>
         </div>
+      </div>
     </div>
-</div>
+  </div>

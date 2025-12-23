@@ -7,7 +7,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { ToastrService } from 'ngx-toastr';
 import { TranslateService } from '@ngx-translate/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { ExportType, MatTableExporterDirective } from 'mat-table-exporter';
+import { ExportType, MatTableExporterDirective } from '@csmart/mat-table-exporter';
 
 @Component({
   selector: 'app-employees',

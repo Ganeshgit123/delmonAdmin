@@ -8,7 +8,7 @@ import { ToastrService } from 'ngx-toastr';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
-import { ExportType, MatTableExporterDirective } from 'mat-table-exporter';
+import { ExportType, MatTableExporterDirective } from '@csmart/mat-table-exporter';
 
 @Component({
   selector: 'app-merchats',

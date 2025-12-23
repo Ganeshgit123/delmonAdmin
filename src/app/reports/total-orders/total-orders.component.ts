@@ -5,7 +5,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { TranslateService } from '@ngx-translate/core';
-import { ExportType, MatTableExporterDirective } from 'mat-table-exporter';
+import { ExportType, MatTableExporterDirective } from '@csmart/mat-table-exporter';
 
 @Component({
   selector: 'app-total-orders',
@@ -48,7 +48,7 @@ export class TotalOrdersComponent implements OnInit {
 
     if (this.userType == 1 || this.userType == 0) {
       this.flowType = 'POULTRY'
-    } else if (this.userType == 2){
+    } else if (this.userType == 2) {
       this.flowType = 'FEEDING'
     }
 
@@ -193,9 +193,9 @@ export class TotalOrdersComponent implements OnInit {
     }
   }
 
-  onChangeFlowTypeFilter(value){
-    this.flowType  = value;
-    const object = { type: this.flowType, deliveryBoyId: this.driverId, startDate: this.startDate, endDate: this.endDate, orderStatus: 'DRIVERASSIGNED,OUTFORDELIVERY'}
+  onChangeFlowTypeFilter(value) {
+    this.flowType = value;
+    const object = { type: this.flowType, deliveryBoyId: this.driverId, startDate: this.startDate, endDate: this.endDate, orderStatus: 'DRIVERASSIGNED,OUTFORDELIVERY' }
     this.getDateQuery(object)
   }
 

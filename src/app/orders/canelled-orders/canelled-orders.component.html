@@ -1,244 +1,275 @@
 <div class="d-flex justify-content-between align-items-center flex-wrap grid-margin">
-    <div>
-        <h2 class="mb-3 mb-md-0">{{"CancelledOrders" | translate}}</h2>
-    </div>
+  <div>
+    <h2 class="mb-3 mb-md-0">{{"CancelledOrders" | translate}}</h2>
+  </div>
 </div>
 <ngx-spinner bdColor="rgba(51,51,51,0.8)" size="medium" color="#fff" type="ball-scale-multiple">
-    <p style="font-size: 20px; color: white"> {{"Loading" | translate}}...</p>
+  <p style="font-size: 20px; color: white"> {{"Loading" | translate}}...</p>
 </ngx-spinner>
 
 <div class="row">
-    <div class="col-md-3">
-        <mat-form-field appearance="standard">
-            <mat-label>{{"Search" | translate}}</mat-label>
-            <input matInput (keyup)="applyFilter($event)" placeholder="{{'Search' | translate}}" #input>
-        </mat-form-field>
-    </div>
+  <div class="col-md-3">
+    <mat-form-field appearance="standard">
+      <mat-label>{{"Search" | translate}}</mat-label>
+      <input matInput (keyup)="applyFilter($event)" placeholder="{{'Search' | translate}}" #input>
+    </mat-form-field>
+  </div>
+  <div class="col-md-2 city_col">
+    <select #select (change)="onChangeFilter(select.value)" class="form-control">
+      <option value="1">{{"DELIVERY" | translate}}</option>
+      <option value="0">{{"PICKUP" | translate}}</option>
+    </select>
+  </div>
+  @if (superAdminRole) {
     <div class="col-md-2 city_col">
-        <select #select (change)="onChangeFilter(select.value)" class="form-control">
-            <option value="1">{{"DELIVERY" | translate}}</option>
-            <option value="0">{{"PICKUP" | translate}}</option>
-        </select>
+      <select #type (change)="onChangeFlowTypeFilter(type.value)" class="form-control">
+        <option value="POULTRY">{{"Poultry" | translate}}</option>
+        <option value="FEEDING">{{"Feeding" | translate}}</option>
+      </select>
     </div>
-    <div class="col-md-2 city_col" *ngIf="superAdminRole">
-        <select #type (change)="onChangeFlowTypeFilter(type.value)" class="form-control">
-            <option value="POULTRY">{{"Poultry" | translate}}</option>
-            <option value="FEEDING">{{"Feeding" | translate}}</option>
-        </select>
-    </div>
-    <div class="col-md-5"></div>
+  }
+  <div class="col-md-5"></div>
 </div>
 
 <div class="mat-elevation-z8">
-    <table class="table" mat-table [dataSource]="dataSource" matSort>
+  <table class="table" mat-table [dataSource]="dataSource" matSort>
 
-        <ng-container matColumnDef="index">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>{{"S.No" | translate}}</th>
-            <td mat-cell *matCellDef="let element; let i = index;"> {{matPaginator.pageSize * matPaginator.pageIndex + i
-                + 1}} </td>
-        </ng-container>
+    <ng-container matColumnDef="index">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>{{"S.No" | translate}}</th>
+      <td mat-cell *matCellDef="let element; let i = index;"> {{matPaginator.pageSize * matPaginator.pageIndex + i
+      + 1}} </td>
+    </ng-container>
 
-        <ng-container matColumnDef="orderId">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"OrderId" | translate}} </th>
-            <td mat-cell *matCellDef="let element"> {{element.orderId}} </td>
-        </ng-container>
+    <ng-container matColumnDef="orderId">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"OrderId" | translate}} </th>
+      <td mat-cell *matCellDef="let element"> {{element.orderId}} </td>
+    </ng-container>
 
-        <ng-container matColumnDef="orderDetails">
-            <th mat-header-cell *matHeaderCellDef> {{"OrderDetails" | translate}} </th>
-            <td mat-cell *matCellDef="let element" class="text-center">
-                <button class="simi_btn" (click)="openModal(content,element)">
-                    {{"viewOrders" | translate}}
-                </button>
-            </td>
-        </ng-container>
+    <ng-container matColumnDef="orderDetails">
+      <th mat-header-cell *matHeaderCellDef> {{"OrderDetails" | translate}} </th>
+      <td mat-cell *matCellDef="let element" class="text-center">
+        <button class="simi_btn" (click)="openModal(content,element)">
+          {{"viewOrders" | translate}}
+        </button>
+      </td>
+    </ng-container>
 
-        <ng-container matColumnDef="drivers">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"DriverName" | translate}} </th>
-            <td mat-cell *matCellDef="let element">
-                <span *ngIf="element.deliveryBoyId != null">{{element.driverName}}</span>
-                <span *ngIf="element.deliveryBoyId == null">{{"DriverNotAssigned" | translate}}</span>
-            </td>
-        </ng-container>
+    <ng-container matColumnDef="drivers">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"DriverName" | translate}} </th>
+      <td mat-cell *matCellDef="let element">
+        @if (element.deliveryBoyId != null) {
+          <span>{{element.driverName}}</span>
+        }
+        @if (element.deliveryBoyId == null) {
+          <span>{{"DriverNotAssigned" | translate}}</span>
+        }
+      </td>
+    </ng-container>
 
-        <ng-container matColumnDef="zone">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"Zones" | translate}} </th>
-            <td mat-cell *matCellDef="let element"> {{element.zoneName}} </td>
-        </ng-container>
+    <ng-container matColumnDef="zone">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"Zones" | translate}} </th>
+      <td mat-cell *matCellDef="let element"> {{element.zoneName}} </td>
+    </ng-container>
 
-        <ng-container matColumnDef="area">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"Areas" | translate}} </th>
-            <td mat-cell *matCellDef="let element"> {{element.area}} </td>
-        </ng-container>
+    <ng-container matColumnDef="area">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"Areas" | translate}} </th>
+      <td mat-cell *matCellDef="let element"> {{element.area}} </td>
+    </ng-container>
 
-        <ng-container matColumnDef="orderDate">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"OrderDate" | translate}} </th>
-            <td mat-cell *matCellDef="let element"> {{element.orderPlaceTime | date :'dd/MM/yyyy'}} </td>
-        </ng-container>
+    <ng-container matColumnDef="orderDate">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"OrderDate" | translate}} </th>
+      <td mat-cell *matCellDef="let element"> {{element.orderPlaceTime | date :'dd/MM/yyyy'}} </td>
+    </ng-container>
 
-        <ng-container matColumnDef="deliveryDate">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"DeliveryDate" | translate}} </th>
-            <td mat-cell *matCellDef="let element">
-                <span *ngIf="element.newDeliveryDate == null">
-                    <span>{{ isDateValid(element.deliveryDate) ? (element.deliveryDate | date:'dd/MM/yyyy') :
-                        element.deliveryDate }}</span>
-                </span>
-                <span *ngIf="element.newDeliveryDate != null">{{element.newDeliveryDate}}</span>
-            </td>
-        </ng-container>
+    <ng-container matColumnDef="deliveryDate">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"DeliveryDate" | translate}} </th>
+      <td mat-cell *matCellDef="let element">
+        @if (element.newDeliveryDate == null) {
+          <span>
+            <span>{{ isDateValid(element.deliveryDate) ? (element.deliveryDate | date:'dd/MM/yyyy') :
+            element.deliveryDate }}</span>
+          </span>
+        }
+        @if (element.newDeliveryDate != null) {
+          <span>{{element.newDeliveryDate}}</span>
+        }
+      </td>
+    </ng-container>
 
-        <ng-container matColumnDef="rowActionIcon" *ngIf="showAccept">
-            <th mat-header-cell *matHeaderCellDef>{{"Action" | translate}}</th>
-            <td mat-cell *matCellDef="let element" class="text-center">
-                <button class="appre_btn" (click)="resheduleOrder(element,editModal)">{{"Reshedule" |
-                    translate}}</button>
-                <ng-template #editModal role="document" let-modal="close">
-                    <div class="modal-header">
-                        <h5 class="modal-title">{{"ResheduleOrder" | translate}}</h5>
-                        <button type="button" class="close" aria-label="Close" (click)="modal('Cross click')">
-                            <span aria-checked="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body p-3">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <select class="form-control"
-                                        *ngIf="element.orderStatus == 'USERREJECTED' || element.orderStatus == 'CANCELLED'"
-                                        #driver (change)="driverClick(driver.value)">
-                                        <option selected disabled>{{"SelectPerson" | translate}}</option>
-                                        <option *ngFor="let item of getDrivers" value="{{item.id}}">{{item.userName}}
-                                        </option>
-                                    </select>
-                                    <p *ngIf="driverMsg" style="color: red;">{{"SelectDriver" | translate}}</p>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <mat-form-field>
-                                        <input matInput [matDatepicker]="picker"
-                                            placeholder="{{'DeliveryDate' | translate}}"
-                                            (dateInput)="dateEvent($event)">
-                                        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-                                        <mat-datepicker #picker></mat-datepicker>
-                                    </mat-form-field>
-                                    <p *ngIf="errorMsg" style="color: red;">{{"SelectDateRequired" | translate}}</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <button type="submit" class="btn btn-own" (click)="onReAssign()">{{"Save" |
-                                translate}}</button>
-                            <button type="button" class="btn btn-own-cancel ml-1"
-                                (click)="modal('close click')">{{"Cancel" |
-                                translate}}</button>
-                        </div>
-                    </div>
-                </ng-template>
-            </td>
-        </ng-container>
+    @if (showAccept) {
+      <ng-container matColumnDef="rowActionIcon">
+        <th mat-header-cell *matHeaderCellDef>{{"Action" | translate}}</th>
+        <td mat-cell *matCellDef="let element" class="text-center">
+          <button class="appre_btn" (click)="resheduleOrder(element,editModal)">{{"Reshedule" |
+          translate}}</button>
+          <ng-template #editModal role="document" let-modal="close">
+            <div class="modal-header">
+              <h5 class="modal-title">{{"ResheduleOrder" | translate}}</h5>
+              <button type="button" class="close" aria-label="Close" (click)="modal('Cross click')">
+                <span aria-checked="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body p-3">
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    @if (element.orderStatus == 'USERREJECTED' || element.orderStatus == 'CANCELLED') {
+                      <select class="form-control"
+                        #driver (change)="driverClick(driver.value)">
+                        <option selected disabled>{{"SelectPerson" | translate}}</option>
+                        @for (item of getDrivers; track item) {
+                          <option value="{{item.id}}">{{item.userName}}
+                          </option>
+                        }
+                      </select>
+                    }
+                    @if (driverMsg) {
+                      <p style="color: red;">{{"SelectDriver" | translate}}</p>
+                    }
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <mat-form-field>
+                      <input matInput [matDatepicker]="picker"
+                        placeholder="{{'DeliveryDate' | translate}}"
+                        (dateInput)="dateEvent($event)">
+                      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                      <mat-datepicker #picker></mat-datepicker>
+                    </mat-form-field>
+                    @if (errorMsg) {
+                      <p style="color: red;">{{"SelectDateRequired" | translate}}</p>
+                    }
+                  </div>
+                </div>
+              </div>
+              <div class="text-right">
+                <button type="submit" class="btn btn-own" (click)="onReAssign()">{{"Save" |
+                translate}}</button>
+                <button type="button" class="btn btn-own-cancel ml-1"
+                  (click)="modal('close click')">{{"Cancel" |
+                translate}}</button>
+              </div>
+            </div>
+          </ng-template>
+        </td>
+      </ng-container>
+    }
 
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
 
-        <tr class="mat-row" *matNoDataRow>
-            <td class="mat-cell text-center" colspan="8">{{"No data found" | translate}}</td>
-        </tr>
-    </table>
-    <mat-paginator [pageSizeOptions]="[10, 20, 25]" showFirstLastButtons></mat-paginator>
+    <tr class="mat-row" *matNoDataRow>
+      <td class="mat-cell text-center" colspan="8">{{"No data found" | translate}}</td>
+    </tr>
+  </table>
+  <mat-paginator [pageSizeOptions]="[10, 20, 25]" showFirstLastButtons></mat-paginator>
 </div>
 
 <ng-template #content role="document" let-modal="close">
-    <div class="modal-header">
-        <h5 class="modal-title">{{"OrderDetails" | translate}}</h5>
-        <h5 class="modal-title">{{"userType" | translate}} : {{orderDetail?.userType}}</h5>
+  <div class="modal-header">
+    <h5 class="modal-title">{{"OrderDetails" | translate}}</h5>
+    <h5 class="modal-title">{{"userType" | translate}} : {{orderDetail?.userType}}</h5>
 
-        <button type="button" class="close" aria-label="Close" (click)="modal('Cross click')">
-            <span aria-checked="true">&times;</span>
-        </button>
+    <button type="button" class="close" aria-label="Close" (click)="modal('Cross click')">
+      <span aria-checked="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body p-3">
+    <p class="text-center mb-0 det_head">{{"CartDetails" | translate}}</p>
+    <div class="table-responsive mb-3">
+      <table id="basic-datatable" class="table table-bordered dt-responsive text-nowrap  no-footer dtr-inline">
+        <thead>
+          <tr>
+            <th>{{"Products" | translate}}</th>
+            <!-- <th>Type</th> -->
+            <th>{{"Weight" | translate}}</th>
+            <!-- <th>{{"ProductPrice" | translate}}</th> -->
+            <th>{{"Quantity" | translate}}</th>
+            <!-- <th>{{"TotalPrice" | translate}}</th> -->
+          </tr>
+        </thead>
+        <tbody>
+          @for (det of orderDetail.cartDetails; track det) {
+            <tr>
+              <td class="text-center">{{det?.enProductName}}</td>
+              <!-- <td class="text-center">{{det.soldType}}</td> -->
+              <td class="text-center">{{det?.weight}}</td>
+              <!-- <td class="text-center">{{det?.price}}</td> -->
+              <td class="text-center">{{det?.quantity}}</td>
+              <!-- <td class="text-center">{{det?.quantity * det?.price}}</td> -->
+            </tr>
+          }
+        </tbody>
+      </table>
     </div>
-    <div class="modal-body p-3">
-        <p class="text-center mb-0 det_head">{{"CartDetails" | translate}}</p>
-        <div class="table-responsive mb-3">
-            <table id="basic-datatable" class="table table-bordered dt-responsive text-nowrap  no-footer dtr-inline">
-                <thead>
-                    <tr>
-                        <th>{{"Products" | translate}}</th>
-                        <!-- <th>Type</th> -->
-                        <th>{{"Weight" | translate}}</th>
-                        <!-- <th>{{"ProductPrice" | translate}}</th> -->
-                        <th>{{"Quantity" | translate}}</th>
-                        <!-- <th>{{"TotalPrice" | translate}}</th> -->
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr *ngFor="let det of orderDetail.cartDetails">
-                        <td class="text-center">{{det?.enProductName}}</td>
-                        <!-- <td class="text-center">{{det.soldType}}</td> -->
-                        <td class="text-center">{{det?.weight}}</td>
-                        <!-- <td class="text-center">{{det?.price}}</td> -->
-                        <td class="text-center">{{det?.quantity}}</td>
-                        <!-- <td class="text-center">{{det?.quantity * det?.price}}</td> -->
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <p class="text-center mb-0 det_head">{{"customerDetails" | translate}}</p>
-        <div class="table-responsive mb-3">
-            <table id="basic-datatable" class="table table-bordered dt-responsive text-nowrap  no-footer dtr-inline">
-                <thead>
-                    <tr>
-                        <th>{{"OrderId" | translate}}</th>
-                        <th>{{"customerName" | translate}}</th>
-                        <th>{{"Phone" | translate}}</th>
-                        <th>{{"Zone Name" | translate}}</th>
-                        <th>{{"Address" | translate}}</th>
-                        <th *ngIf="orderDetail?.deliveryAddress !== null">{{"DeliveryAddType" | translate}}</th>
-                        <th>{{"PaymentMode" | translate}}</th>
-                        <th>{{"Notes" | translate}}</th>
-                        <th>{{"unavailableNotes" | translate}}</th>
-                        <th>{{"sonicNo" | translate}}</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td class="text-center">{{orderDetail.id}}</td>
-                        <td class="text-center">{{orderDetail?.userName}}</td>
-                        <td class="text-center">{{orderDetail?.mobileNumber}}</td>
-                        <td class="text-center">{{orderDetail?.deliveryAddress?.zoneName}}</td>
-                        <td class="text-center" *ngIf="orderDetail?.deliveryAddress !== null">
-                            {{orderDetail?.deliveryAddress?.area}}, {{orderDetail?.deliveryAddress?.blockNo}},
-                            {{orderDetail?.deliveryAddress?.houseNo}}, {{orderDetail?.deliveryAddress?.roadNo}},
-                            {{orderDetail?.deliveryAddress?.flat}} - {{orderDetail?.deliveryAddress?.pin}}
-                            ({{orderDetail?.deliveryAddress?.notes}})</td>
-                        <td class="text-center" *ngIf="orderDetail?.deliveryAddress !== null">
-                            {{orderDetail?.deliveryAddressType}}</td>
-                        <td class="text-center" *ngIf="orderDetail?.deliveryAddress == null">
-                            {{orderDetail?.pickupAddress}}</td>
-                        <td class="text-center">{{orderDetail?.paymentTypeId}}</td>
-                        <td class="text-center">{{orderDetail?.deliveryNotes}}</td>
-                        <td class="text-center">{{orderDetail?.unAvailableNotes}}</td>
-                        <td class="text-center">{{orderDetail?.sonicNumber}}</td>
-                    </tr>
-                    <tr>
-                        <td class="text-center"></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <p class="text-center mb-0 det_head">{{"OrderDetails" | translate}}</p>
-        <div class="table-responsive mb-3">
-            <table id="basic-datatable" class="table table-bordered dt-responsive text-nowrap  no-footer dtr-inline">
-                <tbody>
-                    <tr *ngFor="let det of orderDetail.order">
-                        <td>{{det.title}}</td>
-                        <td>{{det.price}}</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <div class="text-right">
-            <button type="button" class="btn btn-own-cancel ml-1" (click)="modal('close click')">{{"Cancel" |
-                translate}}</button>
-        </div>
+    <p class="text-center mb-0 det_head">{{"customerDetails" | translate}}</p>
+    <div class="table-responsive mb-3">
+      <table id="basic-datatable" class="table table-bordered dt-responsive text-nowrap  no-footer dtr-inline">
+        <thead>
+          <tr>
+            <th>{{"OrderId" | translate}}</th>
+            <th>{{"customerName" | translate}}</th>
+            <th>{{"Phone" | translate}}</th>
+            <th>{{"Zone Name" | translate}}</th>
+            <th>{{"Address" | translate}}</th>
+            @if (orderDetail?.deliveryAddress !== null) {
+              <th>{{"DeliveryAddType" | translate}}</th>
+            }
+            <th>{{"PaymentMode" | translate}}</th>
+            <th>{{"Notes" | translate}}</th>
+            <th>{{"unavailableNotes" | translate}}</th>
+            <th>{{"sonicNo" | translate}}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="text-center">{{orderDetail.id}}</td>
+            <td class="text-center">{{orderDetail?.userName}}</td>
+            <td class="text-center">{{orderDetail?.mobileNumber}}</td>
+            <td class="text-center">{{orderDetail?.deliveryAddress?.zoneName}}</td>
+            @if (orderDetail?.deliveryAddress !== null) {
+              <td class="text-center">
+                {{orderDetail?.deliveryAddress?.area}}, {{orderDetail?.deliveryAddress?.blockNo}},
+                {{orderDetail?.deliveryAddress?.houseNo}}, {{orderDetail?.deliveryAddress?.roadNo}},
+                {{orderDetail?.deliveryAddress?.flat}} - {{orderDetail?.deliveryAddress?.pin}}
+              ({{orderDetail?.deliveryAddress?.notes}})</td>
+            }
+            @if (orderDetail?.deliveryAddress !== null) {
+              <td class="text-center">
+              {{orderDetail?.deliveryAddressType}}</td>
+            }
+            @if (orderDetail?.deliveryAddress == null) {
+              <td class="text-center">
+              {{orderDetail?.pickupAddress}}</td>
+            }
+            <td class="text-center">{{orderDetail?.paymentTypeId}}</td>
+            <td class="text-center">{{orderDetail?.deliveryNotes}}</td>
+            <td class="text-center">{{orderDetail?.unAvailableNotes}}</td>
+            <td class="text-center">{{orderDetail?.sonicNumber}}</td>
+          </tr>
+          <tr>
+            <td class="text-center"></td>
+          </tr>
+        </tbody>
+      </table>
     </div>
+    <p class="text-center mb-0 det_head">{{"OrderDetails" | translate}}</p>
+    <div class="table-responsive mb-3">
+      <table id="basic-datatable" class="table table-bordered dt-responsive text-nowrap  no-footer dtr-inline">
+        <tbody>
+          @for (det of orderDetail.order; track det) {
+            <tr>
+              <td>{{det.title}}</td>
+              <td>{{det.price}}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    <div class="text-right">
+      <button type="button" class="btn btn-own-cancel ml-1" (click)="modal('close click')">{{"Cancel" |
+      translate}}</button>
+    </div>
+  </div>
 </ng-template>

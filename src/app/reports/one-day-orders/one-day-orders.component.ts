@@ -5,7 +5,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { TranslateService } from '@ngx-translate/core';
-import { ExportType, MatTableExporterDirective, MatTableExporterModule } from 'mat-table-exporter';
+import { ExportType, MatTableExporterDirective, MatTableExporterModule } from '@csmart/mat-table-exporter';
 
 @Component({
   selector: 'app-one-day-orders',
@@ -43,14 +43,14 @@ export class OneDayOrdersComponent implements OnInit {
     }
 
     this.userType = sessionStorage.getItem('userType');
-    
-    this.displayedColumns = ['index', 'orderId', 'customerName','phoneNumber','userType', 'driverName', 'customerAddress', 'prodDetails',
+
+    this.displayedColumns = ['index', 'orderId', 'customerName', 'phoneNumber', 'userType', 'driverName', 'customerAddress', 'prodDetails',
       'orderDetails', 'deliveryCost', 'discount', 'total', 'paymentType', 'sonicNo', 'orderStatus',
       'orderDate', 'deliveryDate'];
 
     if (this.userType == 1 || this.userType == 0) {
       this.flowType = 'POULTRY'
-    } else if (this.userType == 2){
+    } else if (this.userType == 2) {
       this.flowType = 'FEEDING'
     }
 
@@ -148,9 +148,9 @@ export class OneDayOrdersComponent implements OnInit {
     }
   }
 
-  onChangeFlowTypeFilter(value){
-    this.flowType  = value;
-    const object = { type: this.flowType, deliveryBoyId: this.driverId, startDate: this.startDate, endDate: this.endDate, orderStatus: 'DRIVERASSIGNED,OUTFORDELIVERY'}
+  onChangeFlowTypeFilter(value) {
+    this.flowType = value;
+    const object = { type: this.flowType, deliveryBoyId: this.driverId, startDate: this.startDate, endDate: this.endDate, orderStatus: 'DRIVERASSIGNED,OUTFORDELIVERY' }
     this.getDateQuery(object)
   }
 

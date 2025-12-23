@@ -8,7 +8,7 @@ import { LayoutModule } from './layout/layout.module';
 import { AuthGuard } from './core/guard/auth.guard';
 import { AuthInterceptor } from "./shared/auth.interceptor";
 
-import { AppComponent } from './app.component';
+// AppComponent is now standalone and bootstrapped via bootstrapApplication
 
 import { HIGHLIGHT_OPTIONS } from 'ngx-highlightjs';
 import { ToastrModule } from 'ngx-toastr';
@@ -27,9 +27,7 @@ export function createTranslateLoader(http: HttpClient): any {
 }
 
 @NgModule({
-  declarations: [
-    AppComponent,
-  ],
+  declarations: [],
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -39,7 +37,7 @@ export function createTranslateLoader(http: HttpClient): any {
     MatTableModule,
     ToastrModule.forRoot(),
     TranslateModule.forRoot({
-      defaultLanguage:'en',
+      defaultLanguage: 'en',
       loader: {
         provide: TranslateLoader,
         useFactory: createTranslateLoader,
@@ -66,7 +64,7 @@ export function createTranslateLoader(http: HttpClient): any {
       }
     }
   ],
-  bootstrap: [AppComponent]
+  // No bootstrap here; standalone bootstrap is used in main.ts
 })
 export class AppModule { }
 export function HttpLoaderFactory(http: HttpClient) {

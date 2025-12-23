@@ -1,120 +1,132 @@
 <div class="d-flex justify-content-between align-items-center flex-wrap grid-margin">
-    <div>
-        <h2 class="mb-3 mb-md-0">{{"Lucky Draw" | translate}}</h2>
-    </div>
+  <div>
+    <h2 class="mb-3 mb-md-0">{{"Lucky Draw" | translate}}</h2>
+  </div>
 </div>
 
 <div class="row">
-    <div class="col-md-3">
-        <mat-form-field appearance="standard">
-            <mat-label>{{"Search" | translate}}</mat-label>
-            <input matInput (keyup)="applyFilter($event)" placeholder="{{'Search' | translate}}" #input>
-        </mat-form-field>
+  <div class="col-md-3">
+    <mat-form-field appearance="standard">
+      <mat-label>{{"Search" | translate}}</mat-label>
+      <input matInput (keyup)="applyFilter($event)" placeholder="{{'Search' | translate}}" #input>
+    </mat-form-field>
+  </div>
+  <div class="col-md-2 date_col">
+    <mat-form-field>
+      <input matInput [matDatepicker]="picker" placeholder="{{'Start date' | translate}}"
+        (dateInput)="startEvent($event)">
+      <!-- <mat-hint>MM/DD/YYYY</mat-hint> -->
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+  </div>
+  <div class="col-md-2 date_col">
+    <mat-form-field>
+      <input matInput [matDatepicker]="picker1" placeholder="{{'End date' | translate}}"
+        (dateInput)="endEvent($event)">
+      <!-- <mat-hint>MM/DD/YYYY</mat-hint> -->
+      <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+      <mat-datepicker #picker1></mat-datepicker>
+    </mat-form-field>
+  </div>
+  <div class="col-md-3">
+    <form [formGroup]="timeForm">
+      <div class="form-group">
+        <label for="timeInSeconds">{{"timeInSeconds" | translate}}</label>
+        <input type="text" class="form-control" placeholder="{{'timeInSeconds' |translate}}"
+          formControlName="timeInSeconds" (keypress)="restrictNumeric($event)">
+      </div>
+    </form>
+  </div>
+  <div class="col-md-2">
+    <div style="text-align:end;" class="mt-2">
+      <a href="javascript:void(0);" class="btn btn-own" (click)="startRandomizer()">
+        {{"Start" | translate}}
+      </a>
     </div>
-    <div class="col-md-2 date_col">
-        <mat-form-field>
-            <input matInput [matDatepicker]="picker" placeholder="{{'Start date' | translate}}"
-                (dateInput)="startEvent($event)">
-            <!-- <mat-hint>MM/DD/YYYY</mat-hint> -->
-            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-            <mat-datepicker #picker></mat-datepicker>
-        </mat-form-field>
-    </div>
-    <div class="col-md-2 date_col">
-        <mat-form-field>
-            <input matInput [matDatepicker]="picker1" placeholder="{{'End date' | translate}}"
-                (dateInput)="endEvent($event)">
-            <!-- <mat-hint>MM/DD/YYYY</mat-hint> -->
-            <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
-            <mat-datepicker #picker1></mat-datepicker>
-        </mat-form-field>
-    </div>
-    <div class="col-md-3">
-        <form [formGroup]="timeForm">
-            <div class="form-group">
-                <label for="timeInSeconds">{{"timeInSeconds" | translate}}</label>
-                <input type="text" class="form-control" placeholder="{{'timeInSeconds' |translate}}"
-                    formControlName="timeInSeconds" (keypress)="restrictNumeric($event)">
-            </div>
-        </form>
-    </div>
-    <div class="col-md-2">
-        <div style="text-align:end;" class="mt-2">
-            <a href="javascript:void(0);" class="btn btn-own" (click)="startRandomizer()">
-                {{"Start" | translate}}
-            </a>
-        </div>
-    </div>
+  </div>
 </div>
 
-<div *ngIf="filteredOrders.length > 0 && !currentOrder">
+@if (filteredOrders.length > 0 && !currentOrder) {
+  <div>
     <h3>{{"Orders" | translate}}:</h3>
     <ul>
-        <li *ngFor="let order of filteredOrders">
-            {{ order.id }} - {{ order.userName }} ({{order.mobileNumber}}) -
-            <span *ngIf="order.newDeliveryDate == null">{{order.deliveryOrderDate}}</span>
-            <span *ngIf="order.newDeliveryDate != null">{{order.newDeliveryDate}}</span>
+      @for (order of filteredOrders; track order) {
+        <li>
+          {{ order.id }} - {{ order.userName }} ({{order.mobileNumber}}) -
+          @if (order.newDeliveryDate == null) {
+            <span>{{order.deliveryOrderDate}}</span>
+          }
+          @if (order.newDeliveryDate != null) {
+            <span>{{order.newDeliveryDate}}</span>
+          }
         </li>
+      }
     </ul>
-</div>
+  </div>
+}
 
-<div *ngIf="filteredOrders.length == 0 && showTable">
+@if (filteredOrders.length == 0 && showTable) {
+  <div>
     <h3 class="text-center">{{"No data found" | translate}}</h3>
-</div>
+  </div>
+}
 
-<div *ngIf="currentOrder">
+@if (currentOrder) {
+  <div>
     <h3>{{"CurrentOrder" | translate}}:</h3>
     <p>{{ currentOrder.id }} - {{ currentOrder.userName }} ({{currentOrder.mobileNumber}})</p>
-</div>
+  </div>
+}
 
-<div *ngIf="winner">
+@if (winner) {
+  <div>
     <h3>{{"Winner" | translate}}:</h3>
     <p>{{ winner.id }} - {{ winner.userName }} ({{winner.mobileNumber}})</p>
-</div>
+  </div>
+}
 
-<div class="mat-elevation-z8" *ngIf="!showTable">
+@if (!showTable) {
+  <div class="mat-elevation-z8">
     <table class="table" mat-table matTableExporter #exporter="matTableExporter" [dataSource]="dataSource" matSort>
-
-        <ng-container matColumnDef="index">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>{{"S.No" | translate}}</th>
-            <td mat-cell *matCellDef="let element; let i = index;"> {{matPaginator.pageSize * matPaginator.pageIndex + i
-                + 1}} </td>
-        </ng-container>
-
-        <ng-container matColumnDef="orderId">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"OrderId" | translate}}</th>
-            <td mat-cell *matCellDef="let element">{{element.id}} </td>
-        </ng-container>
-
-        <ng-container matColumnDef="customerName">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"customerName" | translate}}</th>
-            <td mat-cell *matCellDef="let element">
-                <p>{{element.userName}} </p>
-            </td>
-        </ng-container>
-
-        <ng-container matColumnDef="phoneNumber">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"PhoneNumber" | translate}}</th>
-            <td mat-cell *matCellDef="let element">
-                <p>{{element.mobileNumber}}</p>
-            </td>
-        </ng-container>
-
-        <ng-container matColumnDef="deliveryDate">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"DeliveryDate" | translate}}</th>
-            <td mat-cell *matCellDef="let element">
-                <span *ngIf="element.newDeliveryDate == null">{{element.deliveryOrderDate}}</span>
-                <span *ngIf="element.newDeliveryDate != null">{{element.newDeliveryDate}}</span>
-            </td>
-        </ng-container>
-
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-
-        <tr class="mat-row" *matNoDataRow>
-            <td class="mat-cell text-center" colspan="13">{{"No data found" | translate}}</td>
-        </tr>
+      <ng-container matColumnDef="index">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>{{"S.No" | translate}}</th>
+        <td mat-cell *matCellDef="let element; let i = index;"> {{matPaginator.pageSize * matPaginator.pageIndex + i
+        + 1}} </td>
+      </ng-container>
+      <ng-container matColumnDef="orderId">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"OrderId" | translate}}</th>
+        <td mat-cell *matCellDef="let element">{{element.id}} </td>
+      </ng-container>
+      <ng-container matColumnDef="customerName">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"customerName" | translate}}</th>
+        <td mat-cell *matCellDef="let element">
+          <p>{{element.userName}} </p>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="phoneNumber">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"PhoneNumber" | translate}}</th>
+        <td mat-cell *matCellDef="let element">
+          <p>{{element.mobileNumber}}</p>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="deliveryDate">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"DeliveryDate" | translate}}</th>
+        <td mat-cell *matCellDef="let element">
+          @if (element.newDeliveryDate == null) {
+            <span>{{element.deliveryOrderDate}}</span>
+          }
+          @if (element.newDeliveryDate != null) {
+            <span>{{element.newDeliveryDate}}</span>
+          }
+        </td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell text-center" colspan="13">{{"No data found" | translate}}</td>
+      </tr>
     </table>
     <mat-paginator [pageSizeOptions]="[10, 20, 25]" showFirstLastButtons></mat-paginator>
-
-</div>
+  </div>
+}
