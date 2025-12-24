@@ -6,9 +6,7 @@ import feather from 'feather-icons';
   standalone: true,
 })
 export class FeatherIconDirective implements AfterViewInit {
-  constructor() {}
-
-  ngAfterViewInit() {
+  ngAfterViewInit(): void {
     // feather icon
     feather.replace();
   }

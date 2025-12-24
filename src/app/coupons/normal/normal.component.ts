@@ -1,28 +1,32 @@
 import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
 import { AuthService } from 'src/app/shared/auth.service';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { ToastrService } from 'ngx-toastr';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import Swal from 'sweetalert2';
+import { ReactiveFormsModule } from '@angular/forms';
+import { NgMaterialModule } from 'src/app/ng-material.module';
 
 @Component({
   selector: 'app-normal',
   templateUrl: './normal.component.html',
   styleUrls: ['./normal.component.scss'],
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, TranslateModule, NgMaterialModule, NgbModalModule],
 })
 export class NormalComponent implements OnInit, AfterViewInit {
   displayedColumns: string[];
-  dataSource: MatTableDataSource<any>;
-  getvalue = [];
+  dataSource: MatTableDataSource<CouponRow>;
+  getvalue: CouponRow[] = [];
   isEdit = false;
   couponForm: FormGroup;
   submitted = false;
-  couponId: any;
+  couponId: number;
   showAccept = true;
   superAdminRole = false;
 
@@ -34,7 +38,6 @@ export class NormalComponent implements OnInit, AfterViewInit {
     public fb: FormBuilder,
     public authService: AuthService,
     private toastr: ToastrService,
-    private router: Router,
     private translate: TranslateService,
   ) {}
 
@@ -47,8 +50,8 @@ export class NormalComponent implements OnInit, AfterViewInit {
     }
 
     this.authService.getCoupon('NORMAL').subscribe((res: any) => {
-      this.getvalue = res.data.reverse();
-      this.dataSource = new MatTableDataSource(this.getvalue);
+      this.getvalue = (res.data as CouponRow[]).reverse();
+      this.dataSource = new MatTableDataSource<CouponRow>(this.getvalue);
       this.dataSource.paginator = this.matPaginator;
       this.dataSource.sort = this.matSort;
     });
@@ -98,8 +101,9 @@ export class NormalComponent implements OnInit, AfterViewInit {
 
   callRolePermission() {
     if (sessionStorage.getItem('roleName') !== 'superAdmin') {
-      const settingPermssion = JSON.parse(sessionStorage.getItem('permission'));
-      const orderPermission = settingPermssion?.find((ele) => ele.area == 'coupons')?.write == 1;
+      const raw = sessionStorage.getItem('permission');
+      const settingPermssion: Array<{ area: string; write: number }> = raw ? JSON.parse(raw) : [];
+      const orderPermission = settingPermssion.find((ele) => ele.area === 'coupons')?.write === 1;
       // console.log("fef",orderPermission)
       this.showAccept = orderPermission;
     }
@@ -118,14 +122,14 @@ export class NormalComponent implements OnInit, AfterViewInit {
     }
   }
 
-  openModal(content) {
+  openModal(content: any) {
     this.submitted = false;
     this.couponForm.reset();
     this.isEdit = false;
     this.modalService.open(content, { centered: true, size: 'lg' });
   }
 
-  onCouponInput(event: any): void {
+  onCouponInput(event: Event): void {
     const input = event.target as HTMLInputElement;
     const filteredValue = input.value.replace(/[^a-zA-Z]/g, '');
     input.value = filteredValue;
@@ -141,7 +145,7 @@ export class NormalComponent implements OnInit, AfterViewInit {
     this.couponForm.controls['couponCode'].setValue(sanitized, { emitEvent: false });
   }
 
-  editCoupon(data, content) {
+  editCoupon(data: CouponRow, content: any) {
     this.modalService.open(content, { centered: true, size: 'lg' });
     this.isEdit = true;
     this.couponId = data['id'];
@@ -160,7 +164,7 @@ export class NormalComponent implements OnInit, AfterViewInit {
     });
   }
 
-  onSubmitData() {
+  onSubmitData(): boolean | void {
     this.submitted = true;
     if (!this.couponForm.valid) {
       return false;
@@ -184,7 +188,7 @@ export class NormalComponent implements OnInit, AfterViewInit {
     });
   }
 
-  couponEditService(data) {
+  couponEditService(data: CouponRow) {
     this.authService.editCoupon(data, this.couponId).subscribe((res: any) => {
       if (res.success == true) {
         this.toastr.success('Success ', res.massage);
@@ -197,7 +201,7 @@ export class NormalComponent implements OnInit, AfterViewInit {
     });
   }
 
-  changeStatus(value) {
+  changeStatus(value: CouponRow) {
     const visible = value.active === 1 ? 0 : 1;
     const object = { active: visible };
 
@@ -211,7 +215,7 @@ export class NormalComponent implements OnInit, AfterViewInit {
     });
   }
 
-  deleteCoupon(value) {
+  deleteCoupon(id: number) {
     Swal.fire({
       title: this.translate.instant('AreYouSure'),
       text: this.translate.instant('YouWontBeRevertThis'),
@@ -229,7 +233,7 @@ export class NormalComponent implements OnInit, AfterViewInit {
           icon: 'success',
           confirmButtonText: this.translate.instant('Ok'),
         }),
-          this.authService.deleteCoupons(value).subscribe((res: any) => {
+          this.authService.deleteCoupons(id).subscribe((res: any) => {
             if (res.success == true) {
               this.toastr.success('Success ', res.massage);
               this.ngOnInit();
@@ -240,4 +244,19 @@ export class NormalComponent implements OnInit, AfterViewInit {
       }
     });
   }
+}
+
+interface CouponRow {
+  id: number;
+  enCouponName: string;
+  arCouponName: string;
+  couponCode: string;
+  discountPercentage: number;
+  maximumDiscount: number;
+  title: string;
+  enDescription: string;
+  arDescription: string;
+  expiryDate: string;
+  active: number;
+  type?: string;
 }

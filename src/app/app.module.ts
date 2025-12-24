@@ -1,5 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
+import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -8,7 +9,7 @@ import { LayoutModule } from './layout/layout.module';
 import { AuthGuard } from './core/guard/auth.guard';
 import { AuthInterceptor } from './shared/auth.interceptor';
 
-// AppComponent is now standalone and bootstrapped via bootstrapApplication
+// Root module bootstraps AppComponent
 
 import { HIGHLIGHT_OPTIONS } from 'ngx-highlightjs';
 import { ToastrModule } from 'ngx-toastr';
@@ -23,7 +24,7 @@ export function createTranslateLoader(http: HttpClient): any {
 }
 
 @NgModule({
-  declarations: [],
+  declarations: [AppComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -60,7 +61,7 @@ export function createTranslateLoader(http: HttpClient): any {
       },
     },
   ],
-  // No bootstrap here; standalone bootstrap is used in main.ts
+  bootstrap: [AppComponent],
 })
 export class AppModule {}
 export function HttpLoaderFactory(http: HttpClient) {

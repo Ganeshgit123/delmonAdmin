@@ -7,7 +7,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { NgxSpinnerModule } from 'ngx-spinner';
 
 @NgModule({
-  declarations: [OnlineSalesComponent],
+  declarations: [],
   imports: [
     CommonModule,
     RouterModule.forChild([
@@ -16,6 +16,7 @@ import { NgxSpinnerModule } from 'ngx-spinner';
         component: OnlineSalesComponent,
       },
     ]),
+    OnlineSalesComponent,
     NgMaterialModule,
     TranslateModule,
     NgxSpinnerModule,

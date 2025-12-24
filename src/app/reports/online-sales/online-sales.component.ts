@@ -1,22 +1,26 @@
 import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
 import { AuthService } from 'src/app/shared/auth.service';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { ExportType, MatTableExporterDirective } from '@csmart/mat-table-exporter';
-import { NgxSpinnerService } from 'ngx-spinner';
+import { NgxSpinnerService, NgxSpinnerModule } from 'ngx-spinner';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { NgMaterialModule } from '../../ng-material.module';
 
 @Component({
   selector: 'app-online-sales',
   templateUrl: './online-sales.component.html',
   styleUrls: ['./online-sales.component.scss'],
+  standalone: true,
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, TranslateModule, NgMaterialModule, NgxSpinnerModule],
 })
 export class OnlineSalesComponent implements OnInit, AfterViewInit {
   displayedColumns: string[];
-  dataSource: MatTableDataSource<any>;
-  getOrders = [];
+  dataSource: MatTableDataSource<OnlineSaleRow>;
+  getOrders: OnlineSaleRow[] = [];
   formattedDateTime: string;
   startDate: any = '';
   endDate: any = '';
@@ -32,7 +36,6 @@ export class OnlineSalesComponent implements OnInit, AfterViewInit {
 
   constructor(
     public authService: AuthService,
-    private router: Router,
     private translate: TranslateService,
     private spinner: NgxSpinnerService,
   ) {}
@@ -87,10 +90,10 @@ export class OnlineSalesComponent implements OnInit, AfterViewInit {
 
     this.spinner.show();
     this.authService.getInternalSalesReport(object).subscribe((res: any) => {
-      this.getOrders = res.data;
+      this.getOrders = res.data as OnlineSaleRow[];
       this.spinner.hide();
       // console.log("Fef",this.getOrders)
-      this.dataSource = new MatTableDataSource(this.getOrders);
+      this.dataSource = new MatTableDataSource<OnlineSaleRow>(this.getOrders);
       this.dataSource.paginator = this.matPaginator;
       this.dataSource.sort = this.matSort;
     });
@@ -98,19 +101,26 @@ export class OnlineSalesComponent implements OnInit, AfterViewInit {
 
   callRolePermission() {
     if (sessionStorage.getItem('roleName') !== 'superAdmin') {
-      const settingPermssion = JSON.parse(sessionStorage.getItem('permission'));
-      const orderPermission = settingPermssion?.find((ele) => ele.area == 'online-sales-reports')?.write == 1;
+      const raw = sessionStorage.getItem('permission');
+      const settingPermssion: Array<{ area: string; write: number }> = raw ? JSON.parse(raw) : [];
+      const orderPermission = settingPermssion.find((ele) => ele.area === 'online-sales-reports')?.write === 1;
       // console.log("fef",orderPermission)
       this.showAccept = orderPermission;
     }
   }
 
-  getDateQuery(object) {
+  getDateQuery(object: {
+    type: string;
+    startDate: string;
+    endDate: string;
+    deliveryType: number;
+    orderStatus: string | number;
+  }) {
     this.spinner.show();
     this.authService.getInternalSalesReport(object).subscribe((res: any) => {
-      this.getOrders = res.data;
+      this.getOrders = res.data as OnlineSaleRow[];
       this.spinner.hide();
-      this.dataSource = new MatTableDataSource(this.getOrders);
+      this.dataSource = new MatTableDataSource<OnlineSaleRow>(this.getOrders);
       this.dataSource.paginator = this.matPaginator;
       this.dataSource.sort = this.matSort;
     });
@@ -129,7 +139,7 @@ export class OnlineSalesComponent implements OnInit, AfterViewInit {
     }
   }
 
-  startEvent(event) {
+  startEvent(event: { value: string | Date }) {
     const stDate = event.value;
     const date = new Date(stDate);
 
@@ -145,7 +155,7 @@ export class OnlineSalesComponent implements OnInit, AfterViewInit {
     // this.getDateQuery(object)
   }
 
-  endEvent(event) {
+  endEvent(event: { value: string | Date }) {
     const stDate = event.value;
     const date = new Date(stDate);
 
@@ -157,11 +167,17 @@ export class OnlineSalesComponent implements OnInit, AfterViewInit {
 
     this.endDate = endFomatDate;
 
-    const object = { type: this.flowType, startDate: this.startDate, endDate: this.endDate, deliveryType: 1 };
+    const object = {
+      type: this.flowType,
+      startDate: this.startDate,
+      endDate: this.endDate,
+      deliveryType: 1,
+      orderStatus: 'PLACED,USERACCEPTED,DRIVERASSIGNED,OUTFORDELIVERY,COMPLETED',
+    };
     this.getDateQuery(object);
   }
 
-  onChangeFlowTypeFilter(value) {
+  onChangeFlowTypeFilter(value: string) {
     this.flowType = value;
     const object = {
       type: this.flowType,
@@ -190,4 +206,25 @@ export class OnlineSalesComponent implements OnInit, AfterViewInit {
       fileName: `Online Order Report ${this.formattedDateTime}`,
     });
   }
+}
+
+interface OnlineSaleRow {
+  orderId: string | number;
+  customerName: string;
+  userType: string | number;
+  driverName: string;
+  zoneName: string;
+  item: string;
+  qty: number;
+  weight: number | string;
+  total: number | string;
+  paymentType: string;
+  phoneNo: string;
+  area: string;
+  blockNo: string;
+  roadNo: string;
+  houseNo: string;
+  flat: string;
+  pin: string;
+  notes: string;
 }

@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+// Router not used; remove import
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AuthService } from 'src/app/shared/auth.service';
 import { MatPaginator } from '@angular/material/paginator';
@@ -12,6 +12,20 @@ import Swal from 'sweetalert2';
 import { AngularEditorConfig } from '@kolkov/angular-editor';
 import { TranslateService } from '@ngx-translate/core';
 
+interface RecipeRow {
+  id: number;
+  name: string;
+  arName: string;
+  ingredients: string;
+  arIngredients: string;
+  steps: string;
+  arSteps: string;
+  categoryId: number;
+  videos: string | null;
+  thumbnailImage: string | null;
+  active: number;
+}
+
 @Component({
   selector: 'app-recepies',
   templateUrl: './recepies.component.html',
@@ -19,8 +33,8 @@ import { TranslateService } from '@ngx-translate/core';
 })
 export class RecepiesComponent implements OnInit, AfterViewInit {
   displayedColumns: string[];
-  dataSource: MatTableDataSource<any>;
-  getvalue = [];
+  dataSource: MatTableDataSource<RecipeRow>;
+  getvalue: RecipeRow[] = [];
   isEdit = false;
   receipeForm: FormGroup;
   submitted = false;
@@ -52,16 +66,16 @@ export class RecepiesComponent implements OnInit, AfterViewInit {
     toolbarHiddenButtons: [['italic', 'insertImage', 'insertVideo', 'subscript', 'superscript']],
   };
   getCategory = [];
-  iconImg = null;
-  videoUpp = null;
-  fileImgUpload: any;
-  iconImgUrl: any;
-  videoUrl: any;
-  fileVideoUpload: any;
-  receipeId: any;
+  iconImg: string | null = null;
+  videoUpp: string | null = null;
+  fileImgUpload: File | null = null;
+  iconImgUrl: string | null = null;
+  videoUrl: string | null = null;
+  fileVideoUpload: File | null = null;
+  receipeId: number | string;
   showAccept = true;
   superAdminRole = false;
-  userType: any;
+  userType: string | null;
 
   @ViewChild(MatPaginator) matPaginator: MatPaginator;
   @ViewChild(MatSort) matSort: MatSort;
@@ -71,10 +85,11 @@ export class RecepiesComponent implements OnInit, AfterViewInit {
     public fb: FormBuilder,
     public authService: AuthService,
     private toastr: ToastrService,
-    private router: Router,
+    // router not used
     private spinner: NgxSpinnerService,
     private translate: TranslateService,
   ) {}
+
 
   ngOnInit(): void {
     this.callRolePermission();
@@ -92,19 +107,19 @@ export class RecepiesComponent implements OnInit, AfterViewInit {
       this.displayedColumns = ['index', 'name', 'videos', 'thumbnailImage'];
     }
 
-    if (this.userType == 1 || this.userType == 0) {
+    if (this.userType == '1' || this.userType == '0') {
       this.authService.getCategory('POULTRY').subscribe((res: any) => {
         this.getCategory = res.data;
       });
-    } else if (this.userType == 2 || this.userType == 0) {
+    } else if (this.userType == '2' || this.userType == '0') {
       this.authService.getCategory('FEEDING').subscribe((res: any) => {
         this.getCategory = res.data;
       });
     }
 
     this.authService.getReceipes().subscribe((res: any) => {
-      this.getvalue = res.data.filter((category) => this.getCategory.some((item) => item.id === category.categoryId));
-      this.dataSource = new MatTableDataSource(this.getvalue);
+      this.getvalue = res.data.filter((category: RecipeRow) => this.getCategory.some((item: any) => item.id === category.categoryId));
+      this.dataSource = new MatTableDataSource<RecipeRow>(this.getvalue);
       this.dataSource.paginator = this.matPaginator;
       this.dataSource.sort = this.matSort;
     });
@@ -128,8 +143,9 @@ export class RecepiesComponent implements OnInit, AfterViewInit {
 
   callRolePermission() {
     if (sessionStorage.getItem('roleName') !== 'superAdmin') {
-      const settingPermssion = JSON.parse(sessionStorage.getItem('permission'));
-      const orderPermission = settingPermssion?.find((ele) => ele.area == 'recipes')?.write == 1;
+      const perm = sessionStorage.getItem('permission');
+      const settingPermssion: any[] | null = perm ? JSON.parse(perm) : null;
+      const orderPermission = settingPermssion?.find((ele: any) => ele.area == 'recipes')?.write == 1;
       // console.log("fef",orderPermission)
       this.showAccept = orderPermission;
     }
@@ -148,7 +164,7 @@ export class RecepiesComponent implements OnInit, AfterViewInit {
     }
   }
 
-  openModal(content) {
+  openModal(content: any) {
     this.modalService.open(content, { centered: true, size: 'xl' });
     this.receipeForm.reset();
     this.isEdit = false;
@@ -157,24 +173,25 @@ export class RecepiesComponent implements OnInit, AfterViewInit {
     this.fileImgUpload = null;
   }
 
-  checkFileFormat(checkFile) {
-    if (checkFile.type == 'video/mp4') {
+  checkFileFormat(checkFile: File) {
+    if (checkFile.type === 'video/mp4') {
       return false;
     } else {
       return true;
     }
   }
 
-  uploadVideoFile(event) {
-    const file = event.target.files && event.target.files[0];
-    const valid = this.checkFileFormat(event.target.files[0]);
+  uploadVideoFile(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files && input.files[0];
+    const valid = input.files ? this.checkFileFormat(input.files[0]) : true;
     if (!valid) {
       const reader = new FileReader();
-      reader.onload = (event: any) => {
-        this.videoUpp = event.target.result;
+      reader.onload = (e: ProgressEvent<FileReader>) => {
+        this.videoUpp = (e.target as FileReader).result as string;
         // console.log("fef", this.videoUpp)
       };
-      reader.readAsDataURL(event.target.files[0]);
+      if (file) reader.readAsDataURL(file);
       this.fileVideoUpload = file;
     } else {
       this.toastr.error('Error ', 'Upload only mp4 Video format');
@@ -182,16 +199,16 @@ export class RecepiesComponent implements OnInit, AfterViewInit {
   }
 
   removeVideo() {
-    this.videoUpp = '';
-    this.fileVideoUpload = '';
+    this.videoUpp = null;
+    this.fileVideoUpload = null;
   }
 
-  checkImageFormat(checkFile) {
+  checkImageFormat(checkFile: File) {
     if (
-      checkFile.type == 'image/webp' ||
-      checkFile.type == 'image/png' ||
-      checkFile.type == 'image/jpeg' ||
-      checkFile.type == 'image/jpg'
+      checkFile.type === 'image/webp' ||
+      checkFile.type === 'image/png' ||
+      checkFile.type === 'image/jpeg' ||
+      checkFile.type === 'image/jpg'
     ) {
       return false;
     } else {
@@ -199,73 +216,88 @@ export class RecepiesComponent implements OnInit, AfterViewInit {
     }
   }
 
-  uploadImageFile(event) {
-    const file = event.target.files && event.target.files[0];
-    const valid = this.checkImageFormat(event.target.files[0]);
+  uploadImageFile(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files && input.files[0];
+    const valid = input.files ? this.checkImageFormat(input.files[0]) : true;
     if (!valid) {
       const reader = new FileReader();
-      reader.onload = (event: any) => {
-        this.iconImg = event.target.result;
+      reader.onload = (e: ProgressEvent<FileReader>) => {
+        this.iconImg = (e.target as FileReader).result as string;
       };
-      reader.readAsDataURL(event.target.files[0]);
+      if (file) reader.readAsDataURL(file);
       this.fileImgUpload = file;
     } else {
       this.toastr.error('Error ', 'Upload only jpg,jpeg,png,webp Image formats');
     }
   }
   removeImg() {
-    this.iconImg = '';
-    this.fileImgUpload = '';
+    this.iconImg = null;
+    this.fileImgUpload = null;
   }
 
   onSubmitData() {
     this.submitted = true;
     if (!this.receipeForm.valid) {
-      return false;
+      return;
     }
 
     if (this.isEdit) {
-      this.receipeEditService(this.receipeForm.value);
+      this.receipeEditService();
       return;
     }
 
     this.spinner.show();
     if (this.fileVideoUpload) {
       const postData = new FormData();
-      postData.append('image', this.fileVideoUpload);
+      postData.append('image', this.fileVideoUpload as File);
       this.authService.s3upload(postData).subscribe((res: any) => {
         if (res.error == false) {
           this.videoUrl = res.files;
           this.receipeForm.value.videos = this.videoUrl;
 
-          const postData = new FormData();
-          postData.append('image', this.fileImgUpload);
-          this.authService.s3upload(postData).subscribe((res: any) => {
-            if (res.error == false) {
-              this.iconImgUrl = res.files;
-              this.receipeForm.value.thumbnailImage = this.iconImgUrl;
-
-              // console.log("fef", this.receipeForm.value)
-              this.authService.addReceipes(this.receipeForm.value).subscribe((res: any) => {
-                if (res.error == false) {
-                  this.toastr.success('Success ', res.message);
-                  this.spinner.hide();
-                  this.iconImg = null;
-                  this.receipeForm.reset();
-                  this.modalService.dismissAll();
-                  this.ngOnInit();
-                } else {
-                  this.toastr.error('Enter valid ', res.message);
-                }
-              });
-            }
-          });
+          if (this.fileImgUpload) {
+            const postData = new FormData();
+            postData.append('image', this.fileImgUpload as File);
+            this.authService.s3upload(postData).subscribe((res: any) => {
+              if (res.error == false) {
+                this.iconImgUrl = res.files;
+                this.receipeForm.value.thumbnailImage = this.iconImgUrl;
+                this.authService.addReceipes(this.receipeForm.value).subscribe((res: any) => {
+                  if (res.error == false) {
+                    this.toastr.success('Success ', res.message);
+                    this.spinner.hide();
+                    this.iconImg = null;
+                    this.receipeForm.reset();
+                    this.modalService.dismissAll();
+                    this.ngOnInit();
+                  } else {
+                    this.toastr.error('Enter valid ', res.message);
+                  }
+                });
+              }
+            });
+          } else {
+            this.receipeForm.value.thumbnailImage = null;
+            this.authService.addReceipes(this.receipeForm.value).subscribe((res: any) => {
+              if (res.error == false) {
+                this.toastr.success('Success ', res.message);
+                this.spinner.hide();
+                this.iconImg = null;
+                this.receipeForm.reset();
+                this.modalService.dismissAll();
+                this.ngOnInit();
+              } else {
+                this.toastr.error('Enter valid ', res.message);
+              }
+            });
+          }
         }
       });
     }
   }
 
-  editReceipe(data, content) {
+  editReceipe(data: RecipeRow, content: any) {
     this.modalService.open(content, { centered: true, size: 'xl' });
     this.isEdit = true;
     this.fileImgUpload = null;
@@ -287,7 +319,7 @@ export class RecepiesComponent implements OnInit, AfterViewInit {
     });
   }
 
-  receipeEditService(data) {
+  receipeEditService() {
     if (this.fileImgUpload && this.fileVideoUpload) {
       const postData = new FormData();
       postData.append('image', this.fileVideoUpload);
@@ -297,7 +329,7 @@ export class RecepiesComponent implements OnInit, AfterViewInit {
           this.receipeForm.value.videos = this.videoUrl;
 
           const postData = new FormData();
-          postData.append('image', this.fileImgUpload);
+          postData.append('image', this.fileImgUpload as File);
           this.authService.s3upload(postData).subscribe((res: any) => {
             if (res.error == false) {
               this.iconImgUrl = res.files;
@@ -327,11 +359,10 @@ export class RecepiesComponent implements OnInit, AfterViewInit {
       this.authService.s3upload(postData).subscribe((res: any) => {
         if (res.error == false) {
           this.iconImgUrl = res.files;
-          const data = this.receipeForm.value;
-          data['thumbnailImage'] = this.iconImgUrl;
-          data['videos'] = this.videoUpp;
-          // console.log("1stImageUpload", data)
-          this.authService.editReceipes(data, this.receipeId).subscribe((res: any) => {
+          const dataVal = this.receipeForm.value as any;
+          dataVal['thumbnailImage'] = this.iconImgUrl;
+          dataVal['videos'] = this.videoUpp;
+          this.authService.editReceipes(dataVal, this.receipeId).subscribe((res: any) => {
             if (res.error == false) {
               this.toastr.success('Success ', res.message);
               this.iconImgUrl = null;
@@ -353,11 +384,10 @@ export class RecepiesComponent implements OnInit, AfterViewInit {
       this.authService.s3upload(postData).subscribe((res: any) => {
         if (res.error == false) {
           this.videoUrl = res.files;
-          const data = this.receipeForm.value;
-          data['videos'] = this.videoUrl;
-          data['thumbnailImage'] = this.iconImg;
-          // console.log("1stImageUpload", data)
-          this.authService.editReceipes(data, this.receipeId).subscribe((res: any) => {
+          const dataVal = this.receipeForm.value as any;
+          dataVal['videos'] = this.videoUrl;
+          dataVal['thumbnailImage'] = this.iconImg;
+          this.authService.editReceipes(dataVal, this.receipeId).subscribe((res: any) => {
             if (res.error == false) {
               this.toastr.success('Success ', res.message);
               this.iconImg = null;
@@ -373,11 +403,10 @@ export class RecepiesComponent implements OnInit, AfterViewInit {
         }
       });
     } else {
-      const data = this.receipeForm.value;
-      data['videos'] = this.videoUpp;
-      data['thumbnailImage'] = this.iconImg;
-      // console.log("1stImageUpload", data)
-      this.authService.editReceipes(data, this.receipeId).subscribe((res: any) => {
+      const dataVal = this.receipeForm.value as any;
+      dataVal['videos'] = this.videoUpp;
+      dataVal['thumbnailImage'] = this.iconImg;
+      this.authService.editReceipes(dataVal, this.receipeId).subscribe((res: any) => {
         if (res.error == false) {
           this.toastr.success('Success ', res.message);
           this.iconImg = null;
@@ -393,7 +422,7 @@ export class RecepiesComponent implements OnInit, AfterViewInit {
     }
   }
 
-  changeStatus(value) {
+  changeStatus(value: RecipeRow) {
     const visible = value.active === 1 ? 0 : 1;
     const object = { active: visible };
 
@@ -407,7 +436,7 @@ export class RecepiesComponent implements OnInit, AfterViewInit {
     });
   }
 
-  deleteReceipe(value) {
+  deleteReceipe(value: RecipeRow) {
     Swal.fire({
       title: this.translate.instant('AreYouSure'),
       text: this.translate.instant('YouWontBeRevertThis'),
@@ -425,7 +454,7 @@ export class RecepiesComponent implements OnInit, AfterViewInit {
           icon: 'success',
           confirmButtonText: this.translate.instant('Ok'),
         }),
-          this.authService.deleteReceipes(value).subscribe((res: any) => {
+          this.authService.deleteReceipes(value.id).subscribe((res: any) => {
             if (res.error == false) {
               this.toastr.success('Success ', res.message);
               this.ngOnInit();

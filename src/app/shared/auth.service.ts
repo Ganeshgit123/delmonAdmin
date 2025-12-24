@@ -2,12 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment.prod';
-import { Router } from '@angular/router';
-interface ApiResponse<T = unknown> {
-  error: boolean;
-  message: string;
-  data?: T;
-}
+import { ApiResponse } from './models/api-response';
 @Injectable({
   providedIn: 'root',
 })
@@ -26,7 +21,6 @@ export class AuthService {
   requestOptions = { headers: this.headers };
   constructor(
     private http: HttpClient,
-    private router: Router,
   ) {}
 
   s3upload(user: unknown) {
@@ -97,7 +91,8 @@ export class AuthService {
 
   getAdminUser(): Observable<ApiResponse<unknown>> {
     const param1 = new HttpParams();
-    const id = JSON.parse(sessionStorage.getItem('adminId'));
+    const adminIdRaw = sessionStorage.getItem('adminId');
+    const id = adminIdRaw ? JSON.parse(adminIdRaw) : '0';
     return this.http.get<ApiResponse<unknown>>(`${this.endpoint}/adminUser/${id}`, { params: param1 });
   }
 

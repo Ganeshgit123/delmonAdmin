@@ -1,22 +1,20 @@
 import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+// Router not used; remove import
+import { NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
 import { AuthService } from 'src/app/shared/auth.service';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { ToastrService } from 'ngx-toastr';
-import { NgxSpinnerService } from 'ngx-spinner';
+import { NgxSpinnerService, NgxSpinnerModule } from 'ngx-spinner';
 import Swal from 'sweetalert2';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { NgMaterialModule } from '../../ng-material.module';
 
-interface ApiResponse<T> {
-  error: boolean;
-  data: T;
-  message: string;
-  files?: string | string[];
-}
+// Remove local ApiResponse to avoid clashes with service typing
 
 interface ProductRow {
   id: number;
@@ -34,6 +32,8 @@ interface ProductRow {
   selector: 'app-feeding-product',
   templateUrl: './feeding-product.component.html',
   styleUrls: ['./feeding-product.component.scss'],
+  standalone: true,
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, TranslateModule, NgMaterialModule, NgbModalModule, NgxSpinnerModule],
 })
 export class FeedingProductComponent implements OnInit, AfterViewInit {
   displayedColumns: string[];
@@ -42,8 +42,8 @@ export class FeedingProductComponent implements OnInit, AfterViewInit {
   isEdit = false;
   productForm: FormGroup;
   submitted = false;
-  fileImgUpload: File | '';
-  getCategory: unknown[] = [];
+  fileImgUpload: File | null = null;
+  getCategory: any[] = [];
   imgs3: string[] = [];
   uploadFiles: File[] = [];
   imageNeed = false;
@@ -77,7 +77,7 @@ export class FeedingProductComponent implements OnInit, AfterViewInit {
     public fb: FormBuilder,
     public authService: AuthService,
     private toastr: ToastrService,
-    private router: Router,
+    // router not used
     private spinner: NgxSpinnerService,
     private translate: TranslateService,
   ) {}
@@ -108,19 +108,19 @@ export class FeedingProductComponent implements OnInit, AfterViewInit {
       this.displayedColumns = ['index', 'categoryId', 'enProductName', 'arProductName', 'image', 'addSimilar'];
     }
 
-    this.authService.getProductsWithParentIdFeed('FEEDING').subscribe((res: ApiResponse<ProductRow[]>) => {
+    this.authService.getProductsWithParentIdFeed('FEEDING').subscribe((res: any) => {
       this.getvalue = res.data;
       this.dataSource = new MatTableDataSource(this.getvalue);
       this.dataSource.paginator = this.matPaginator;
       this.dataSource.sort = this.matSort;
     });
 
-    this.authService.getCategoryUser('FEEDING').subscribe((res: ApiResponse<Array<{ id: number }>>) => {
-      this.getCategoryUSer = res.data.filter((item) => item.id !== 0);
+    this.authService.getCategoryUser('FEEDING').subscribe((res: any) => {
+      this.getCategoryUSer = res.data.filter((item: any) => item.id !== 0);
       // console.log("fe",this.getCategoryUSer)
     });
 
-    this.authService.getCategory('FEEDING').subscribe((res: ApiResponse<unknown[]>) => {
+    this.authService.getCategory('FEEDING').subscribe((res: any) => {
       this.getCategory = res.data;
     });
 
@@ -142,9 +142,9 @@ export class FeedingProductComponent implements OnInit, AfterViewInit {
 
   callRolePermission() {
     if (sessionStorage.getItem('roleName') !== 'superAdmin') {
-      const settingPermssion = JSON.parse(sessionStorage.getItem('permission'));
-      const orderPermission = settingPermssion?.find((ele) => ele.area === 'products')?.write === 1;
-      // console.log("fef",orderPermission)
+      const perm = sessionStorage.getItem('permission');
+      const settingPermssion: any[] | null = perm ? JSON.parse(perm) : null;
+      const orderPermission = settingPermssion?.find((ele: any) => ele.area === 'products')?.write === 1;
       this.showAccept = orderPermission;
     }
   }
@@ -162,13 +162,13 @@ export class FeedingProductComponent implements OnInit, AfterViewInit {
     }
   }
 
-  selectCategory(event) {
-    this.authService.getSubCategory(event).subscribe((res: ApiResponse<unknown[]>) => {
+  selectCategory(event: number | string) {
+    this.authService.getSubCategory(event).subscribe((res: any) => {
       this.subCate = true;
       this.getSubCategory = res.data;
       this.subCategLength = this.getSubCategory.length;
       if (this.subCategLength === 0) {
-        this.categId = event;
+        this.categId = Number(event);
       } else {
         this.categId = null;
       }
@@ -176,13 +176,13 @@ export class FeedingProductComponent implements OnInit, AfterViewInit {
     });
   }
 
-  selectSubCategory(event) {
-    this.authService.getSubCategory(event).subscribe((res: ApiResponse<unknown[]>) => {
+  selectSubCategory(event: number | string) {
+    this.authService.getSubCategory(event).subscribe((res: any) => {
       this.subSubCate = true;
       this.getSubSubCategory = res.data;
       this.subSubCategLength = this.getSubSubCategory.length;
       if (this.subSubCategLength === 0) {
-        this.categId = event;
+        this.categId = Number(event);
       } else {
         this.categId = null;
       }
@@ -190,13 +190,13 @@ export class FeedingProductComponent implements OnInit, AfterViewInit {
     });
   }
 
-  selectSubSubCategory(event) {
-    this.authService.getSubCategory(event).subscribe((res: ApiResponse<unknown[]>) => {
+  selectSubSubCategory(event: number | string) {
+    this.authService.getSubCategory(event).subscribe((res: any) => {
       this.subSubSubCate = true;
       this.getSubSubSubCategory = res.data;
       this.subSubSubCategLength = this.getSubSubSubCategory.length;
       if (this.subSubSubCategLength === 0) {
-        this.categId = event;
+        this.categId = Number(event);
       } else {
         this.categId = null;
       }
@@ -204,12 +204,12 @@ export class FeedingProductComponent implements OnInit, AfterViewInit {
     });
   }
 
-  selectLastCategory(event) {
-    this.categId = event;
+  selectLastCategory(event: number | string) {
+    this.categId = Number(event);
     // console.log("lllll",this.categId)
   }
 
-  openModal(content) {
+  openModal(content: any) {
     this.productForm.reset();
     this.imageNeed = false;
     this.isEdit = false;
@@ -247,15 +247,16 @@ export class FeedingProductComponent implements OnInit, AfterViewInit {
   //   this.pushedImage.splice(i, 1);
   // }
 
-  uploadImageFile(event) {
-    if (event.target.files && event.target.files[0]) {
-      const file = event.target.files && event.target.files[0];
+  uploadImageFile(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+      const file = input.files[0];
       const reader = new FileReader();
       reader.onload = (e: ProgressEvent<FileReader>) => {
         const result = (e.target as FileReader).result as string | ArrayBuffer;
         this.prodImg = result as string;
       };
-      reader.readAsDataURL(event.target.files[0]);
+      reader.readAsDataURL(file);
       this.fileImgUpload = file;
     }
   }
@@ -263,7 +264,7 @@ export class FeedingProductComponent implements OnInit, AfterViewInit {
   removeImg() {
     this.iconImg = '';
     this.prodImg = '';
-    this.fileImgUpload = '';
+    this.fileImgUpload = null;
   }
 
   onSubmitData() {
@@ -278,8 +279,8 @@ export class FeedingProductComponent implements OnInit, AfterViewInit {
     if (this.fileImgUpload) {
       this.spinner.show();
       const postData = new FormData();
-      postData.append('image', this.fileImgUpload);
-      this.authService.s3upload(postData).subscribe((res: ApiResponse<string>) => {
+      postData.append('image', this.fileImgUpload as File);
+      this.authService.s3upload(postData).subscribe((res: any) => {
         if (res.error === false) {
           this.iconImg = (res.files as string) ?? '';
           this.imgs3.push(this.iconImg);
@@ -318,7 +319,7 @@ export class FeedingProductComponent implements OnInit, AfterViewInit {
     // }
   }
 
-  onSubmitProductImage(data) {
+  onSubmitProductImage(data: any) {
     this.submitted = false;
     this.productForm.value.type = 'FEEDING';
     this.productForm.value.categoryId = this.categId;
@@ -328,14 +329,14 @@ export class FeedingProductComponent implements OnInit, AfterViewInit {
     this.productForm.value.cartonActive = 0;
     this.productForm.value.isBasket = 0;
     // console.log("submit", this.productForm.value)
-    this.authService.addProduct(data).subscribe((res: ApiResponse<unknown>) => {
+    this.authService.addProduct(data).subscribe((res: any) => {
       if (res.error === false) {
         this.toastr.success('Success ', res.message);
         this.spinner.hide();
         this.submitted = false;
         this.iconImg = '';
         this.prodImg = '';
-        this.fileImgUpload = '';
+        this.fileImgUpload = null;
         this.productForm.reset();
         this.modalService.dismissAll();
         this.ngOnInit();
@@ -345,7 +346,7 @@ export class FeedingProductComponent implements OnInit, AfterViewInit {
     });
   }
 
-  editProduct(data, content) {
+  editProduct(data: ProductRow & { parentId?: number; description?: string; arDescription?: string; soldType?: number }, content: any) {
     this.modalService.open(content, { centered: true, size: 'lg' });
     this.isEdit = true;
     this.productId = data['id'];
@@ -371,8 +372,8 @@ export class FeedingProductComponent implements OnInit, AfterViewInit {
       this.imgs3 = [];
       this.spinner.show();
       const postData = new FormData();
-      postData.append('image', this.fileImgUpload);
-      this.authService.s3upload(postData).subscribe((res: ApiResponse<string>) => {
+      postData.append('image', this.fileImgUpload as File);
+      this.authService.s3upload(postData).subscribe((res: any) => {
         if (res.error === false) {
           this.iconImg = (res.files as string) ?? '';
           this.imgs3.push(this.iconImg);
@@ -412,8 +413,8 @@ export class FeedingProductComponent implements OnInit, AfterViewInit {
     // }
   }
 
-  editProductImage(data) {
-    this.authService.editProduct(data, this.productId).subscribe((res: ApiResponse<unknown>) => {
+  editProductImage(data: any) {
+    this.authService.editProduct(data, this.productId).subscribe((res: any) => {
       if (res.error === false) {
         this.toastr.success('Success ', res.message);
         this.spinner.hide();
@@ -421,7 +422,7 @@ export class FeedingProductComponent implements OnInit, AfterViewInit {
         this.submitted = false;
         this.iconImg = '';
         this.prodImg = '';
-        this.fileImgUpload = '';
+        this.fileImgUpload = null;
         this.modalService.dismissAll();
       } else {
         this.toastr.error('Enter valid ', res.message);
@@ -430,9 +431,9 @@ export class FeedingProductComponent implements OnInit, AfterViewInit {
   }
 
   getRelatedProduct() {
-    this.authService.getProductsDetails('FEEDING', this.productId).subscribe((res: ApiResponse<Array<{ id: number }>>) => {
-      const filteredData = res.data.filter((item) => item.id !== this.productId);
-      const updatedData = filteredData.map((obj) => ({
+    this.authService.getProductsDetails('FEEDING', this.productId).subscribe((res: any) => {
+      const filteredData = res.data.filter((item: any) => item.id !== this.productId);
+      const updatedData = filteredData.map((obj: any) => ({
         id: obj.id,
         categoryId: this.productForm.value.categoryId,
         enProductName: this.productForm.value.enProductName,
@@ -442,7 +443,7 @@ export class FeedingProductComponent implements OnInit, AfterViewInit {
       }));
       // console.log("afterUpdate", updatedData)
       const object = { product: updatedData };
-      this.authService.editReletedProduct(object).subscribe((res: ApiResponse<unknown>) => {
+      this.authService.editReletedProduct(object).subscribe((res: any) => {
         if (res.error === false) {
           this.productForm.reset();
           this.ngOnInit();
@@ -451,11 +452,11 @@ export class FeedingProductComponent implements OnInit, AfterViewInit {
     });
   }
 
-  changeStatus(value) {
+  changeStatus(value: ProductRow) {
     const visible = value.active === 1 ? 0 : 1;
     const object = { active: visible };
 
-    this.authService.editProduct(object, value.id).subscribe((res: ApiResponse<unknown>) => {
+    this.authService.editProduct(object, value.id).subscribe((res: any) => {
       if (res.error === false) {
         this.toastr.success('Success ', res.message);
         this.ngOnInit();
@@ -465,7 +466,7 @@ export class FeedingProductComponent implements OnInit, AfterViewInit {
     });
   }
 
-  deleteProduct(value) {
+  deleteProduct(value: ProductRow) {
     Swal.fire({
       title: this.translate.instant('AreYouSure'),
       text: this.translate.instant('YouWontBeRevertThis'),
@@ -483,7 +484,7 @@ export class FeedingProductComponent implements OnInit, AfterViewInit {
           icon: 'success',
           confirmButtonText: this.translate.instant('Ok'),
         });
-        this.authService.deleteProd(value).subscribe((res: ApiResponse<unknown>) => {
+        this.authService.deleteProd(value.id).subscribe((res: any) => {
           if (res.error === false) {
             this.toastr.success('Success ', res.message);
             this.ngOnInit();
@@ -495,11 +496,11 @@ export class FeedingProductComponent implements OnInit, AfterViewInit {
     });
   }
 
-  changeMostWantedProduct(value) {
+  changeMostWantedProduct(value: ProductRow) {
     const visible = value.mostWantedProduct === 1 ? 0 : 1;
     const object = { mostWantedProduct: visible };
 
-    this.authService.editProduct(object, value.id).subscribe((res: ApiResponse<unknown>) => {
+    this.authService.editProduct(object, value.id).subscribe((res: any) => {
       if (res.error === false) {
         this.toastr.success('Success ', res.message);
         this.ngOnInit();
@@ -509,11 +510,11 @@ export class FeedingProductComponent implements OnInit, AfterViewInit {
     });
   }
 
-  changeOffers(value) {
+  changeOffers(value: ProductRow) {
     const visible = value.offers === 1 ? 0 : 1;
     const object = { offers: visible };
 
-    this.authService.editProduct(object, value.id).subscribe((res: ApiResponse<unknown>) => {
+    this.authService.editProduct(object, value.id).subscribe((res: any) => {
       if (res.error === false) {
         this.toastr.success('Success ', res.message);
         this.ngOnInit();
@@ -522,11 +523,11 @@ export class FeedingProductComponent implements OnInit, AfterViewInit {
       }
     });
   }
-  changeNewProduct(value) {
+  changeNewProduct(value: ProductRow) {
     const visible = value.newProduct === 1 ? 0 : 1;
     const object = { newProduct: visible };
 
-    this.authService.editProduct(object, value.id).subscribe((res: ApiResponse<unknown>) => {
+    this.authService.editProduct(object, value.id).subscribe((res: any) => {
       if (res.error === false) {
         this.toastr.success('Success ', res.message);
         this.ngOnInit();

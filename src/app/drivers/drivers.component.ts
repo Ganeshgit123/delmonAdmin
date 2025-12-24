@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AuthService } from 'src/app/shared/auth.service';
 import { MatPaginator } from '@angular/material/paginator';
@@ -8,26 +9,30 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { ToastrService } from 'ngx-toastr';
 import { NgxSpinnerService } from 'ngx-spinner';
+import { NgxSpinnerModule } from 'ngx-spinner';
 import Swal from 'sweetalert2';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
+import { NgMaterialModule } from '../ng-material.module';
 
 @Component({
   selector: 'app-drivers',
   templateUrl: './drivers.component.html',
   styleUrls: ['./drivers.component.scss'],
+  standalone: true,
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, TranslateModule, NgMaterialModule, NgxSpinnerModule],
 })
 export class DriversComponent implements OnInit, AfterViewInit {
   displayedColumns: string[];
-  dataSource: MatTableDataSource<any>;
-  getvalue = [];
+  dataSource: MatTableDataSource<DriverRow>;
+  getvalue: DriverRow[] = [];
   isEdit = false;
   driverForm: FormGroup;
-  driverImg = null;
+  driverImg: string | null = null;
   submitted = false;
   driverId: any;
-  iconImg = null;
-  fileImgUpload: any;
-  iconImgUrl: any;
+  iconImg: string | null = null;
+  fileImgUpload: File | null = null;
+  iconImgUrl: string | null = null;
   showAccept = true;
   superAdminRole = false;
 
@@ -39,7 +44,6 @@ export class DriversComponent implements OnInit, AfterViewInit {
     public fb: FormBuilder,
     public authService: AuthService,
     private toastr: ToastrService,
-    private router: Router,
     private spinner: NgxSpinnerService,
     private translate: TranslateService,
   ) {}
@@ -69,8 +73,8 @@ export class DriversComponent implements OnInit, AfterViewInit {
     }
 
     this.authService.getDrivers().subscribe((res: any) => {
-      this.getvalue = res.data.reverse();
-      this.dataSource = new MatTableDataSource(this.getvalue);
+      this.getvalue = (res.data as DriverRow[]).reverse();
+      this.dataSource = new MatTableDataSource<DriverRow>(this.getvalue);
       this.dataSource.paginator = this.matPaginator;
       this.dataSource.sort = this.matSort;
     });
@@ -93,8 +97,11 @@ export class DriversComponent implements OnInit, AfterViewInit {
 
   callRolePermission() {
     if (sessionStorage.getItem('roleName') !== 'superAdmin') {
-      const settingPermssion = JSON.parse(sessionStorage.getItem('permission'));
-      const orderPermission = settingPermssion?.find((ele) => ele.area == 'drivers')?.write == 1;
+      const permStr = sessionStorage.getItem('permission');
+      const settingPermssion: Array<{ area: string; read: number; write: number }> | null = permStr
+        ? JSON.parse(permStr)
+        : null;
+      const orderPermission = settingPermssion?.find((ele: { area: string; read: number; write: number }) => ele.area == 'drivers')?.write == 1;
       // console.log("fef",orderPermission)
       this.showAccept = orderPermission;
     }
@@ -113,7 +120,7 @@ export class DriversComponent implements OnInit, AfterViewInit {
     }
   }
 
-  openModal(content) {
+  openModal(content: any) {
     this.submitted = false;
     this.driverForm.reset();
     this.isEdit = false;
@@ -121,7 +128,7 @@ export class DriversComponent implements OnInit, AfterViewInit {
     this.modalService.open(content, { centered: true, size: 'lg' });
   }
 
-  checkFileFormat(checkFile) {
+  checkFileFormat(checkFile: File) {
     if (
       checkFile.type == 'image/webp' ||
       checkFile.type == 'image/png' ||
@@ -138,23 +145,27 @@ export class DriversComponent implements OnInit, AfterViewInit {
 
   removeImg() {
     this.iconImg = '';
-    this.fileImgUpload = '';
+    this.fileImgUpload = null;
   }
 
-  uploadImageFile(event) {
-    const file = event.target.files && event.target.files[0];
-    const valid = this.checkFileFormat(event.target.files[0]);
+  uploadImageFile(event: any) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files && input.files[0];
+    if (!file) {
+      return;
+    }
+    const valid = this.checkFileFormat(file);
     if (!valid) {
       const reader = new FileReader();
       reader.onload = (event: any) => {
         this.iconImg = event.target.result;
       };
-      reader.readAsDataURL(event.target.files[0]);
+      reader.readAsDataURL(file);
       this.fileImgUpload = file;
     }
   }
 
-  editDriverData(data, content) {
+  editDriverData(data: any, content: any) {
     this.modalService.open(content, { centered: true, size: 'lg' });
     this.isEdit = true;
     this.fileImgUpload = null;
@@ -227,7 +238,7 @@ export class DriversComponent implements OnInit, AfterViewInit {
     }
   }
 
-  driverEditService(data) {
+  driverEditService(data: any) {
     if (this.fileImgUpload) {
       this.spinner.show();
       const postData = new FormData();
@@ -271,7 +282,7 @@ export class DriversComponent implements OnInit, AfterViewInit {
     }
   }
 
-  changeStatus(value) {
+  changeStatus(value: { id: number; active: number }) {
     const visible = value.active === 1 ? 0 : 1;
     const object = { active: visible };
 
@@ -285,7 +296,7 @@ export class DriversComponent implements OnInit, AfterViewInit {
     });
   }
 
-  deleteDriverData(value) {
+  deleteDriverData(value: any) {
     Swal.fire({
       title: this.translate.instant('AreYouSure'),
       text: this.translate.instant('YouWontBeRevertThis'),
@@ -314,4 +325,16 @@ export class DriversComponent implements OnInit, AfterViewInit {
       }
     });
   }
+}
+
+interface DriverRow {
+  id: number;
+  userName: string;
+  employeeId: string;
+  employeeCode: string;
+  email: string;
+  mobileNumber: string | number;
+  image: string;
+  type: string;
+  active: number;
 }

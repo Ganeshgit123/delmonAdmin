@@ -1,24 +1,27 @@
 import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
 import { AuthService } from 'src/app/shared/auth.service';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { ToastrService } from 'ngx-toastr';
-import { NgxSpinnerService } from 'ngx-spinner';
-import { TranslateService } from '@ngx-translate/core';
+import { NgxSpinnerService, NgxSpinnerModule } from 'ngx-spinner';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { NgMaterialModule } from '../../ng-material.module';
 
 @Component({
   selector: 'app-completed-orders',
   templateUrl: './completed-orders.component.html',
   styleUrls: ['./completed-orders.component.scss'],
+  standalone: true,
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, TranslateModule, NgMaterialModule, NgbModalModule, NgxSpinnerModule],
 })
 export class CompletedOrdersComponent implements OnInit, AfterViewInit {
   displayedColumns: string[];
-  dataSource: MatTableDataSource<any>;
-  getvalue = [];
+  dataSource: MatTableDataSource<OrderRow>;
+  getvalue: OrderRow[] = [];
   orderDetail: any;
   showAccept = true;
   superAdminRole = false;
@@ -33,8 +36,6 @@ export class CompletedOrdersComponent implements OnInit, AfterViewInit {
     private modalService: NgbModal,
     public fb: FormBuilder,
     public authService: AuthService,
-    private toastr: ToastrService,
-    private router: Router,
     private spinner: NgxSpinnerService,
     private translate: TranslateService,
   ) {}
@@ -77,8 +78,11 @@ export class CompletedOrdersComponent implements OnInit, AfterViewInit {
 
   callRolePermission() {
     if (sessionStorage.getItem('roleName') !== 'superAdmin') {
-      const settingPermssion = JSON.parse(sessionStorage.getItem('permission'));
-      const orderPermission = settingPermssion?.find((ele) => ele.area == 'orders')?.write == 1;
+      const permStr = sessionStorage.getItem('permission');
+      const settingPermssion: Array<{ area: string; read: number; write: number }> | null = permStr
+        ? JSON.parse(permStr)
+        : null;
+      const orderPermission = settingPermssion?.find((ele: { area: string; read: number; write: number }) => ele.area == 'orders')?.write == 1;
       // console.log("fef",orderPermission)
       this.showAccept = orderPermission;
     }
@@ -101,29 +105,29 @@ export class CompletedOrdersComponent implements OnInit, AfterViewInit {
     }
   }
 
-  openModal(content, data) {
+  openModal(content: any, data: OrderRow) {
     this.modalService.open(content, { centered: true, size: 'lg' });
     this.orderDetail = data;
   }
 
-  getTypeFilter(value) {
+  getTypeFilter(value: { deliveryType: number | string; orderStatus: string; type: string }) {
     this.spinner.show();
     const object = { deliveryType: value.deliveryType, orderStatus: value.orderStatus, type: value.type };
     this.authService.getOrdersWithStatus(object).subscribe((res: any) => {
-      res.data.forEach((element) => {
+      res.data.forEach((element: any) => {
         ((element.zoneName = element.deliveryAddress?.zoneName),
           (element.area = element.deliveryAddress?.area),
           (element.driverName = element.deliveryBoyDetail?.userName));
       });
-      this.getvalue = res.data;
+      this.getvalue = res.data as OrderRow[];
       this.spinner.hide();
-      this.dataSource = new MatTableDataSource(this.getvalue);
+      this.dataSource = new MatTableDataSource<OrderRow>(this.getvalue);
       this.dataSource.paginator = this.matPaginator;
       this.dataSource.sort = this.matSort;
     });
   }
 
-  onChangeFilter(value) {
+  onChangeFilter(value: string | number) {
     this.deliveryType = value;
     if (this.deliveryType == '1') {
       const object = { deliveryType: 1, orderStatus: 'COMPLETED', type: this.userFlowType };
@@ -134,9 +138,22 @@ export class CompletedOrdersComponent implements OnInit, AfterViewInit {
     }
   }
 
-  onChangeFlowTypeFilter(value) {
+  onChangeFlowTypeFilter(value: string) {
     this.userFlowType = value;
     const object = { deliveryType: this.deliveryType, orderStatus: 'COMPLETED', type: this.userFlowType };
     this.getTypeFilter(object);
   }
+}
+
+interface OrderRow {
+  orderId: number | string;
+  orderDetails?: unknown;
+  drivers?: unknown;
+  zoneName?: string;
+  area?: string;
+  orderDate?: string;
+  deliveryDate?: string;
+  deliveryAddress?: { zoneName?: string; area?: string };
+  deliveryBoyDetail?: { userName?: string };
+  driverName?: string;
 }

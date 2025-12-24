@@ -1,6 +1,5 @@
 import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AuthService } from 'src/app/shared/auth.service';
 import { MatPaginator } from '@angular/material/paginator';
@@ -18,17 +17,17 @@ import Swal from 'sweetalert2';
 })
 export class FeedingComponent implements OnInit, AfterViewInit {
   displayedColumns: string[];
-  dataSource: MatTableDataSource<any>;
-  getvalue = [];
+  dataSource: MatTableDataSource<CategoryRow>;
+  getvalue: CategoryRow[] = [];
   isEdit = false;
   categoryForm: FormGroup;
-  catImg = null;
+  catImg: string | null = null;
   submitted = false;
   categoryId: any;
-  iconImg = null;
-  fileImgUpload: any;
-  iconImgUrl: any;
-  color: any;
+  iconImg: string | null = null;
+  fileImgUpload: File | null = null;
+  iconImgUrl: string | null = null;
+  color: string | null = null;
   subCateg = false;
   subCategoryForm: FormGroup;
   showAccept = true;
@@ -42,7 +41,6 @@ export class FeedingComponent implements OnInit, AfterViewInit {
     public fb: FormBuilder,
     public authService: AuthService,
     private toastr: ToastrService,
-    private router: Router,
     private spinner: NgxSpinnerService,
     private translate: TranslateService,
   ) {}
@@ -72,7 +70,7 @@ export class FeedingComponent implements OnInit, AfterViewInit {
       this.displayedColumns = ['index', 'enName', 'arName', 'image', 'colorCode', 'vat'];
     }
     this.authService.getCategory('FEEDING').subscribe((res: any) => {
-      this.getvalue = res.data;
+      this.getvalue = res.data as CategoryRow[];
       this.dataSource = new MatTableDataSource(this.getvalue);
       this.dataSource.paginator = this.matPaginator;
       this.dataSource.sort = this.matSort;
@@ -97,10 +95,11 @@ export class FeedingComponent implements OnInit, AfterViewInit {
 
   callRolePermission() {
     if (sessionStorage.getItem('roleName') !== 'superAdmin') {
-      const settingPermssion = JSON.parse(sessionStorage.getItem('permission'));
-      const orderPermission = settingPermssion?.find((ele) => ele.area == 'category')?.write == 1;
+      const permStr = sessionStorage.getItem('permission');
+      const settingPermssion: Array<{ area: string; read: number; write: number }> | null = permStr ? JSON.parse(permStr) : null;
+      const orderPermission = settingPermssion?.find((ele: { area: string; read: number; write: number }) => ele.area === 'category')?.write === 1;
       // console.log("fef",orderPermission)
-      this.showAccept = orderPermission;
+      this.showAccept = !!orderPermission;
     }
   }
 
@@ -117,14 +116,14 @@ export class FeedingComponent implements OnInit, AfterViewInit {
     }
   }
 
-  openModal(content) {
+  openModal(content: any) {
     this.categoryForm.reset();
     this.isEdit = false;
     this.catImg = null;
     this.modalService.open(content, { centered: true });
   }
 
-  checkFileFormat(checkFile) {
+  checkFileFormat(checkFile: File) {
     if (
       checkFile.type == 'image/webp' ||
       checkFile.type == 'image/png' ||
@@ -141,45 +140,49 @@ export class FeedingComponent implements OnInit, AfterViewInit {
 
   removeImg() {
     this.iconImg = '';
-    this.fileImgUpload = '';
+    this.fileImgUpload = null;
   }
 
-  uploadImageFile(event) {
-    const file = event.target.files && event.target.files[0];
-    const valid = this.checkFileFormat(event.target.files[0]);
+  uploadImageFile(event: any) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files && input.files[0];
+    if (!file) {
+      return;
+    }
+    const valid = this.checkFileFormat(file);
     if (!valid) {
       const reader = new FileReader();
       reader.onload = (event: any) => {
         this.iconImg = event.target.result;
       };
-      reader.readAsDataURL(event.target.files[0]);
+      reader.readAsDataURL(file);
       this.fileImgUpload = file;
     }
   }
 
-  colorClicked(colorvalue) {
-    const cvalue = colorvalue;
+  colorClicked(colorvalue: string) {
+    const cvalue: string = colorvalue;
     this.color = cvalue;
     this.categoryForm.patchValue({ colorCode: cvalue });
   }
 
-  editCategory(data, content) {
+  editCategory(data: CategoryRow, content: any) {
     this.modalService.open(content, { centered: true });
     this.isEdit = true;
     this.fileImgUpload = null;
-    this.categoryId = data['id'];
-    this.iconImg = data['image'];
+    this.categoryId = data.id;
+    this.iconImg = data.image;
 
     this.categoryForm = this.fb.group({
-      type: [data['type']],
-      enName: [data['enName']],
-      arName: [data['arName']],
+      type: [data.type],
+      enName: [data.enName],
+      arName: [data.arName],
       image: [''],
-      colorCode: [data['colorCode']],
-      parentId: [data['parentId']],
-      vat: [data['vat']],
-      userType: [data['userType']],
-      employeeType: [data['employeeType']],
+      colorCode: [data.colorCode],
+      parentId: [data.parentId],
+      vat: [data.vat],
+      userType: [data.userType],
+      employeeType: [data.employeeType],
     });
   }
 
@@ -197,7 +200,9 @@ export class FeedingComponent implements OnInit, AfterViewInit {
     this.spinner.show();
     this.submitted = false;
     const postData = new FormData();
-    postData.append('image', this.fileImgUpload);
+    if (this.fileImgUpload) {
+      postData.append('image', this.fileImgUpload);
+    }
     this.authService.s3upload(postData).subscribe((res: any) => {
       if (res.error == false) {
         this.iconImgUrl = res.files;
@@ -228,7 +233,7 @@ export class FeedingComponent implements OnInit, AfterViewInit {
     });
   }
 
-  categoryEditService(data) {
+  categoryEditService(data: any) {
     if (this.fileImgUpload) {
       this.spinner.show();
       const postData = new FormData();
@@ -259,7 +264,7 @@ export class FeedingComponent implements OnInit, AfterViewInit {
       });
     } else {
       const data = this.categoryForm.value;
-      data['image'] = this.iconImg;
+      data['image'] = this.iconImg ?? '';
       // console.log("withoutupload", data)
       this.authService.editCategory(data, this.categoryId).subscribe((res: any) => {
         if (res.error == false) {
@@ -276,7 +281,7 @@ export class FeedingComponent implements OnInit, AfterViewInit {
     }
   }
 
-  changeStatus(value) {
+  changeStatus(value: CategoryRow) {
     const visible = value.active === 1 ? 0 : 1;
     const object = { active: visible };
 
@@ -290,7 +295,7 @@ export class FeedingComponent implements OnInit, AfterViewInit {
     });
   }
 
-  deleteCategory(value) {
+  deleteCategory(value: CategoryRow) {
     Swal.fire({
       title: this.translate.instant('AreYouSure'),
       text: this.translate.instant('YouWontBeRevertThis'),
@@ -308,7 +313,7 @@ export class FeedingComponent implements OnInit, AfterViewInit {
           icon: 'success',
           confirmButtonText: this.translate.instant('Ok'),
         }),
-          this.authService.deleteCategory(value).subscribe((res: any) => {
+          this.authService.deleteCategory(value.id).subscribe((res: any) => {
             if (res.error == false) {
               this.toastr.success('Success ', res.message);
               this.ngOnInit();
@@ -320,13 +325,8 @@ export class FeedingComponent implements OnInit, AfterViewInit {
     });
   }
 
-  changeUserStatus(value) {
-    let stat: number;
-    if (value.userType == 0) {
-      stat = 1;
-    } else if (value.userType == 1) {
-      stat = 0;
-    }
+  changeUserStatus(value: CategoryRow) {
+    const stat: number = value.userType === 1 ? 0 : 1;
     const object = { userType: stat };
 
     this.authService.editCategory(object, value.id).subscribe((res: any) => {
@@ -339,14 +339,8 @@ export class FeedingComponent implements OnInit, AfterViewInit {
     });
   }
 
-  changeEmployeeStatus(value) {
-    let stat: number;
-    if (value.employeeType == 0) {
-      stat = 1;
-    } else if (value.employeeType == 1) {
-      stat = 0;
-    }
-
+  changeEmployeeStatus(value: CategoryRow) {
+    const stat: number = value.employeeType === 1 ? 0 : 1;
     const object = { employeeType: stat };
 
     this.authService.editCategory(object, value.id).subscribe((res: any) => {
@@ -358,4 +352,18 @@ export class FeedingComponent implements OnInit, AfterViewInit {
       }
     });
   }
+}
+
+interface CategoryRow {
+  id: number;
+  enName: string;
+  arName: string;
+  image: string;
+  colorCode: string;
+  vat: number | string;
+  type: string;
+  parentId: number | string;
+  userType: number;
+  employeeType: number;
+  active: number;
 }

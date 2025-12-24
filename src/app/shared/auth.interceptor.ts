@@ -11,7 +11,6 @@ export class AuthInterceptor implements HttpInterceptor {
     let authReq = req;
     const token = this.authService.getToken();
     const langkey = this.authService.getLanguage();
-    const _webflow = this.authService.getWebFlow();
     if (token) {
       authReq = req.clone({
         setHeaders: {

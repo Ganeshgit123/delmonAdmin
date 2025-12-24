@@ -1,25 +1,29 @@
 import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
 import { AuthService } from 'src/app/shared/auth.service';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { ExportType, MatTableExporterDirective } from '@csmart/mat-table-exporter';
-import { NgxSpinnerService } from 'ngx-spinner';
+import { NgxSpinnerService, NgxSpinnerModule } from 'ngx-spinner';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { NgMaterialModule } from '../../ng-material.module';
 
 @Component({
   selector: 'app-internal-sales',
   templateUrl: './internal-sales.component.html',
   styleUrls: ['./internal-sales.component.scss'],
+  standalone: true,
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, TranslateModule, NgMaterialModule, NgxSpinnerModule],
 })
 export class InternalSalesComponent implements OnInit, AfterViewInit {
   displayedColumns: string[];
-  dataSource: MatTableDataSource<any>;
-  getOrders = [];
+  dataSource: MatTableDataSource<InternalSalesRow>;
+  getOrders: InternalSalesRow[] = [];
   formattedDateTime: string;
-  startDate: any = '';
-  endDate: any = '';
+  startDate: string = '';
+  endDate: string = '';
   showAccept = true;
   superAdminRole = false;
   dir: any;
@@ -32,7 +36,6 @@ export class InternalSalesComponent implements OnInit, AfterViewInit {
 
   constructor(
     public authService: AuthService,
-    private router: Router,
     private translate: TranslateService,
     private spinner: NgxSpinnerService,
   ) {}
@@ -68,7 +71,7 @@ export class InternalSalesComponent implements OnInit, AfterViewInit {
       this.flowType = 'FEEDING';
     }
 
-    const object = {
+    const object: InternalDateQuery = {
       type: this.flowType,
       startDate: '',
       endDate: '',
@@ -78,10 +81,10 @@ export class InternalSalesComponent implements OnInit, AfterViewInit {
 
     this.spinner.show();
     this.authService.getInternalSalesReport(object).subscribe((res: any) => {
-      this.getOrders = res.data;
+      this.getOrders = res.data as InternalSalesRow[];
       this.spinner.hide();
       // console.log("Fef",this.getOrders)
-      this.dataSource = new MatTableDataSource(this.getOrders);
+      this.dataSource = new MatTableDataSource<InternalSalesRow>(this.getOrders);
       this.dataSource.paginator = this.matPaginator;
       this.dataSource.sort = this.matSort;
     });
@@ -89,8 +92,9 @@ export class InternalSalesComponent implements OnInit, AfterViewInit {
 
   callRolePermission() {
     if (sessionStorage.getItem('roleName') !== 'superAdmin') {
-      const settingPermssion = JSON.parse(sessionStorage.getItem('permission'));
-      const orderPermission = settingPermssion?.find((ele) => ele.area == 'internal-sales-reports')?.write == 1;
+      const raw = sessionStorage.getItem('permission');
+      const settingPermssion: Permission[] = raw ? (JSON.parse(raw) as Permission[]) : [];
+      const orderPermission = settingPermssion?.find((ele: Permission) => ele.area == 'internal-sales-reports')?.write == 1;
       // console.log("fef",orderPermission)
       this.showAccept = orderPermission;
     }
@@ -100,12 +104,12 @@ export class InternalSalesComponent implements OnInit, AfterViewInit {
     this.matPaginator._intl.itemsPerPageLabel = this.translate.instant('itemsPerPage');
   }
 
-  getDateQuery(object) {
+  getDateQuery(object: InternalDateQuery) {
     this.spinner.show();
     this.authService.getInternalSalesReport(object).subscribe((res: any) => {
-      this.getOrders = res.data;
+      this.getOrders = res.data as InternalSalesRow[];
       this.spinner.hide();
-      this.dataSource = new MatTableDataSource(this.getOrders);
+      this.dataSource = new MatTableDataSource<InternalSalesRow>(this.getOrders);
       this.dataSource.paginator = this.matPaginator;
       this.dataSource.sort = this.matSort;
     });
@@ -120,7 +124,7 @@ export class InternalSalesComponent implements OnInit, AfterViewInit {
     }
   }
 
-  startEvent(event) {
+  startEvent(event: { value: Date }) {
     const stDate = event.value;
     const date = new Date(stDate);
 
@@ -136,7 +140,7 @@ export class InternalSalesComponent implements OnInit, AfterViewInit {
     // this.getDateQuery(object)
   }
 
-  endEvent(event) {
+  endEvent(event: { value: Date }) {
     const stDate = event.value;
     const date = new Date(stDate);
 
@@ -148,13 +152,19 @@ export class InternalSalesComponent implements OnInit, AfterViewInit {
 
     this.endDate = endFomatDate;
 
-    const object = { type: this.flowType, startDate: this.startDate, endDate: this.endDate, deliveryType: 0 };
+    const object: InternalDateQuery = {
+      type: this.flowType,
+      startDate: this.startDate,
+      endDate: this.endDate,
+      deliveryType: 0,
+      orderStatus: 'PLACED,USERACCEPTED,DRIVERASSIGNED,OUTFORDELIVERY,COMPLETED',
+    };
     this.getDateQuery(object);
   }
 
-  onChangeFlowTypeFilter(value) {
+  onChangeFlowTypeFilter(value: string) {
     this.flowType = value;
-    const object = {
+    const object: InternalDateQuery = {
       type: this.flowType,
       startDate: this.startDate,
       endDate: this.endDate,
@@ -181,4 +191,29 @@ export class InternalSalesComponent implements OnInit, AfterViewInit {
       fileName: `Internal Sales Report ${this.formattedDateTime}`,
     });
   }
+}
+
+interface InternalSalesRow {
+  orderId?: string | number;
+  customerName?: string;
+  userType?: string;
+  driverName?: string;
+  item?: string;
+  qty?: number;
+  weight?: number | string;
+  total?: number | string;
+  paymentType?: string;
+}
+
+interface InternalDateQuery {
+  type: string;
+  startDate: string;
+  endDate: string;
+  deliveryType: number;
+  orderStatus: string | number;
+}
+
+interface Permission {
+  area: string;
+  write: number;
 }

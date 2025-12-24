@@ -1,34 +1,39 @@
 import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/shared/auth.service';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { ToastrService } from 'ngx-toastr';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { NgxSpinnerService } from 'ngx-spinner';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ExportType, MatTableExporterDirective } from '@csmart/mat-table-exporter';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { NgMaterialModule } from '../../ng-material.module';
 
 @Component({
   selector: 'app-normal-user',
   templateUrl: './normal-user.component.html',
   styleUrls: ['./normal-user.component.scss'],
+  standalone: true,
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, TranslateModule, NgMaterialModule, NgbModalModule],
 })
 export class NormalUserComponent implements OnInit, AfterViewInit {
   displayedColumns: string[];
   historyDisplayedColumns: string[];
-  dataSource: MatTableDataSource<any>;
-  historyDataSource: MatTableDataSource<any>;
-  getUsers: any[] = [];
+  dataSource: MatTableDataSource<UserRow>;
+  historyDataSource: MatTableDataSource<UserHistoryRow>;
+  getUsers: UserRow[] = [];
   employeeForm: FormGroup;
   submitted = false;
   userId: any;
   showAccept = true;
   superAdminRole = false;
   formattedDateTime: string;
-  getHistory: any[] = [];
+  getHistory: UserHistoryRow[] = [];
 
   @ViewChild('paginator1') paginator1!: MatPaginator;
   @ViewChild('sort1') sort1!: MatSort;
@@ -86,9 +91,9 @@ export class NormalUserComponent implements OnInit, AfterViewInit {
 
     this.spinner.show();
     this.authService.getNormalUsers().subscribe((res: any) => {
-      this.getUsers = res.data;
+      this.getUsers = res.data as UserRow[];
       this.spinner.hide();
-      this.dataSource = new MatTableDataSource<any>(this.getUsers as any[]);
+      this.dataSource = new MatTableDataSource<UserRow>(this.getUsers);
       this.dataSource.paginator = this.paginator1;
       this.dataSource.sort = this.sort1;
     });
@@ -105,10 +110,11 @@ export class NormalUserComponent implements OnInit, AfterViewInit {
 
   callRolePermission() {
     if (sessionStorage.getItem('roleName') !== 'superAdmin') {
-      const settingPermssion = JSON.parse(sessionStorage.getItem('permission'));
-      const orderPermission = settingPermssion?.find((ele) => ele.area == 'users')?.write == 1;
+      const permStr = sessionStorage.getItem('permission');
+      const settingPermssion: Array<{ area: string; read: number; write: number }> | null = permStr ? JSON.parse(permStr) : null;
+      const orderPermission = settingPermssion?.find((ele: { area: string; read: number; write: number }) => ele.area === 'users')?.write === 1;
       // console.log("fef",orderPermission)
-      this.showAccept = orderPermission;
+      this.showAccept = !!orderPermission;
     }
   }
 
@@ -125,7 +131,7 @@ export class NormalUserComponent implements OnInit, AfterViewInit {
     }
   }
 
-  editUserType(id, editModal) {
+  editUserType(id: number, editModal: any) {
     this.userId = id;
     this.modalService.open(editModal, { centered: true, size: 'md' });
   }
@@ -151,7 +157,7 @@ export class NormalUserComponent implements OnInit, AfterViewInit {
     });
   }
 
-  changeActiveStatus(value) {
+  changeActiveStatus(value: { id: number; active: number }) {
     const visible = value.active === 1 ? 0 : 1;
     const object = { active: visible };
     this.authService.updateUserType(object, value.id).subscribe((res: any) => {
@@ -182,12 +188,12 @@ export class NormalUserComponent implements OnInit, AfterViewInit {
     });
   }
 
-  historyClick(id, content) {
+  historyClick(id: number, content: any) {
     this.modalService.open(content, { centered: true, size: 'md' });
     this.authService.getUserHistory(id).subscribe({
       next: (res: any) => {
-        this.getHistory = res.data;
-        this.historyDataSource = new MatTableDataSource<any>(this.getHistory as any[]);
+        this.getHistory = res.data as UserHistoryRow[];
+        this.historyDataSource = new MatTableDataSource<UserHistoryRow>(this.getHistory);
         this.historyDataSource.paginator = this.paginator2;
         this.historyDataSource.sort = this.sort2;
       },
@@ -214,4 +220,23 @@ export class NormalUserComponent implements OnInit, AfterViewInit {
       fileName: `WalletHistory ${this.formattedDateTime}`,
     });
   }
+}
+
+interface UserRow {
+  id: number;
+  mobileNumber: string;
+  userName: string;
+  email: string;
+  walletAmount: number | string;
+  loyaltyPoint: number | string;
+  dailyLimit: number | string;
+  created_date: string;
+  active: number;
+}
+
+interface UserHistoryRow {
+  paymentType: string;
+  orderId: number | string;
+  amount: number | string;
+  type: string;
 }

@@ -1,26 +1,41 @@
 import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormGroup, FormBuilder, FormArray } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ActivatedRoute } from '@angular/router';
+import { NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
 import { AuthService } from 'src/app/shared/auth.service';
 import { ToastrService } from 'ngx-toastr';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { TranslateModule } from '@ngx-translate/core';
+import { NgMaterialModule } from '../../ng-material.module';
+import { NgxSpinnerModule } from 'ngx-spinner';
 
 @Component({
   selector: 'app-poultry-related',
   templateUrl: './poultry-related.component.html',
   styleUrls: ['./poultry-related.component.scss'],
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    TranslateModule,
+    NgMaterialModule,
+    NgxSpinnerModule,
+    NgbModalModule,
+  ],
 })
 export class PoultryRelatedComponent implements OnInit {
   pieceForm: FormGroup;
   cartonForm: FormGroup;
   oldValue: FormGroup;
   getvalue: any;
-  getCategory = [];
-  prodParamsId: any;
-  pieceRelatedArray = [];
-  cartonRelatedArray = [];
-  cartonActive: any;
-  piecesActive: any;
+  getCategory: any[] = [];
+  prodParamsId: number | string;
+  pieceRelatedArray: any[] = [];
+  cartonRelatedArray: any[] = [];
+  cartonActive: number;
+  piecesActive: number;
   isEdit = false;
   showAccept = true;
   superAdminRole = false;
@@ -30,7 +45,6 @@ export class PoultryRelatedComponent implements OnInit {
     public fb: FormBuilder,
     public authService: AuthService,
     private toastr: ToastrService,
-    private router: Router,
     private route: ActivatedRoute,
   ) {
     this.pieceForm = this.fb.group({
@@ -71,10 +85,11 @@ export class PoultryRelatedComponent implements OnInit {
       });
 
       // delete the firstobject because firstobject is a main product object
-      const _deleteFirstObject = res.data.shift();
+      // remove main product object
+      res.data.shift();
 
       // filter the old related product with soldType = 1 for piece
-      this.pieceRelatedArray = res.data.filter((element) => {
+      this.pieceRelatedArray = res.data.filter((element: any) => {
         return element.soldType === 1;
       });
 
@@ -92,7 +107,7 @@ export class PoultryRelatedComponent implements OnInit {
       });
 
       // filter the old related product with soldType = 2 for carton
-      this.cartonRelatedArray = res.data.filter((element) => {
+      this.cartonRelatedArray = res.data.filter((element: any) => {
         return element.soldType === 2;
       });
 
@@ -118,15 +133,15 @@ export class PoultryRelatedComponent implements OnInit {
 
   callRolePermission() {
     if (sessionStorage.getItem('roleName') !== 'superAdmin') {
-      const settingPermssion = JSON.parse(sessionStorage.getItem('permission'));
-      const orderPermission =
-        settingPermssion?.find((ele) => ele.area === 'products')?.write === 1;
+      const perm = sessionStorage.getItem('permission');
+      const settingPermssion: any[] | null = perm ? JSON.parse(perm) : null;
+      const orderPermission = settingPermssion?.find((ele) => ele.area === 'products')?.write === 1;
       // console.log("fef",orderPermission)
       this.showAccept = orderPermission;
     }
   }
 
-  getPiecesValue(obj): FormGroup {
+  getPiecesValue(obj: any): FormGroup {
     return this.fb.group({
       id: [obj.id],
       categoryId: [obj.categoryId],
@@ -169,7 +184,7 @@ export class PoultryRelatedComponent implements OnInit {
     );
   }
 
-  getCartonsValue(obj): FormGroup {
+  getCartonsValue(obj: any): FormGroup {
     return this.fb.group({
       id: [obj.id],
       categoryId: [obj.categoryId],
@@ -214,15 +229,15 @@ export class PoultryRelatedComponent implements OnInit {
 
   onSubmitData() {
     // Compare the old product value to new product value and remove the old product value for piece flow
-    this.pieceForm.value.product = this.pieceForm.value.product.filter((val) => {
-      return !this.pieceRelatedArray.find((val2) => {
+    this.pieceForm.value.product = this.pieceForm.value.product.filter((val: any) => {
+      return !this.pieceRelatedArray.find((val2: any) => {
         return val.id === val2.id;
       });
     });
 
     // Compare the old product value to new product value and remove the old product value for carton flow
-    this.cartonForm.value.product = this.cartonForm.value.product.filter((val) => {
-      return !this.cartonRelatedArray.find((val2) => {
+    this.cartonForm.value.product = this.cartonForm.value.product.filter((val: any) => {
+      return !this.cartonRelatedArray.find((val2: any) => {
         return val.id === val2.id;
       });
     });
@@ -245,7 +260,7 @@ export class PoultryRelatedComponent implements OnInit {
     });
   }
 
-  changePieceStatus(value) {
+  changePieceStatus(value: any) {
     const visible = value.piecesActive === 1 ? 0 : 1;
     const object = { piecesActive: visible };
     // console.log("fef",object,value.id)
@@ -260,7 +275,7 @@ export class PoultryRelatedComponent implements OnInit {
     });
   }
 
-  changeCartonStatus(value) {
+  changeCartonStatus(value: any) {
     const visible = value.cartonActive === 1 ? 0 : 1;
     const object = { cartonActive: visible };
     // console.log("fef",object,value.id)
@@ -275,7 +290,7 @@ export class PoultryRelatedComponent implements OnInit {
     });
   }
 
-  updateProduct(data) {
+  updateProduct(data: any) {
     // console.log("edit,data", data)
     const editArray = [];
     editArray.push(data);
@@ -299,13 +314,13 @@ export class PoultryRelatedComponent implements OnInit {
     });
   }
 
-  changeProdStatus(value) {
+  changeProdStatus(value: any) {
     const visible = value.active === 1 ? 0 : 1;
     const object = { active: visible };
     // console.log("fef",object,value.id)
 
     this.authService.editProduct(object, value.id).subscribe((res: any) => {
-      if (res.error == false) {
+      if (res.error === false) {
         this.toastr.success('Success ', res.message);
         this.ngOnInit();
       } else {

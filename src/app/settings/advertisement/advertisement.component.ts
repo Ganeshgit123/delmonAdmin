@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 import { AuthService } from 'src/app/shared/auth.service';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
@@ -10,21 +9,20 @@ import { ToastrService } from 'ngx-toastr';
   styleUrls: ['./advertisement.component.scss'],
 })
 export class AdvertisementComponent implements OnInit {
-  getValue = [];
-  iconImg = null;
-  fileImgUpload: any;
-  iconImgUrl: any;
-  ariconImg = null;
-  arfileImgUpload: any;
-  ariconImgUrl: any;
-  prodId: any;
+  getValue: Setting[] = [];
+  iconImg: string | null = null;
+  fileImgUpload: File | null = null;
+  iconImgUrl: string | null = null;
+  ariconImg: string | null = null;
+  arfileImgUpload: File | null = null;
+  ariconImgUrl: string | null = null;
+  prodId: string | number | null = null;
   showAccept = true;
   superAdminRole = false;
 
   constructor(
     public authService: AuthService,
     private toastr: ToastrService,
-    private router: Router,
     private spinner: NgxSpinnerService,
   ) {}
 
@@ -37,25 +35,26 @@ export class AdvertisementComponent implements OnInit {
     }
 
     this.authService.getSettings().subscribe((res: any) => {
-      this.getValue = res.data.filter((element) => {
+      this.getValue = (res.data as Setting[]).filter((element: Setting) => {
         return element.key === 'popupAdvertisement';
       });
-      this.iconImg = this.getValue[0].enValue;
-      this.ariconImg = this.getValue[0].arValue;
-      this.prodId = this.getValue[0].id;
+      this.iconImg = this.getValue[0]?.enValue ?? null;
+      this.ariconImg = this.getValue[0]?.arValue ?? null;
+      this.prodId = this.getValue[0]?.id ?? null;
     });
   }
 
   callRolePermission() {
     if (sessionStorage.getItem('roleName') !== 'superAdmin') {
-      const settingPermssion = JSON.parse(sessionStorage.getItem('permission'));
-      const orderPermission = settingPermssion?.find((ele) => ele.area == 'master')?.write == 1;
+      const raw = sessionStorage.getItem('permission');
+      const settingPermssion: Permission[] = raw ? (JSON.parse(raw) as Permission[]) : [];
+      const orderPermission = settingPermssion?.find((ele: Permission) => ele.area == 'master')?.write == 1;
       // console.log("fef",orderPermission)
       this.showAccept = orderPermission;
     }
   }
 
-  checkFileFormat(checkFile) {
+  checkFileFormat(checkFile: File): boolean {
     if (
       checkFile.type == 'image/webp' ||
       checkFile.type == 'image/png' ||
@@ -71,37 +70,39 @@ export class AdvertisementComponent implements OnInit {
   }
 
   removeImg() {
-    this.iconImg = '';
-    this.fileImgUpload = '';
+    this.iconImg = null;
+    this.fileImgUpload = null;
   }
 
-  uploadImageFile(event) {
-    const file = event.target.files && event.target.files[0];
-    const valid = this.checkFileFormat(event.target.files[0]);
+  uploadImageFile(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files && input.files[0];
+    const valid = file ? this.checkFileFormat(file) : true;
     if (!valid) {
       const reader = new FileReader();
       reader.onload = (event: any) => {
         this.iconImg = event.target.result;
       };
-      reader.readAsDataURL(event.target.files[0]);
+      reader.readAsDataURL(file as File);
       this.fileImgUpload = file;
     }
   }
 
   removearImg() {
-    this.ariconImg = '';
-    this.arfileImgUpload = '';
+    this.ariconImg = null;
+    this.arfileImgUpload = null;
   }
 
-  uploadarImageFile(event) {
-    const file = event.target.files && event.target.files[0];
-    const valid = this.checkFileFormat(event.target.files[0]);
+  uploadarImageFile(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files && input.files[0];
+    const valid = file ? this.checkFileFormat(file) : true;
     if (!valid) {
       const reader = new FileReader();
       reader.onload = (event: any) => {
         this.ariconImg = event.target.result;
       };
-      reader.readAsDataURL(event.target.files[0]);
+      reader.readAsDataURL(file as File);
       this.arfileImgUpload = file;
     }
   }
@@ -111,20 +112,18 @@ export class AdvertisementComponent implements OnInit {
     if (this.fileImgUpload && this.arfileImgUpload) {
       this.spinner.show();
       const postData = new FormData();
-      postData.append('image', this.fileImgUpload);
+      postData.append('image', this.fileImgUpload as File);
       this.authService.s3upload(postData).subscribe((res: any) => {
         if (res.error == false) {
           this.iconImgUrl = res.files;
           const postData = new FormData();
-          postData.append('image', this.arfileImgUpload);
+          postData.append('image', this.arfileImgUpload as File);
           this.authService.s3upload(postData).subscribe((res: any) => {
             if (res.error == false) {
               this.ariconImgUrl = res.files;
-              const object = {};
-              object['enValue'] = this.iconImgUrl;
-              object['arValue'] = this.ariconImgUrl;
+              const object: UpdateSettingPayload = { enValue: this.iconImgUrl, arValue: this.ariconImgUrl };
               // console.log("editBothImage", data)
-              this.authService.updateSetting(object, this.prodId).subscribe((res: any) => {
+              this.authService.updateSetting(object, this.prodId as string | number).subscribe((res: any) => {
                 if (res.success == true) {
                   this.toastr.success('Success ', res.message);
                   this.iconImg = null;
@@ -142,15 +141,13 @@ export class AdvertisementComponent implements OnInit {
     } else if (this.fileImgUpload) {
       this.spinner.show();
       const postData = new FormData();
-      postData.append('image', this.fileImgUpload);
+      postData.append('image', this.fileImgUpload as File);
       this.authService.s3upload(postData).subscribe((res: any) => {
         if (res.error == false) {
           this.iconImgUrl = res.files;
-          const object = {};
-          object['enValue'] = this.iconImgUrl;
-          object['arValue'] = this.ariconImg;
+          const object: UpdateSettingPayload = { enValue: this.iconImgUrl, arValue: this.ariconImg };
           // console.log("1stImageUpload", data)
-          this.authService.updateSetting(object, this.prodId).subscribe((res: any) => {
+          this.authService.updateSetting(object, this.prodId as string | number).subscribe((res: any) => {
             if (res.success == true) {
               this.toastr.success('Success ', res.message);
               this.iconImg = null;
@@ -166,15 +163,13 @@ export class AdvertisementComponent implements OnInit {
     } else if (this.arfileImgUpload) {
       this.spinner.show();
       const postData = new FormData();
-      postData.append('image', this.arfileImgUpload);
+      postData.append('image', this.arfileImgUpload as File);
       this.authService.s3upload(postData).subscribe((res: any) => {
         if (res.error == false) {
           this.ariconImgUrl = res.files;
-          const object = {};
-          object['enValue'] = this.iconImg;
-          object['arValue'] = this.ariconImgUrl;
+          const object: UpdateSettingPayload = { enValue: this.iconImg, arValue: this.ariconImgUrl };
           // console.log("2ndImageUpload", data)
-          this.authService.updateSetting(object, this.prodId).subscribe((res: any) => {
+          this.authService.updateSetting(object, this.prodId as string | number).subscribe((res: any) => {
             if (res.success == true) {
               this.toastr.success('Success ', res.message);
               this.iconImg = null;
@@ -188,11 +183,9 @@ export class AdvertisementComponent implements OnInit {
         }
       });
     } else {
-      const object = {};
-      object['enValue'] = this.iconImg;
-      object['arValue'] = this.ariconImg;
+      const object: UpdateSettingPayload = { enValue: this.iconImg, arValue: this.ariconImg };
       // console.log("withoutupload", data)
-      this.authService.updateSetting(object, this.prodId).subscribe((res: any) => {
+      this.authService.updateSetting(object, this.prodId as string | number).subscribe((res: any) => {
         if (res.success == true) {
           this.toastr.error('Error', res.message);
         } else {
@@ -205,4 +198,21 @@ export class AdvertisementComponent implements OnInit {
       });
     }
   }
+}
+
+interface Setting {
+  id: string | number;
+  key: string;
+  enValue: string | null;
+  arValue: string | null;
+}
+
+interface UpdateSettingPayload {
+  enValue: string | null;
+  arValue: string | null;
+}
+
+interface Permission {
+  area: string;
+  write: number;
 }

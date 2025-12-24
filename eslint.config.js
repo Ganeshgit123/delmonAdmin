@@ -41,6 +41,8 @@ module.exports = defineConfig([
       '@typescript-eslint/no-empty-function': 'warn',
       '@typescript-eslint/no-unused-expressions': 'warn',
       '@typescript-eslint/prefer-for-of': 'warn',
+      '@typescript-eslint/explicit-member-accessibility': ['warn', { accessibility: 'explicit' }],
+      '@typescript-eslint/consistent-type-definitions': ['warn', 'interface'],
       'no-useless-escape': 'warn',
       '@angular-eslint/no-empty-lifecycle-method': 'warn',
       'no-unused-vars': 'off',

@@ -1,30 +1,35 @@
 import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/shared/auth.service';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { ToastrService } from 'ngx-toastr';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ExportType, MatTableExporterDirective } from '@csmart/mat-table-exporter';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { NgMaterialModule } from '../../ng-material.module';
 
 @Component({
   selector: 'app-employees',
   templateUrl: './employees.component.html',
   styleUrls: ['./employees.component.scss'],
+  standalone: true,
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, TranslateModule, NgMaterialModule],
 })
 export class EmployeesComponent implements OnInit, AfterViewInit {
   displayedColumns: string[];
   historyDisplayedColumns: string[];
-  dataSource: MatTableDataSource<any>;
-  historyDataSource: MatTableDataSource<any>;
-  getUsers: any[] = [];
+  dataSource: MatTableDataSource<EmployeeRow>;
+  historyDataSource: MatTableDataSource<UserHistoryRow>;
+  getUsers: EmployeeRow[] = [];
   userId: any;
   showAccept = true;
   superAdminRole = false;
   formattedDateTime: string;
-  getHistory: any[] = [];
+  getHistory: UserHistoryRow[] = [];
 
   @ViewChild('paginator1') paginator1!: MatPaginator;
   @ViewChild('sort1') sort1!: MatSort;
@@ -82,8 +87,8 @@ export class EmployeesComponent implements OnInit, AfterViewInit {
     }
 
     this.authService.getEmployeeUsers().subscribe((res: any) => {
-      this.getUsers = res.data;
-      this.dataSource = new MatTableDataSource<any>(this.getUsers as any[]);
+      this.getUsers = res.data as EmployeeRow[];
+      this.dataSource = new MatTableDataSource<EmployeeRow>(this.getUsers);
       this.dataSource.paginator = this.paginator1;
       this.dataSource.sort = this.sort1;
     });
@@ -112,7 +117,7 @@ export class EmployeesComponent implements OnInit, AfterViewInit {
     }
   }
 
-  approve(value) {
+  approve(value: number) {
     const userId = value;
 
     const object = { isApprove: 1 };
@@ -127,7 +132,7 @@ export class EmployeesComponent implements OnInit, AfterViewInit {
     });
   }
 
-  reject(id) {
+  reject(id: number) {
     const object = { isApprove: 2 };
 
     this.authService.approveEmployee(object, id).subscribe((res: any) => {
@@ -140,7 +145,7 @@ export class EmployeesComponent implements OnInit, AfterViewInit {
     });
   }
 
-  editUserType(id, editModal) {
+  editUserType(id: number, editModal: any) {
     this.userId = id;
     this.modalService.open(editModal, { centered: true, size: 'sm' });
   }
@@ -161,7 +166,7 @@ export class EmployeesComponent implements OnInit, AfterViewInit {
     });
   }
 
-  changeActiveStatus(value) {
+  changeActiveStatus(value: { id: number; active: number }) {
     const visible = value.active === 1 ? 0 : 1;
     const object = { active: visible };
     this.authService.updateUserType(object, value.id).subscribe((res: any) => {
@@ -174,12 +179,12 @@ export class EmployeesComponent implements OnInit, AfterViewInit {
     });
   }
 
-  historyClick(id, content) {
+  historyClick(id: number, content: any) {
     this.modalService.open(content, { centered: true, size: 'md' });
     this.authService.getUserHistory(id).subscribe({
       next: (res: any) => {
-        this.getHistory = res.data;
-        this.historyDataSource = new MatTableDataSource<any>(this.getHistory as any[]);
+        this.getHistory = res.data as UserHistoryRow[];
+        this.historyDataSource = new MatTableDataSource<UserHistoryRow>(this.getHistory);
         this.historyDataSource.paginator = this.paginator2;
         this.historyDataSource.sort = this.sort2;
       },
@@ -224,4 +229,25 @@ export class EmployeesComponent implements OnInit, AfterViewInit {
       fileName: `WalletHistory ${this.formattedDateTime}`,
     });
   }
+}
+
+interface EmployeeRow {
+  id: number;
+  mobileNumber: string;
+  employeeNumber: string;
+  userName: string;
+  email: string;
+  walletAmount: number | string;
+  cartonDiscount: number | string;
+  dailyLimit: number | string;
+  created_date: string;
+  status?: string | number;
+  active: number;
+}
+
+interface UserHistoryRow {
+  paymentType: string;
+  orderId: number | string;
+  amount: number | string;
+  type: string;
 }

@@ -8,7 +8,7 @@ import { NgxSpinnerModule } from 'ngx-spinner';
 import { TranslateModule } from '@ngx-translate/core';
 
 @NgModule({
-  declarations: [PoultryProductComponent],
+  declarations: [],
   imports: [
     CommonModule,
     RouterModule.forChild([
@@ -17,6 +17,7 @@ import { TranslateModule } from '@ngx-translate/core';
         component: PoultryProductComponent,
       },
     ]),
+    PoultryProductComponent,
     NgMaterialModule,
     TranslateModule,
     FormsModule,

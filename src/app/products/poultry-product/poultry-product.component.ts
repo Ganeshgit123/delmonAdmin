@@ -1,22 +1,20 @@
 import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
 import { AuthService } from 'src/app/shared/auth.service';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { MatCheckboxChange } from '@angular/material/checkbox';
 import { ToastrService } from 'ngx-toastr';
-import { NgxSpinnerService } from 'ngx-spinner';
+import { NgxSpinnerService, NgxSpinnerModule } from 'ngx-spinner';
 import Swal from 'sweetalert2';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { NgMaterialModule } from '../../ng-material.module';
 
-interface ApiResponse<T> {
-  error: boolean;
-  data: T;
-  message: string;
-  files?: string | string[];
-}
+// Note: Use service response types; avoid local ApiResponse conflicts.
 
 interface ProductRow {
   id: number;
@@ -35,6 +33,8 @@ interface ProductRow {
   selector: 'app-poultry-product',
   templateUrl: './poultry-product.component.html',
   styleUrls: ['./poultry-product.component.scss'],
+  standalone: true,
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, TranslateModule, NgMaterialModule, NgbModalModule, NgxSpinnerModule],
 })
 export class PoultryProductComponent implements OnInit, AfterViewInit {
   displayedColumns: string[];
@@ -43,7 +43,7 @@ export class PoultryProductComponent implements OnInit, AfterViewInit {
   isEdit = false;
   productForm: FormGroup;
   submitted = false;
-  fileImgUpload: File | '';
+  fileImgUpload: File | null = null;
   getCategory: unknown[] = [];
   imgs3: string[] = [];
   uploadFiles: File[] = [];
@@ -54,7 +54,7 @@ export class PoultryProductComponent implements OnInit, AfterViewInit {
   pushedImage: string[] = [];
   isRelated = false;
   productRelId: number;
-  filteredProd = [];
+  filteredProd: { id: number }[] = [];
   recipeId: number;
   getReceipeList: { id: number }[] = [];
   checkPieceValue: boolean;
@@ -72,7 +72,6 @@ export class PoultryProductComponent implements OnInit, AfterViewInit {
     public fb: FormBuilder,
     public authService: AuthService,
     private toastr: ToastrService,
-    private router: Router,
     private spinner: NgxSpinnerService,
     private translate: TranslateService,
   ) {}
@@ -113,14 +112,14 @@ export class PoultryProductComponent implements OnInit, AfterViewInit {
       ];
     }
 
-    this.authService.getProductsWithParentOnly('POULTRY').subscribe((res: ApiResponse<ProductRow[]>) => {
+    this.authService.getProductsWithParentOnly('POULTRY').subscribe((res: any) => {
       this.getvalue = res.data;
       this.dataSource = new MatTableDataSource(this.getvalue);
       this.dataSource.paginator = this.matPaginator;
       this.dataSource.sort = this.matSort;
     });
 
-    this.authService.getCategory('POULTRY').subscribe((res: ApiResponse<unknown[]>) => {
+    this.authService.getCategory('POULTRY').subscribe((res: any) => {
       this.getCategory = res.data;
     });
 
@@ -142,9 +141,9 @@ export class PoultryProductComponent implements OnInit, AfterViewInit {
 
   callRolePermission() {
     if (sessionStorage.getItem('roleName') !== 'superAdmin') {
-      const settingPermssion = JSON.parse(sessionStorage.getItem('permission'));
-      const orderPermission = settingPermssion?.find((ele) => ele.area === 'products')?.write === 1;
-      // console.log("fef",orderPermission)
+      const perm = sessionStorage.getItem('permission');
+      const settingPermssion: any[] | null = perm ? JSON.parse(perm) : null;
+      const orderPermission = settingPermssion?.find((ele: any) => ele.area === 'products')?.write === 1;
       this.showAccept = orderPermission;
     }
   }
@@ -162,7 +161,7 @@ export class PoultryProductComponent implements OnInit, AfterViewInit {
     }
   }
 
-  openModal(content) {
+  openModal(content: any) {
     this.productForm.reset();
     this.imageNeed = false;
     this.isEdit = false;
@@ -203,15 +202,16 @@ export class PoultryProductComponent implements OnInit, AfterViewInit {
   //   this.pushedImage.splice(i, 1);
   // }
 
-  uploadImageFile(event) {
-    if (event.target.files && event.target.files[0]) {
-      const file = event.target.files && event.target.files[0];
+  uploadImageFile(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+      const file = input.files[0];
       const reader = new FileReader();
       reader.onload = (e: ProgressEvent<FileReader>) => {
         const result = (e.target as FileReader).result as string | ArrayBuffer;
         this.prodImg = result as string;
       };
-      reader.readAsDataURL(event.target.files[0]);
+      reader.readAsDataURL(file);
       this.fileImgUpload = file;
     }
   }
@@ -219,7 +219,7 @@ export class PoultryProductComponent implements OnInit, AfterViewInit {
   removeProdImg() {
     this.iconImg = '';
     this.prodImg = '';
-    this.fileImgUpload = '';
+    this.fileImgUpload = null;
   }
 
   onSubmitData() {
@@ -235,7 +235,7 @@ export class PoultryProductComponent implements OnInit, AfterViewInit {
       this.spinner.show();
       const postData = new FormData();
       postData.append('image', this.fileImgUpload);
-      this.authService.s3upload(postData).subscribe((res: ApiResponse<string>) => {
+      this.authService.s3upload(postData).subscribe((res: any) => {
         if (res.error === false) {
           this.iconImg = (res.files as string) ?? '';
           this.imgs3.push(this.iconImg);
@@ -274,7 +274,7 @@ export class PoultryProductComponent implements OnInit, AfterViewInit {
     // }
   }
 
-  typeChange(event) {
+  typeChange(event: MatCheckboxChange & { source: { value: 'piece' | 'carton'; checked: boolean } }) {
     if (event.source.value === 'piece') {
       this.checkPieceValue = event.source.checked === true ? true : false;
     }
@@ -283,7 +283,7 @@ export class PoultryProductComponent implements OnInit, AfterViewInit {
     }
   }
 
-  onSubmitProductImage(data) {
+  onSubmitProductImage(data: any) {
     this.submitted = false;
     if (this.checkPieceValue == true && this.checkCartonValue == false) {
       this.productForm.value.soldType = 1;
@@ -304,7 +304,7 @@ export class PoultryProductComponent implements OnInit, AfterViewInit {
     this.productForm.value.parentId = 0;
     this.productForm.value.isBasket = 0;
     // console.log("submit", this.productForm.value)
-    this.authService.addProduct(data).subscribe((res: ApiResponse<unknown>) => {
+    this.authService.addProduct(data).subscribe((res: any) => {
       if (res.error === false) {
         this.toastr.success('Success ', res.message);
         this.spinner.hide();
@@ -312,7 +312,7 @@ export class PoultryProductComponent implements OnInit, AfterViewInit {
         this.productForm.reset();
         this.iconImg = '';
         this.prodImg = '';
-        this.fileImgUpload = '';
+        this.fileImgUpload = null;
         this.modalService.dismissAll();
         this.ngOnInit();
       } else {
@@ -321,7 +321,7 @@ export class PoultryProductComponent implements OnInit, AfterViewInit {
     });
   }
 
-  editProduct(data, content) {
+  editProduct(data: ProductRow & { piecesActive?: number; cartonActive?: number; parentId?: number; description?: string; arDescription?: string }, content: any) {
     this.modalService.open(content, { centered: true, size: 'lg' });
     this.isEdit = true;
     this.isRelated = false;
@@ -361,7 +361,7 @@ export class PoultryProductComponent implements OnInit, AfterViewInit {
       this.spinner.show();
       const postData = new FormData();
       postData.append('image', this.fileImgUpload);
-      this.authService.s3upload(postData).subscribe((res: ApiResponse<string>) => {
+      this.authService.s3upload(postData).subscribe((res: any) => {
         if (res.error === false) {
           this.iconImg = (res.files as string) ?? '';
           this.imgs3.push(this.iconImg);
@@ -401,7 +401,7 @@ export class PoultryProductComponent implements OnInit, AfterViewInit {
     // }
   }
 
-  editProductImage(data) {
+  editProductImage(data: any) {
     if (this.checkPieceValue === true && this.checkCartonValue === false) {
       this.productForm.value.soldType = 1;
       this.productForm.value.piecesActive = 1;
@@ -417,14 +417,14 @@ export class PoultryProductComponent implements OnInit, AfterViewInit {
       this.productForm.value.piecesActive = 1;
       this.productForm.value.cartonActive = 1;
     }
-    this.authService.editProduct(data, this.productId).subscribe((res: ApiResponse<unknown>) => {
+    this.authService.editProduct(data, this.productId).subscribe((res: any) => {
       if (res.error === false) {
         this.toastr.success('Success ', res.message);
         this.spinner.hide();
         this.getRelatedProduct();
         this.submitted = false;
         this.iconImg = '';
-        this.fileImgUpload = '';
+        this.fileImgUpload = null;
         this.prodImg = '';
         this.modalService.dismissAll();
       } else {
@@ -434,9 +434,9 @@ export class PoultryProductComponent implements OnInit, AfterViewInit {
   }
 
   getRelatedProduct() {
-    this.authService.getProductsDetails('POULTRY', this.productId).subscribe((res: ApiResponse<Array<{ id: number }>>) => {
-      const filteredData = res.data.filter((item) => item.id !== this.productId);
-      const updatedData = filteredData.map((obj) => ({
+    this.authService.getProductsDetails('POULTRY', this.productId).subscribe((res: any) => {
+      const filteredData = res.data.filter((item: any) => item.id !== this.productId);
+      const updatedData = filteredData.map((obj: any) => ({
         id: obj.id,
         categoryId: this.productForm.value.categoryId,
         enProductName: this.productForm.value.enProductName,
@@ -446,7 +446,7 @@ export class PoultryProductComponent implements OnInit, AfterViewInit {
       }));
       // console.log("afterUpdate", updatedData)
       const object = { product: updatedData };
-      this.authService.editReletedProduct(object).subscribe((res: ApiResponse<unknown>) => {
+      this.authService.editReletedProduct(object).subscribe((res: any) => {
         if (res.error === false) {
           this.productForm.reset();
           this.ngOnInit();
@@ -455,11 +455,11 @@ export class PoultryProductComponent implements OnInit, AfterViewInit {
     });
   }
 
-  changeStatus(value) {
+  changeStatus(value: ProductRow) {
     const visible = value.active === 1 ? 0 : 1;
     const object = { active: visible };
 
-    this.authService.editProduct(object, value.id).subscribe((res: ApiResponse<unknown>) => {
+    this.authService.editProduct(object, value.id).subscribe((res: any) => {
       if (res.error === false) {
         this.toastr.success('Success ', res.message);
         this.ngOnInit();
@@ -469,7 +469,7 @@ export class PoultryProductComponent implements OnInit, AfterViewInit {
     });
   }
 
-  deleteProduct(value) {
+  deleteProduct(value: ProductRow) {
     Swal.fire({
       title: this.translate.instant('AreYouSure'),
       text: this.translate.instant('YouWontBeRevertThis'),
@@ -487,7 +487,7 @@ export class PoultryProductComponent implements OnInit, AfterViewInit {
           icon: 'success',
           confirmButtonText: this.translate.instant('Ok'),
         });
-        this.authService.deleteProd(value).subscribe((res: ApiResponse<unknown>) => {
+        this.authService.deleteProd(value.id).subscribe((res: any) => {
           if (res.error === false) {
             this.toastr.success('Success ', res.message);
             this.ngOnInit();
@@ -499,23 +499,23 @@ export class PoultryProductComponent implements OnInit, AfterViewInit {
     });
   }
 
-  recipeProduct(data, receipe) {
+  recipeProduct(data: ProductRow & { recipiesId?: number[] }, receipe: any) {
     this.filteredProd = [];
     this.modalService.open(receipe, { centered: true, size: 'xl' });
     this.productId = data['id'];
     const prod = data['recipiesId'] || [];
-    this.authService.getReceipes().subscribe((res: ApiResponse<Array<{ id: number }>>) => {
+    this.authService.getReceipes().subscribe((res: any) => {
       this.getReceipeList = res.data;
       // console.log("Vv", this.getProducts)
       // console.log("ttt", prod)
-      let filll = [];
-      filll = this.getReceipeList.filter((object1) => prod.some((object2) => object1.id === object2)); // requires unique id
+      let filll: { id: number }[] = [];
+      filll = this.getReceipeList.filter((object1: { id: number }) => prod.some((object2: number) => object1.id === object2)); // requires unique id
 
       this.filteredProd = filll;
     });
   }
 
-  sentProdutId(id) {
+  sentProdutId(id: number) {
     const result = this.getReceipeList.filter((obj) => {
       return obj.id === id;
     });
@@ -527,7 +527,7 @@ export class PoultryProductComponent implements OnInit, AfterViewInit {
     this.filteredProd = [...new Set(join_arr)];
   }
 
-  removeImg(id) {
+  removeImg(id: number) {
     const findIndex = this.filteredProd.findIndex((a) => a.id === id);
 
     if (findIndex !== -1) {
@@ -539,16 +539,18 @@ export class PoultryProductComponent implements OnInit, AfterViewInit {
     const uniqueAddresses = Array.from(new Set(this.filteredProd.map((a) => a.id))).map((id) => {
       return this.filteredProd.find((a) => a.id === id);
     });
-    let lastArray = [];
+    let lastArray: number[] = [];
     uniqueAddresses.forEach((element) => {
-      lastArray.push(element.id);
+      if (element) {
+        lastArray.push(element.id);
+      }
     });
 
     const data = {
       recipiesId: JSON.stringify(lastArray),
     };
 
-    this.authService.editProduct(data, this.productId).subscribe((res: ApiResponse<unknown>) => {
+    this.authService.editProduct(data, this.productId).subscribe((res: any) => {
       if (res.error === false) {
         this.toastr.success('Success ', res.message);
         this.productForm.reset();
@@ -562,11 +564,11 @@ export class PoultryProductComponent implements OnInit, AfterViewInit {
     });
   }
 
-  changeMostWantedProduct(value) {
+  changeMostWantedProduct(value: ProductRow) {
     const visible = value.mostWantedProduct === 1 ? 0 : 1;
     const object = { mostWantedProduct: visible };
 
-    this.authService.editProduct(object, value.id).subscribe((res: ApiResponse<unknown>) => {
+    this.authService.editProduct(object, value.id).subscribe((res: any) => {
       if (res.error === false) {
         this.toastr.success('Success ', res.message);
         this.ngOnInit();
@@ -576,11 +578,11 @@ export class PoultryProductComponent implements OnInit, AfterViewInit {
     });
   }
 
-  changeOffers(value) {
+  changeOffers(value: ProductRow) {
     const visible = value.offers === 1 ? 0 : 1;
     const object = { offers: visible };
 
-    this.authService.editProduct(object, value.id).subscribe((res: ApiResponse<unknown>) => {
+    this.authService.editProduct(object, value.id).subscribe((res: any) => {
       if (res.error === false) {
         this.toastr.success('Success ', res.message);
         this.ngOnInit();
@@ -589,11 +591,11 @@ export class PoultryProductComponent implements OnInit, AfterViewInit {
       }
     });
   }
-  changeNewProduct(value) {
+  changeNewProduct(value: ProductRow) {
     const visible = value.newProduct === 1 ? 0 : 1;
     const object = { newProduct: visible };
 
-    this.authService.editProduct(object, value.id).subscribe((res: ApiResponse<unknown>) => {
+    this.authService.editProduct(object, value.id).subscribe((res: any) => {
       if (res.error === false) {
         this.toastr.success('Success ', res.message);
         this.ngOnInit();

@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { MostWantedAddressComponent } from './most-wanted-address.component';
 
@@ -6,11 +6,11 @@ describe('MostWantedAddressComponent', () => {
   let component: MostWantedAddressComponent;
   let fixture: ComponentFixture<MostWantedAddressComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [MostWantedAddressComponent],
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [MostWantedAddressComponent],
     }).compileComponents();
-  });
+  }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(MostWantedAddressComponent);

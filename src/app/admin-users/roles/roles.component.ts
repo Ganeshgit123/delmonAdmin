@@ -1,32 +1,35 @@
 import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormGroup, FormBuilder, Validators, FormArray, FormControl } from '@angular/forms';
-import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AuthService } from 'src/app/shared/auth.service';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
+import { NgMaterialModule } from '../../ng-material.module';
 import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-roles',
   templateUrl: './roles.component.html',
   styleUrls: ['./roles.component.scss'],
+  standalone: true,
+  imports: [CommonModule, TranslateModule, NgMaterialModule],
 })
 export class RolesComponent implements OnInit, AfterViewInit {
   displayedColumns: string[];
-  dataSource: MatTableDataSource<any>;
-  getvalue = [];
+  dataSource: MatTableDataSource<RoleRow>;
+  getvalue: RoleRow[] = [];
   roleForm: FormGroup;
   isEdit = false;
   roleId: any;
   submitted = false;
-  perm = [];
-  permRoleId;
-  any;
-  updatedPerm = [];
+  perm: any[] = [];
+  permRoleId: number | null = null;
+  any: any;
+  updatedPerm: any[] = [];
   showAccept = true;
   superAdminRole = false;
 
@@ -61,7 +64,6 @@ export class RolesComponent implements OnInit, AfterViewInit {
     public fb: FormBuilder,
     public authService: AuthService,
     private toastr: ToastrService,
-    private router: Router,
     private translate: TranslateService,
   ) {}
 
@@ -80,9 +82,9 @@ export class RolesComponent implements OnInit, AfterViewInit {
     }
 
     this.authService.getRoles().subscribe((res: any) => {
-      res.data = res.data.filter((obj) => obj.id !== 1);
-      this.getvalue = res.data.reverse();
-      this.dataSource = new MatTableDataSource(this.getvalue);
+      res.data = res.data.filter((obj: any) => obj.id !== 1);
+      this.getvalue = (res.data as RoleRow[]).reverse();
+      this.dataSource = new MatTableDataSource<RoleRow>(this.getvalue);
       this.dataSource.paginator = this.matPaginator;
       this.dataSource.sort = this.matSort;
     });
@@ -97,8 +99,11 @@ export class RolesComponent implements OnInit, AfterViewInit {
 
   callRolePermission() {
     if (sessionStorage.getItem('roleName') !== 'superAdmin') {
-      const settingPermssion = JSON.parse(sessionStorage.getItem('permission'));
-      const orderPermission = settingPermssion?.find((ele) => ele.area == 'adminUsers')?.write == 1;
+      const permStr = sessionStorage.getItem('permission');
+      const settingPermssion: Array<{ area: string; read: number; write: number }> | null = permStr
+        ? JSON.parse(permStr)
+        : null;
+      const orderPermission = settingPermssion?.find((ele: { area: string; read: number; write: number }) => ele.area == 'adminUsers')?.write == 1;
       // console.log("fef",orderPermission)
       this.showAccept = orderPermission;
     }
@@ -117,13 +122,13 @@ export class RolesComponent implements OnInit, AfterViewInit {
     }
   }
 
-  openModal(content) {
+  openModal(content: any) {
     this.roleForm.reset();
     this.isEdit = false;
     this.modalService.open(content, { centered: true, size: 'md' });
   }
 
-  editRole(data, content) {
+  editRole(data: any, content: any) {
     this.modalService.open(content, { centered: true });
     this.isEdit = true;
     this.roleId = data['id'];
@@ -158,7 +163,7 @@ export class RolesComponent implements OnInit, AfterViewInit {
     });
   }
 
-  roleEditService(data) {
+  roleEditService(data: any) {
     this.authService.editRole(data, this.roleId).subscribe((res: any) => {
       if (res.error == true) {
         this.toastr.success('Success ', res.massage);
@@ -171,13 +176,13 @@ export class RolesComponent implements OnInit, AfterViewInit {
     });
   }
 
-  viewPerm(data, value) {
+  viewPerm(data: any, value: any) {
     this.modalService.open(value, { centered: true, size: 'lg' });
     this.permRoleId = data['id'];
     this.perm = data['permission'];
   }
 
-  deleteRole(value) {
+  deleteRole(value: any) {
     Swal.fire({
       title: this.translate.instant('AreYouSure'),
       text: this.translate.instant('YouWontBeRevertThis'),
@@ -205,7 +210,7 @@ export class RolesComponent implements OnInit, AfterViewInit {
     });
   }
 
-  changeReadStatus(event) {
+  changeReadStatus(event: { id: number; read: number }) {
     // console.log("vall",event)
     let newValue;
     if (event.read == 1) {
@@ -215,7 +220,7 @@ export class RolesComponent implements OnInit, AfterViewInit {
     }
     const idToUpdate = event.id;
 
-    this.updatedPerm = this.perm.map((obj) => (obj.id === idToUpdate ? { ...obj, read: newValue } : obj));
+    this.updatedPerm = this.perm.map((obj: any) => (obj.id === idToUpdate ? { ...obj, read: newValue } : obj));
 
     const obj = {
       permission: JSON.stringify(this.updatedPerm),
@@ -233,7 +238,7 @@ export class RolesComponent implements OnInit, AfterViewInit {
     });
   }
 
-  changeWriteStatus(event) {
+  changeWriteStatus(event: { id: number; write: number }) {
     let newValue;
     if (event.write == 1) {
       newValue = 0;
@@ -242,7 +247,7 @@ export class RolesComponent implements OnInit, AfterViewInit {
     }
     const idToUpdate = event.id;
 
-    this.updatedPerm = this.perm.map((obj) => (obj.id === idToUpdate ? { ...obj, write: newValue } : obj));
+    this.updatedPerm = this.perm.map((obj: any) => (obj.id === idToUpdate ? { ...obj, write: newValue } : obj));
 
     const obj = {
       permission: JSON.stringify(this.updatedPerm),
@@ -259,4 +264,10 @@ export class RolesComponent implements OnInit, AfterViewInit {
       }
     });
   }
+}
+
+interface RoleRow {
+  id: number;
+  roleName: string;
+  permission: any[];
 }

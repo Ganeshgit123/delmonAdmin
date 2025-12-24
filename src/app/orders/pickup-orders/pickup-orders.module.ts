@@ -7,7 +7,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 
 @NgModule({
-  declarations: [PickupOrdersComponent],
+  declarations: [],
   imports: [
     CommonModule,
     RouterModule.forChild([
@@ -16,6 +16,7 @@ import { TranslateModule } from '@ngx-translate/core';
         component: PickupOrdersComponent,
       },
     ]),
+    PickupOrdersComponent,
     NgMaterialModule,
     TranslateModule,
     FormsModule,

@@ -16,12 +16,12 @@ import { TranslateService } from '@ngx-translate/core';
 })
 export class AreaComponent implements OnInit, AfterViewInit {
   displayedColumns!: string[];
-  dataSource!: MatTableDataSource<any>;
-  getvalue: any[] = [];
+  dataSource!: MatTableDataSource<AreaRow>;
+  getvalue: AreaRow[] = [];
   areaForm!: FormGroup;
   isEdit = false;
-  zoneId: any;
-  areaId: any;
+  zoneId: string | number | null = null;
+  areaId: string | number | null = null;
   submitted = false;
   showAccept = true;
   superAdminRole = false;
@@ -47,7 +47,7 @@ export class AreaComponent implements OnInit, AfterViewInit {
       this.superAdminRole = false;
     }
 
-    this.route.params.subscribe((params) => {
+    this.route.params.subscribe((params: { [key: string]: string }) => {
       this.zoneId = params['id'];
     });
 
@@ -57,9 +57,9 @@ export class AreaComponent implements OnInit, AfterViewInit {
       this.displayedColumns = ['index', 'areaName', 'arAreaName', 'rowActionIcon'];
     }
 
-    this.authService.getAreas(this.zoneId).subscribe((res: any) => {
-      this.getvalue = res.data;
-      this.dataSource = new MatTableDataSource<any>(this.getvalue as any[]);
+    this.authService.getAreas(this.zoneId as string | number).subscribe((res: any) => {
+      this.getvalue = res.data as AreaRow[];
+      this.dataSource = new MatTableDataSource<AreaRow>(this.getvalue);
       this.dataSource.paginator = this.matPaginator;
       this.dataSource.sort = this.matSort;
     });
@@ -78,8 +78,8 @@ export class AreaComponent implements OnInit, AfterViewInit {
   callRolePermission() {
     if (sessionStorage.getItem('roleName') !== 'superAdmin') {
       const rawPermission = sessionStorage.getItem('permission');
-      const settingPermssion = rawPermission ? JSON.parse(rawPermission) : null;
-      const orderPermission = settingPermssion?.find((ele) => ele.area == 'zones')?.write == 1;
+      const settingPermssion: Permission[] = rawPermission ? (JSON.parse(rawPermission) as Permission[]) : [];
+      const orderPermission = settingPermssion?.find((ele: Permission) => ele.area == 'zones')?.write == 1;
       // console.log("fef",orderPermission)
       this.showAccept = orderPermission;
     }
@@ -98,7 +98,7 @@ export class AreaComponent implements OnInit, AfterViewInit {
     }
   }
 
-  openModal(content) {
+  openModal(content: any) {
     this.areaForm.reset();
     this.isEdit = false;
     this.modalService.open(content, { centered: true });
@@ -107,7 +107,7 @@ export class AreaComponent implements OnInit, AfterViewInit {
   onSubmitData() {
     this.submitted = true;
     if (!this.areaForm.valid) {
-      return false;
+      return;
     }
 
     if (this.isEdit) {
@@ -115,7 +115,7 @@ export class AreaComponent implements OnInit, AfterViewInit {
       return;
     }
     this.submitted = false;
-    this.areaForm.value.zoneId = this.zoneId;
+    (this.areaForm as any).value.zoneId = this.zoneId;
     this.authService.addAreas(this.areaForm.value).subscribe((res: any) => {
       if (res.error == false) {
         this.toastr.success('Success ', res.message);
@@ -128,20 +128,20 @@ export class AreaComponent implements OnInit, AfterViewInit {
     });
   }
 
-  editArea(data, content) {
+  editArea(data: AreaRow, content: any) {
     this.modalService.open(content, { centered: true });
     this.isEdit = true;
-    this.areaId = data['id'];
+    this.areaId = data.id ?? null;
 
     this.areaForm = this.fb.group({
-      areaName: [data['areaName']],
-      arAreaName: [data['arAreaName']],
-      zoneId: [data['zoneId']],
+      areaName: [data.areaName],
+      arAreaName: [data.arAreaName],
+      zoneId: [data.zoneId],
     });
   }
 
-  areaEditService(data) {
-    this.authService.editAreasd(data, this.areaId).subscribe((res: any) => {
+  areaEditService(data: any) {
+    this.authService.editAreasd(data, this.areaId as string | number).subscribe((res: any) => {
       if (res.error == false) {
         this.toastr.success('Success ', res.message);
         this.areaForm.reset();
@@ -153,11 +153,11 @@ export class AreaComponent implements OnInit, AfterViewInit {
     });
   }
 
-  changeStatus(value) {
+  changeStatus(value: AreaRow) {
     const visible = value.active === 1 ? 0 : 1;
     const object = { active: visible };
 
-    this.authService.editAreasd(object, value.id).subscribe((res: any) => {
+    this.authService.editAreasd(object, value.id as string | number).subscribe((res: any) => {
       if (res.error == false) {
         this.toastr.success('Success ', res.message);
         this.ngOnInit();
@@ -167,7 +167,20 @@ export class AreaComponent implements OnInit, AfterViewInit {
     });
   }
 
-  areaWithPin(id) {
+  areaWithPin(id: string | number) {
     this.router.navigate([`/pin/${id}`]);
   }
+}
+
+interface AreaRow {
+  id?: string | number;
+  areaName?: string;
+  arAreaName?: string;
+  zoneId?: string | number;
+  active?: number;
+}
+
+interface Permission {
+  area: string;
+  write: number;
 }

@@ -3,20 +3,14 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { ToastrService } from 'ngx-toastr';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { FormBuilder } from '@angular/forms';
 import { AuthService } from 'src/app/shared/auth.service';
 import { ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { MatTableExporterDirective } from '@csmart/mat-table-exporter';
 import * as XLSX from 'xlsx';
 import { NgxSpinnerService } from 'ngx-spinner';
-
-interface ApiResponse<T> {
-  error: boolean;
-  message: string;
-  data: T;
-}
+import { ApiResponse } from 'src/app/shared/models/api-response';
 
 type ColumnType = 'text' | 'number' | 'string' | 'isEdit';
 
@@ -68,7 +62,6 @@ export class ProductAssignComponent implements OnInit, AfterViewInit {
     public fb: FormBuilder,
     public authService: AuthService,
     private toastr: ToastrService,
-    private router: Router,
     private route: ActivatedRoute,
     private translate: TranslateService,
     private spinner: NgxSpinnerService,
@@ -99,8 +92,8 @@ export class ProductAssignComponent implements OnInit, AfterViewInit {
   }
 
   getAPICAll(object: { type: string; id: string }) {
-    this.authService.getProductPriceList(object.type, object.id).subscribe((res: ApiResponse<ProductPriceRow[]>) => {
-      const productListArray = res.data;
+    this.authService.getProductPriceList(object.type, object.id).subscribe((res) => {
+      const productListArray = (res as ApiResponse<ProductPriceRow[]>).data;
       this.getProdPriceList = productListArray.reverse();
 
       this.COLUMNS_SCHEMA = [
@@ -154,7 +147,8 @@ export class ProductAssignComponent implements OnInit, AfterViewInit {
 
   callRolePermission() {
     if (sessionStorage.getItem('roleName') !== 'superAdmin') {
-      const settingPermssion = JSON.parse(sessionStorage.getItem('permission'));
+      const permRaw = sessionStorage.getItem('permission');
+      const settingPermssion = permRaw ? (JSON.parse(permRaw) as { area: string; write: number }[]) : null;
       const orderPermission = settingPermssion?.find((ele) => ele.area === 'priceList')?.write === 1;
       // console.log("fef",orderPermission)
       this.showAccept = orderPermission;
@@ -226,8 +220,12 @@ export class ProductAssignComponent implements OnInit, AfterViewInit {
     const readonlyColumns = [2]; // Example: Make the second column readonly
 
     // Iterate over rows and make specific columns readonly
+    const ref = worksheet['!ref'];
+    if (!ref) {
+      return;
+    }
     readonlyColumns.forEach((col) => {
-      for (let row = 1; row <= XLSX.utils.decode_range(worksheet['!ref']).e.r; row++) {
+      for (let row = 1; row <= XLSX.utils.decode_range(ref).e.r; row++) {
         const cellAddress = XLSX.utils.encode_cell({ c: col, r: row });
         const cell = worksheet[cellAddress];
         if (cell) {
@@ -263,10 +261,11 @@ export class ProductAssignComponent implements OnInit, AfterViewInit {
     this.spinner.show();
     const postData = new FormData();
     postData.append('file', this.fileImgUpload);
-    this.authService.excelUpload(postData, this.params).subscribe((res: ApiResponse<unknown>) => {
-      if (res.error === false) {
+    this.authService.excelUpload(postData, this.params).subscribe((res) => {
+      const r = res as ApiResponse<unknown>;
+      if (r.error === false) {
         this.spinner.hide();
-        this.toastr.success('Success ', res.message);
+        this.toastr.success('Success ', r.message);
         this.ngOnInit();
       }
     });

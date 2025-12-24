@@ -11,6 +11,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "type-check": "tsc -p tsconfig.app.json --noEmit",
+    "type-check:strict": "tsc -p tsconfig.strict.json --noEmit",
     "e2e": "ng e2e"
   },
   "private": true,

@@ -1,22 +1,26 @@
-import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, Renderer2, Inject } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, Inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { DOCUMENT } from '@angular/common';
 
 import MetisMenu from 'metismenujs';
 
-import { MENU } from './menu';
 import { MenuItem } from './menu.model';
-import { Router, NavigationEnd } from '@angular/router';
+import { Router, NavigationEnd, RouterModule } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
+import { FeahterIconModule } from '../../core/feather-icon/feather-icon.module';
 
 @Component({
   selector: 'app-sidebar',
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.scss'],
+  standalone: true,
+  imports: [CommonModule, RouterModule, TranslateModule, FeahterIconModule],
 })
 export class SidebarComponent implements OnInit, AfterViewInit {
   @ViewChild('sidebarToggler') sidebarToggler: ElementRef;
 
-  menuItems = [];
-  permissions: any = [];
+  menuItems: (MenuItem | false)[] = [];
+  permissions: string | null = null;
   isSuperAdmin = false;
   hide = false;
   userFlowType: any;
@@ -25,7 +29,6 @@ export class SidebarComponent implements OnInit, AfterViewInit {
 
   constructor(
     @Inject(DOCUMENT) private document: Document,
-    private renderer: Renderer2,
     router: Router,
   ) {
     router.events.forEach((event) => {
@@ -77,7 +80,7 @@ export class SidebarComponent implements OnInit, AfterViewInit {
   /**
    * Toggle sidebar on hamburger button click
    */
-  toggleSidebar(e) {
+  toggleSidebar(e: Event) {
     this.sidebarToggler.nativeElement.classList.toggle('active');
     this.sidebarToggler.nativeElement.classList.toggle('not-active');
     if (window.matchMedia('(min-width: 992px)').matches) {
@@ -92,7 +95,7 @@ export class SidebarComponent implements OnInit, AfterViewInit {
   /**
    * Toggle settings-sidebar
    */
-  toggleSettingsSidebar(e) {
+  toggleSettingsSidebar(e: Event) {
     e.preventDefault();
     this.document.body.classList.toggle('settings-open');
   }
@@ -118,7 +121,7 @@ export class SidebarComponent implements OnInit, AfterViewInit {
   /**
    * Sidebar-folded on desktop (min-width:992px and max-width: 1199px)
    */
-  iconSidebar(e) {
+  iconSidebar(e: MediaQueryListEvent | MediaQueryList) {
     if (e.matches) {
       this.document.body.classList.add('sidebar-folded');
     } else {
@@ -129,9 +132,12 @@ export class SidebarComponent implements OnInit, AfterViewInit {
   /**
    * Switching sidebar light/dark
    */
-  onSidebarThemeChange(event) {
+  onSidebarThemeChange(event: Event) {
+    const target = event.target as HTMLInputElement;
     this.document.body.classList.remove('sidebar-light', 'sidebar-dark');
-    this.document.body.classList.add(event.target.value);
+    if (target && target.value) {
+      this.document.body.classList.add(target.value);
+    }
     this.document.body.classList.remove('settings-open');
   }
 
@@ -155,7 +161,7 @@ export class SidebarComponent implements OnInit, AfterViewInit {
    * Resets the menus
    */
   resetMenuItems() {
-    const links = document.getElementsByClassName('nav-link-ref');
+    const links = document.getElementsByClassName('nav-link-ref') as HTMLCollectionOf<HTMLAnchorElement>;
 
     for (let i = 0; i < links.length; i++) {
       const menuItemEl = links[i];
@@ -165,30 +171,26 @@ export class SidebarComponent implements OnInit, AfterViewInit {
       if (parentEl) {
         parentEl.classList.remove('mm-active');
         const parent2El = parentEl.parentElement;
-
         if (parent2El) {
           parent2El.classList.remove('mm-show');
-        }
-
-        const parent3El = parent2El.parentElement;
-        if (parent3El) {
+          const parent3El = parent2El.parentElement;
+          if (parent3El) {
           parent3El.classList.remove('mm-active');
-
-          if (parent3El.classList.contains('side-nav-item')) {
-            const firstAnchor = parent3El.querySelector('.side-nav-link-a-ref');
-
-            if (firstAnchor) {
-              firstAnchor.classList.remove('mm-active');
+            if (parent3El.classList.contains('side-nav-item')) {
+              const firstAnchor = parent3El.querySelector('.side-nav-link-a-ref');
+              if (firstAnchor) {
+                firstAnchor.classList.remove('mm-active');
+              }
             }
-          }
 
-          const parent4El = parent3El.parentElement;
-          if (parent4El) {
-            parent4El.classList.remove('mm-show');
+            const parent4El = parent3El.parentElement;
+            if (parent4El) {
+              parent4El.classList.remove('mm-show');
 
-            const parent5El = parent4El.parentElement;
-            if (parent5El) {
-              parent5El.classList.remove('mm-active');
+              const parent5El = parent4El.parentElement;
+              if (parent5El) {
+                parent5El.classList.remove('mm-active');
+              }
             }
           }
         }
@@ -200,12 +202,12 @@ export class SidebarComponent implements OnInit, AfterViewInit {
    * Toggles the menu items
    */
   activateMenuItems() {
-    const links = document.getElementsByClassName('nav-link-ref');
+    const links = document.getElementsByClassName('nav-link-ref') as HTMLCollectionOf<HTMLAnchorElement>;
 
-    let menuItemEl = null;
+    let menuItemEl: HTMLElement | null = null;
 
     for (let i = 0; i < links.length; i++) {
-      if (window.location.pathname === links[i]['pathname']) {
+      if (window.location.pathname === links[i].pathname) {
         menuItemEl = links[i];
 
         break;
@@ -218,31 +220,26 @@ export class SidebarComponent implements OnInit, AfterViewInit {
 
       if (parentEl) {
         parentEl.classList.add('mm-active');
-
         const parent2El = parentEl.parentElement;
         if (parent2El) {
           parent2El.classList.add('mm-show');
-        }
-
-        const parent3El = parent2El.parentElement;
-        if (parent3El) {
-          parent3El.classList.add('mm-active');
-
-          if (parent3El.classList.contains('side-nav-item')) {
-            const firstAnchor = parent3El.querySelector('.side-nav-link-a-ref');
-
-            if (firstAnchor) {
-              firstAnchor.classList.add('mm-active');
+          const parent3El = parent2El.parentElement;
+          if (parent3El) {
+            parent3El.classList.add('mm-active');
+            if (parent3El.classList.contains('side-nav-item')) {
+              const firstAnchor = parent3El.querySelector('.side-nav-link-a-ref');
+              if (firstAnchor) {
+                firstAnchor.classList.add('mm-active');
+              }
             }
-          }
 
-          const parent4El = parent3El.parentElement;
-          if (parent4El) {
-            parent4El.classList.add('mm-show');
-
-            const parent5El = parent4El.parentElement;
-            if (parent5El) {
-              parent5El.classList.add('mm-active');
+            const parent4El = parent3El.parentElement;
+            if (parent4El) {
+              parent4El.classList.add('mm-show');
+              const parent5El = parent4El.parentElement;
+              if (parent5El) {
+                parent5El.classList.add('mm-active');
+              }
             }
           }
         }
@@ -251,16 +248,16 @@ export class SidebarComponent implements OnInit, AfterViewInit {
   }
 
   initialize(): void {
-    const datat = JSON.parse(this.permissions);
+    interface Permission { area: string; read: number; write: number }
+    const datat: Permission[] | null = this.permissions ? JSON.parse(this.permissions) : null;
 
-    // console.log("dafd",set)
-    this.menuItems = [
+    const rawMenu: (MenuItem | false)[] = [
       {
         label: 'Dashboard',
         icon: 'mdi mdi-view-dashboard',
         link: '/dashboard',
       },
-      this.isSuperAdmin || (!this.isSuperAdmin && datat?.find((ele) => ele.area == 'orders')?.read == 1)
+      this.isSuperAdmin || (!this.isSuperAdmin && datat?.find((ele: Permission) => ele.area == 'orders')?.read == 1)
         ? {
             label: 'Orders',
             icon: 'mdi mdi-food',
@@ -288,7 +285,7 @@ export class SidebarComponent implements OnInit, AfterViewInit {
             ],
           }
         : false,
-      this.isSuperAdmin || (!this.isSuperAdmin && datat?.find((ele) => ele.area == 'category')?.read == 1)
+      this.isSuperAdmin || (!this.isSuperAdmin && datat?.find((ele: Permission) => ele.area == 'category')?.read == 1)
         ? {
             label: 'Category',
             icon: 'mdi mdi-tag',
@@ -324,12 +321,12 @@ export class SidebarComponent implements OnInit, AfterViewInit {
             ],
           }
         : false,
-      this.isSuperAdmin || (!this.isSuperAdmin && datat?.find((ele) => ele.area == 'users')?.read == 1)
+      this.isSuperAdmin || (!this.isSuperAdmin && datat?.find((ele: Permission) => ele.area == 'users')?.read == 1)
         ? {
             label: 'Users',
             icon: 'mdi mdi-account-multiple',
             subItems: [
-              this.isSuperAdmin || (!this.isSuperAdmin && datat?.find((ele) => ele.area == 'users')?.write == 1)
+              this.isSuperAdmin || (!this.isSuperAdmin && datat?.find((ele: Permission) => ele.area == 'users')?.write == 1)
                 ? {
                     label: 'Create New User',
                     link: '/create_user',
@@ -350,7 +347,7 @@ export class SidebarComponent implements OnInit, AfterViewInit {
             ],
           }
         : false,
-      this.isSuperAdmin || (!this.isSuperAdmin && datat?.find((ele) => ele.area == 'products')?.read == 1)
+      this.isSuperAdmin || (!this.isSuperAdmin && datat?.find((ele: Permission) => ele.area == 'products')?.read == 1)
         ? {
             label: 'Products',
             icon: 'mdi mdi-shopping',
@@ -390,7 +387,7 @@ export class SidebarComponent implements OnInit, AfterViewInit {
             ],
           }
         : false,
-      this.isSuperAdmin || (!this.isSuperAdmin && datat?.find((ele) => ele.area == 'priceList')?.read == 1)
+      this.isSuperAdmin || (!this.isSuperAdmin && datat?.find((ele: Permission) => ele.area == 'priceList')?.read == 1)
         ? {
             label: 'PriceList',
             icon: 'mdi mdi-wallet',
@@ -411,21 +408,21 @@ export class SidebarComponent implements OnInit, AfterViewInit {
       //   icon: 'mdi mdi-basket',
       //   link: '/overall_products'
       // },
-      this.isSuperAdmin || (!this.isSuperAdmin && datat?.find((ele) => ele.area == 'recipes')?.read == 1)
+      this.isSuperAdmin || (!this.isSuperAdmin && datat?.find((ele: Permission) => ele.area == 'recipes')?.read == 1)
         ? {
             label: 'Recipes',
             icon: 'mdi mdi-silverware-variant',
             link: '/recepies',
           }
         : false,
-      this.isSuperAdmin || (!this.isSuperAdmin && datat?.find((ele) => ele.area == 'zones')?.read == 1)
+      this.isSuperAdmin || (!this.isSuperAdmin && datat?.find((ele: Permission) => ele.area == 'zones')?.read == 1)
         ? {
             label: 'Zones',
             icon: 'mdi mdi-map-marker-radius',
             link: '/zones',
           }
         : false,
-      this.isSuperAdmin || (!this.isSuperAdmin && datat?.find((ele) => ele.area == 'master')?.read == 1)
+      this.isSuperAdmin || (!this.isSuperAdmin && datat?.find((ele: Permission) => ele.area == 'master')?.read == 1)
         ? {
             label: 'Master Settings',
             icon: 'mdi mdi-cog',
@@ -473,14 +470,14 @@ export class SidebarComponent implements OnInit, AfterViewInit {
             ],
           }
         : false,
-      this.isSuperAdmin || (!this.isSuperAdmin && datat?.find((ele) => ele.area == 'drivers')?.read == 1)
+      this.isSuperAdmin || (!this.isSuperAdmin && datat?.find((ele: Permission) => ele.area == 'drivers')?.read == 1)
         ? {
             label: 'Drivers',
             icon: 'mdi mdi-motorbike',
             link: '/drivers',
           }
         : false,
-      this.isSuperAdmin || (!this.isSuperAdmin && datat?.find((ele) => ele.area == 'coupons')?.read == 1)
+      this.isSuperAdmin || (!this.isSuperAdmin && datat?.find((ele: Permission) => ele.area == 'coupons')?.read == 1)
         ? {
             label: 'Coupons',
             icon: 'mdi mdi-sale',
@@ -500,14 +497,14 @@ export class SidebarComponent implements OnInit, AfterViewInit {
             ],
           }
         : false,
-      this.isSuperAdmin || (!this.isSuperAdmin && datat?.find((ele) => ele.area == 'feedbacks')?.read == 1)
+      this.isSuperAdmin || (!this.isSuperAdmin && datat?.find((ele: Permission) => ele.area == 'feedbacks')?.read == 1)
         ? {
             label: 'Feedbacks',
             icon: 'mdi mdi-forum',
             link: '/feedback',
           }
         : false,
-      this.isSuperAdmin || (!this.isSuperAdmin && datat?.find((ele) => ele.area == 'adminUsers')?.read == 1)
+      this.isSuperAdmin || (!this.isSuperAdmin && datat?.find((ele: Permission) => ele.area == 'adminUsers')?.read == 1)
         ? {
             label: 'Admin Users',
             icon: 'mdi mdi-account-multiple',
@@ -527,67 +524,67 @@ export class SidebarComponent implements OnInit, AfterViewInit {
         label: 'Reports',
         icon: 'mdi mdi-account-multiple',
         subItems: [
-          this.isSuperAdmin || (!this.isSuperAdmin && datat?.find((ele) => ele.area == 'one-day-orders')?.read == 1)
+          this.isSuperAdmin || (!this.isSuperAdmin && datat?.find((ele: Permission) => ele.area == 'one-day-orders')?.read == 1)
             ? {
                 label: 'One-Day Orders Quantity',
                 link: '/one-day-orders',
               }
             : false,
-          this.isSuperAdmin || (!this.isSuperAdmin && datat?.find((ele) => ele.area == 'total-orders')?.read == 1)
+          this.isSuperAdmin || (!this.isSuperAdmin && datat?.find((ele: Permission) => ele.area == 'total-orders')?.read == 1)
             ? {
                 label: 'Total Orders Quantity',
                 link: '/total-orders',
               }
             : false,
-          this.isSuperAdmin || (!this.isSuperAdmin && datat?.find((ele) => ele.area == 'financial-reports')?.read == 1)
+          this.isSuperAdmin || (!this.isSuperAdmin && datat?.find((ele: Permission) => ele.area == 'financial-reports')?.read == 1)
             ? {
                 label: 'Financial Reports',
                 link: '/financial-reports',
               }
             : false,
-          this.isSuperAdmin || (!this.isSuperAdmin && datat?.find((ele) => ele.area == 'salesman-reports')?.read == 1)
+          this.isSuperAdmin || (!this.isSuperAdmin && datat?.find((ele: Permission) => ele.area == 'salesman-reports')?.read == 1)
             ? {
                 label: 'Salesman Sales Reports',
                 link: '/salesman-reports',
               }
             : false,
           this.isSuperAdmin ||
-          (!this.isSuperAdmin && datat?.find((ele) => ele.area == 'internal-sales-reports')?.read == 1)
+          (!this.isSuperAdmin && datat?.find((ele: Permission) => ele.area == 'internal-sales-reports')?.read == 1)
             ? {
                 label: 'Internal Sales Reports',
                 link: '/internal-sales-reports',
               }
             : false,
           this.isSuperAdmin ||
-          (!this.isSuperAdmin && datat?.find((ele) => ele.area == 'online-sales-reports')?.read == 1)
+          (!this.isSuperAdmin && datat?.find((ele: Permission) => ele.area == 'online-sales-reports')?.read == 1)
             ? {
                 label: 'Online Sales Reports',
                 link: '/online-sales-reports',
               }
             : false,
           this.isSuperAdmin ||
-          (!this.isSuperAdmin && datat?.find((ele) => ele.area == 'employee-purchase-reports')?.read == 1)
+          (!this.isSuperAdmin && datat?.find((ele: Permission) => ele.area == 'employee-purchase-reports')?.read == 1)
             ? {
                 label: 'Employee Purchase Reports',
                 link: '/employee-purchase-reports',
               }
             : false,
           this.isSuperAdmin ||
-          (!this.isSuperAdmin && datat?.find((ele) => ele.area == 'most-wanted-product-reports')?.read == 1)
+          (!this.isSuperAdmin && datat?.find((ele: Permission) => ele.area == 'most-wanted-product-reports')?.read == 1)
             ? {
                 label: 'Most Wanted Product Reports',
                 link: '/most-wanted-products',
               }
             : false,
           this.isSuperAdmin ||
-          (!this.isSuperAdmin && datat?.find((ele) => ele.area == 'most-wanted-address-reports')?.read == 1)
+          (!this.isSuperAdmin && datat?.find((ele: Permission) => ele.area == 'most-wanted-address-reports')?.read == 1)
             ? {
                 label: 'Most Wanted Address Reports',
                 link: '/most-wanted-address',
               }
             : false,
           this.isSuperAdmin ||
-          (!this.isSuperAdmin && datat?.find((ele) => ele.area == 'favortie-product-reports')?.read == 1)
+          (!this.isSuperAdmin && datat?.find((ele: Permission) => ele.area == 'favortie-product-reports')?.read == 1)
             ? {
                 label: 'Favorite Product Reports',
                 link: '/favorite-products',
@@ -600,5 +597,7 @@ export class SidebarComponent implements OnInit, AfterViewInit {
         ],
       },
     ];
+
+    this.menuItems = rawMenu.filter((item): item is MenuItem => item !== false);
   }
 }

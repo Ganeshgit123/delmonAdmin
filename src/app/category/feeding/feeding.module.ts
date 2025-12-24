@@ -8,7 +8,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgxSpinnerModule } from 'ngx-spinner';
 
 @NgModule({
-  declarations: [FeedingComponent],
+  declarations: [],
   imports: [
     CommonModule,
     RouterModule.forChild([
@@ -17,6 +17,7 @@ import { NgxSpinnerModule } from 'ngx-spinner';
         component: FeedingComponent,
       },
     ]),
+    FeedingComponent,
     NgMaterialModule,
     TranslateModule,
     FormsModule,

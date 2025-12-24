@@ -5,6 +5,11 @@ import { ToastrService } from 'ngx-toastr';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 
+interface UserOption {
+  id: string | number;
+  text: string;
+}
+
 @Component({
   selector: 'app-push-email',
   templateUrl: './push-email.component.html',
@@ -14,10 +19,10 @@ export class PushEmailComponent implements OnInit {
   emailForm: FormGroup;
 
   userCtrl = new FormControl('');
-  filteredUsers = new Observable<any[]>();
+  filteredUsers = new Observable<UserOption[]>();
 
-  allUsers: any[] = [];
-  selectedUsers: any[] = [];
+  allUsers: UserOption[] = [];
+  selectedUsers: UserOption[] = [];
 
   submittedEmail = false;
   showAccept = true;
@@ -44,7 +49,7 @@ export class PushEmailComponent implements OnInit {
 
     // Load & map API users
     this.authService.getNormalUsers().subscribe((res: any) => {
-      this.allUsers = res.data.map((u) => ({
+      this.allUsers = res.data.map((u: any) => ({
         id: u.id,
         text: u.mobileNumber,
       }));
@@ -65,12 +70,12 @@ export class PushEmailComponent implements OnInit {
   }
 
   // For autocomplete display
-  displayFn(user: any): string {
+  displayFn(user: UserOption): string {
     return user?.text || '';
   }
 
   // When selecting autocomplete option
-  selectUser(option: any) {
+  selectUser(option: UserOption) {
     if (this.selectedUsers.some((u) => u.id === option.id)) {
       this.toastr.warning('User already added');
       this.userCtrl.setValue('');
@@ -89,7 +94,7 @@ export class PushEmailComponent implements OnInit {
   handleEnter(event: any) {
     event.preventDefault();
 
-    const value = this.userCtrl.value?.trim();
+    const value = (this.userCtrl.value || '').toString().trim();
 
     const list = this.filteredUsersSource(value);
 
@@ -181,7 +186,7 @@ export class PushEmailComponent implements OnInit {
           this.toastr.error(res.massage || 'Failed to send SMS', '', { timeOut: 2000 });
         }
       },
-      (err) => {
+      (_err) => {
         this.toastr.error('Failed to send SMS', '', { timeOut: 2000 });
       },
     );

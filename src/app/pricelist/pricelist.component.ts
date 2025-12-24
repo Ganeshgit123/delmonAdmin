@@ -9,17 +9,12 @@ import { MatTableDataSource } from '@angular/material/table';
 import { ToastrService } from 'ngx-toastr';
 import Swal from 'sweetalert2';
 import { TranslateService } from '@ngx-translate/core';
+import { ApiResponse } from 'src/app/shared/models/api-response';
 
 interface PriceListName {
   id: number;
   name: string;
   active?: number;
-}
-
-interface ApiResponse<T> {
-  error: boolean;
-  message: string;
-  data: T;
 }
 
 @Component({
@@ -60,8 +55,8 @@ export class PricelistComponent implements OnInit, AfterViewInit {
 
     this.displayedColumns = ['index', 'name', 'rowActionIcon'];
 
-    this.authService.getPriceListName().subscribe((res: ApiResponse<PriceListName[]>) => {
-      this.getvalue = res.data;
+    this.authService.getPriceListName().subscribe((res) => {
+      this.getvalue = (res as ApiResponse<PriceListName[]>).data;
       this.dataSource = new MatTableDataSource(this.getvalue);
       this.dataSource.paginator = this.matPaginator;
       this.dataSource.sort = this.matSort;
@@ -78,7 +73,8 @@ export class PricelistComponent implements OnInit, AfterViewInit {
 
   callRolePermission() {
     if (sessionStorage.getItem('roleName') !== 'superAdmin') {
-      const settingPermssion = JSON.parse(sessionStorage.getItem('permission'));
+      const permRaw = sessionStorage.getItem('permission');
+      const settingPermssion = permRaw ? (JSON.parse(permRaw) as { area: string; write: number }[]) : null;
       const orderPermission = settingPermssion?.find((ele) => ele.area === 'priceList')?.write === 1;
       // console.log("fef",orderPermission)
       this.showAccept = orderPermission;
@@ -107,7 +103,7 @@ export class PricelistComponent implements OnInit, AfterViewInit {
   onSubmitData() {
     this.submitted = true;
     if (!this.priceListForm.valid) {
-      return false;
+      return;
     }
 
     if (this.isEdit) {
@@ -115,14 +111,15 @@ export class PricelistComponent implements OnInit, AfterViewInit {
       return;
     }
     this.submitted = false;
-    this.authService.addPriceListName(this.priceListForm.value).subscribe((res: ApiResponse<unknown>) => {
-      if (res.error === false) {
-        this.toastr.success('Success ', res.message);
+    this.authService.addPriceListName(this.priceListForm.value).subscribe((res) => {
+      const r = res as ApiResponse<unknown>;
+      if (r.error === false) {
+        this.toastr.success('Success ', r.message);
         this.priceListForm.reset();
         this.modalService.dismissAll();
         this.ngOnInit();
       } else {
-        this.toastr.error('Enter valid ', res.message);
+        this.toastr.error('Enter valid ', r.message);
       }
     });
   }
@@ -138,14 +135,15 @@ export class PricelistComponent implements OnInit, AfterViewInit {
   }
 
   priceNameEditService(data: { name: string }) {
-    this.authService.editPriceListName(data, this.priceNameId as number).subscribe((res: ApiResponse<unknown>) => {
-      if (res.error === false) {
-        this.toastr.success('Success ', res.message);
+    this.authService.editPriceListName(data, this.priceNameId as number).subscribe((res) => {
+      const r = res as ApiResponse<unknown>;
+      if (r.error === false) {
+        this.toastr.success('Success ', r.message);
         this.priceListForm.reset();
         this.modalService.dismissAll();
         this.ngOnInit();
       } else {
-        this.toastr.error('Enter valid ', res.message);
+        this.toastr.error('Enter valid ', r.message);
       }
     });
   }
@@ -168,12 +166,13 @@ export class PricelistComponent implements OnInit, AfterViewInit {
           icon: 'success',
           confirmButtonText: this.translate.instant('Ok'),
         });
-        this.authService.deletePriceListName(value).subscribe((res: ApiResponse<unknown>) => {
-          if (res.error === false) {
-            this.toastr.success('Success ', res.message);
+        this.authService.deletePriceListName(value).subscribe((res) => {
+          const r = res as ApiResponse<unknown>;
+          if (r.error === false) {
+            this.toastr.success('Success ', r.message);
             this.ngOnInit();
           } else {
-            this.toastr.error('Error', res.message);
+            this.toastr.error('Error', r.message);
           }
         });
       }

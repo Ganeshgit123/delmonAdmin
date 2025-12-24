@@ -1,24 +1,28 @@
 import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
 import { AuthService } from 'src/app/shared/auth.service';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { ExportType, MatTableExporterDirective } from '@csmart/mat-table-exporter';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { NgMaterialModule } from '../../ng-material.module';
 
 @Component({
   selector: 'app-total-orders',
   templateUrl: './total-orders.component.html',
   styleUrls: ['./total-orders.component.scss'],
+  standalone: true,
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, TranslateModule, NgMaterialModule],
 })
 export class TotalOrdersComponent implements OnInit, AfterViewInit {
   displayedColumns: string[];
-  dataSource: MatTableDataSource<any>;
-  getOrders = [];
+  dataSource: MatTableDataSource<CartRowAggregated>;
+  getOrders: CartRow[] = [];
   formattedDateTime: string;
   driverId: any = '';
-  getDrivers = [];
+  getDrivers: Array<{ id?: number; name?: string }> = [];
   startDate: any = '';
   endDate: any = '';
   showAccept = true;
@@ -33,7 +37,6 @@ export class TotalOrdersComponent implements OnInit, AfterViewInit {
 
   constructor(
     public authService: AuthService,
-    private router: Router,
     private translate: TranslateService,
   ) {}
 
@@ -73,8 +76,8 @@ export class TotalOrdersComponent implements OnInit, AfterViewInit {
       orderStatus: 'DRIVERASSIGNED,OUTFORDELIVERY',
     };
     this.authService.getSalesReport(object).subscribe((res: any) => {
-      res.deliveryBoyOrderList.forEach((element) => {
-        element.cartDetails.forEach((cartdet) => {
+      (res.deliveryBoyOrderList as Array<{ driverName: string; orderPlaceTime?: string; deliveryDate?: string; deliveryOrderDate?: string; newDeliveryDate?: string; cartDetails: CartRow[] }>).forEach((element) => {
+        element.cartDetails.forEach((cartdet: CartRow) => {
           cartdet.driverName = element.driverName;
           cartdet.orderPlaceTime = element.orderPlaceTime;
           cartdet.deliveryDate = element.deliveryDate;
@@ -85,8 +88,8 @@ export class TotalOrdersComponent implements OnInit, AfterViewInit {
       });
       const aggregatedOrders = this.aggregateOrders(this.getOrders);
       // console.log(aggregatedOrders);
-      const revOrder = aggregatedOrders.reverse();
-      this.dataSource = new MatTableDataSource(revOrder);
+      const revOrder = (aggregatedOrders as CartRowAggregated[]).reverse();
+      this.dataSource = new MatTableDataSource<CartRowAggregated>(revOrder);
       this.dataSource.paginator = this.matPaginator;
       this.dataSource.sort = this.matSort;
     });
@@ -96,33 +99,31 @@ export class TotalOrdersComponent implements OnInit, AfterViewInit {
     });
   }
 
-  aggregateOrders(orders) {
-    const aggregated = {};
+  aggregateOrders(orders: CartRow[]): CartRowAggregated[] {
+    const aggregated: Record<string, CartRowAggregated> = {};
 
     orders.forEach((order) => {
-      const date = order.newDeliveryDate || order.deliveryOrderDate; // Use newDeliveryDate if it exists, else use deliveryOrderDate
-      const key = `${order.productId}-${date}-${order.driverName}`; // Unique key based on productId, date, and driverName
+      const date = order.newDeliveryDate || order.deliveryOrderDate;
+      const key = `${order.productId}-${date}-${order.driverName}`;
 
       if (aggregated[key]) {
-        // If the key exists, add the quantity
         aggregated[key].quantity += order.quantity;
       } else {
-        // If the key doesn't exist, initialize it with the current order's data
         aggregated[key] = {
           ...order,
-          quantity: order.quantity, // Ensure the quantity is initialized
+          quantity: order.quantity,
         };
       }
     });
 
-    // Convert aggregated object back to an array
     return Object.values(aggregated);
   }
 
   callRolePermission() {
     if (sessionStorage.getItem('roleName') !== 'superAdmin') {
-      const settingPermssion = JSON.parse(sessionStorage.getItem('permission'));
-      const orderPermission = settingPermssion?.find((ele) => ele.area == 'total-orders')?.write == 1;
+      const raw = sessionStorage.getItem('permission');
+      const settingPermssion: Array<{ area: string; write: number }> = raw ? JSON.parse(raw) : [];
+      const orderPermission = settingPermssion.find((ele) => ele.area === 'total-orders')?.write === 1;
       // console.log("fef",orderPermission)
       this.showAccept = orderPermission;
     }
@@ -132,11 +133,17 @@ export class TotalOrdersComponent implements OnInit, AfterViewInit {
     this.matPaginator._intl.itemsPerPageLabel = this.translate.instant('itemsPerPage');
   }
 
-  getDateQuery(object) {
+  getDateQuery(object: {
+    type: string;
+    deliveryBoyId: string | number;
+    startDate: string;
+    endDate: string;
+    orderStatus: string;
+  }) {
     this.authService.getSalesReport(object).subscribe((res: any) => {
-      const filterArray = [];
-      res.deliveryBoyOrderList.forEach((element) => {
-        element.cartDetails.forEach((cartdet) => {
+      const filterArray: CartRow[] = [];
+      (res.deliveryBoyOrderList as Array<{ driverName: string; orderPlaceTime?: string; deliveryDate?: string; deliveryOrderDate?: string; newDeliveryDate?: string; cartDetails: CartRow[] }>).forEach((element) => {
+        element.cartDetails.forEach((cartdet: CartRow) => {
           cartdet.driverName = element.driverName;
           cartdet.driverName = element.driverName;
           cartdet.orderPlaceTime = element.orderPlaceTime;
@@ -148,8 +155,8 @@ export class TotalOrdersComponent implements OnInit, AfterViewInit {
       });
       const aggregatedOrders = this.aggregateOrders(filterArray);
       // console.log(aggregatedOrders);
-      const revOrder = aggregatedOrders.reverse();
-      this.dataSource = new MatTableDataSource(revOrder);
+      const revOrder = (aggregatedOrders as CartRowAggregated[]).reverse();
+      this.dataSource = new MatTableDataSource<CartRowAggregated>(revOrder);
       this.dataSource.paginator = this.matPaginator;
       this.dataSource.sort = this.matSort;
     });
@@ -164,7 +171,7 @@ export class TotalOrdersComponent implements OnInit, AfterViewInit {
     }
   }
 
-  startEvent(event) {
+  startEvent(event: { value: string | Date }) {
     const stDate = event.value;
     const date = new Date(stDate);
 
@@ -186,7 +193,7 @@ export class TotalOrdersComponent implements OnInit, AfterViewInit {
     this.getDateQuery(object);
   }
 
-  endEvent(event) {
+  endEvent(event: { value: string | Date }) {
     const stDate = event.value;
     const date = new Date(stDate);
 
@@ -208,7 +215,7 @@ export class TotalOrdersComponent implements OnInit, AfterViewInit {
     this.getDateQuery(object);
   }
 
-  onChangeFilter(value) {
+  onChangeFilter(value: string) {
     // console.log("se", value)
     if (value == 'all') {
       const object = {
@@ -232,7 +239,7 @@ export class TotalOrdersComponent implements OnInit, AfterViewInit {
     }
   }
 
-  onChangeFlowTypeFilter(value) {
+  onChangeFlowTypeFilter(value: string) {
     this.flowType = value;
     const object = {
       type: this.flowType,
@@ -262,3 +269,18 @@ export class TotalOrdersComponent implements OnInit, AfterViewInit {
     });
   }
 }
+
+interface CartRow {
+  productId: string | number;
+  productName?: string;
+  soldType?: string;
+  weight?: number | string;
+  quantity: number;
+  orderPlaceTime?: string;
+  deliveryDate?: string;
+  deliveryOrderDate?: string;
+  newDeliveryDate?: string;
+  driverName: string;
+}
+
+type CartRowAggregated = CartRow & { quantity: number };

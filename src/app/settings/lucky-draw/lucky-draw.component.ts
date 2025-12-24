@@ -1,11 +1,9 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { Router } from '@angular/router';
 import { AuthService } from 'src/app/shared/auth.service';
-import { TranslateService } from '@ngx-translate/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { FormGroup, FormBuilder } from '@angular/forms';
 
 @Component({
   selector: 'app-lucky-draw',
@@ -14,15 +12,15 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 })
 export class LuckyDrawComponent implements OnInit {
   displayedColumns: string[];
-  dataSource: MatTableDataSource<any>;
+  dataSource: MatTableDataSource<OrderRow>;
   startDate: any = '';
   endDate: any = '';
   dir: any;
-  getOrders = [];
-  filteredOrders: any[] = [];
+  getOrders: OrderRow[] = [];
+  filteredOrders: OrderRow[] = [];
   timeInSeconds: number;
-  currentOrder: any = null;
-  winner: any = null;
+  currentOrder: OrderRow | null = null;
+  winner: OrderRow | null = null;
   intervalId: any;
   timeForm: FormGroup;
   showTable = false;
@@ -34,8 +32,6 @@ export class LuckyDrawComponent implements OnInit {
 
   constructor(
     public authService: AuthService,
-    private router: Router,
-    private translate: TranslateService,
     public fb: FormBuilder,
   ) {}
 
@@ -58,9 +54,9 @@ export class LuckyDrawComponent implements OnInit {
       orderStatus: 'PLACED,USERACCEPTED,DRIVERASSIGNED,OUTFORDELIVERY,COMPLETED',
     };
     this.authService.getSalesReport(object).subscribe((res: any) => {
-      this.getOrders = res.deliveryBoyOrderList.reverse();
+      this.getOrders = (res.deliveryBoyOrderList as OrderRow[]).reverse();
       // console.log("Fef",this.getOrders)
-      this.dataSource = new MatTableDataSource(this.getOrders);
+      this.dataSource = new MatTableDataSource<OrderRow>(this.getOrders);
       this.dataSource.paginator = this.matPaginator;
       this.dataSource.sort = this.matSort;
     });
@@ -83,12 +79,12 @@ export class LuckyDrawComponent implements OnInit {
     }
   }
 
-  startEvent(event) {
+  startEvent(event: any) {
     this.startDate = event.value;
     this.filterOrders();
   }
 
-  endEvent(event) {
+  endEvent(event: any) {
     this.endDate = event.value;
     this.filterOrders();
   }
@@ -118,7 +114,7 @@ export class LuckyDrawComponent implements OnInit {
 
       // console.log("Filtered Orders:", this.filteredOrders);
 
-      this.dataSource = new MatTableDataSource(this.filteredOrders);
+      this.dataSource = new MatTableDataSource<OrderRow>(this.filteredOrders);
       this.dataSource.paginator = this.matPaginator;
       this.dataSource.sort = this.matSort;
     }
@@ -150,4 +146,13 @@ export class LuckyDrawComponent implements OnInit {
       event.preventDefault();
     }
   }
+}
+
+interface OrderRow {
+  orderId?: number | string;
+  customerName?: string;
+  phoneNumber?: string;
+  deliveryDate?: string;
+  newDeliveryDate?: string;
+  deliveryOrderDate?: string;
 }

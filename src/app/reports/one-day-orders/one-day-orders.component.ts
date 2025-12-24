@@ -1,24 +1,28 @@
 import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
 import { AuthService } from 'src/app/shared/auth.service';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { ExportType, MatTableExporterDirective } from '@csmart/mat-table-exporter';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { NgMaterialModule } from '../../ng-material.module';
 
 @Component({
   selector: 'app-one-day-orders',
   templateUrl: './one-day-orders.component.html',
   styleUrls: ['./one-day-orders.component.scss'],
+  standalone: true,
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, TranslateModule, NgMaterialModule],
 })
 export class OneDayOrdersComponent implements OnInit, AfterViewInit {
   displayedColumns: string[];
-  dataSource: MatTableDataSource<any>;
-  getOrders = [];
+  dataSource: MatTableDataSource<OneDayOrderRow>;
+  getOrders: OneDayOrderRow[] = [];
   formattedDateTime: string;
   driverId: any = '';
-  getDrivers = [];
+  getDrivers: Array<{ id?: number; name?: string }> = [];
   startDate: any = '';
   endDate: any = '';
   showAccept = true;
@@ -33,7 +37,6 @@ export class OneDayOrdersComponent implements OnInit, AfterViewInit {
 
   constructor(
     public authService: AuthService,
-    private router: Router,
     private translate: TranslateService,
   ) {}
 
@@ -82,9 +85,9 @@ export class OneDayOrdersComponent implements OnInit, AfterViewInit {
       orderStatus: 'DRIVERASSIGNED,OUTFORDELIVERY',
     };
     this.authService.getSalesReport(object).subscribe((res: any) => {
-      this.getOrders = res.deliveryBoyOrderList.reverse();
+      this.getOrders = (res.deliveryBoyOrderList as OneDayOrderRow[]).reverse();
       // console.log("Fef",this.getOrders)
-      this.dataSource = new MatTableDataSource(this.getOrders);
+      this.dataSource = new MatTableDataSource<OneDayOrderRow>(this.getOrders);
       this.dataSource.paginator = this.matPaginator;
       this.dataSource.sort = this.matSort;
     });
@@ -96,8 +99,9 @@ export class OneDayOrdersComponent implements OnInit, AfterViewInit {
 
   callRolePermission() {
     if (sessionStorage.getItem('roleName') !== 'superAdmin') {
-      const settingPermssion = JSON.parse(sessionStorage.getItem('permission'));
-      const orderPermission = settingPermssion?.find((ele) => ele.area == 'one-day-orders')?.write == 1;
+      const raw = sessionStorage.getItem('permission');
+      const settingPermssion: Array<{ area: string; write: number }> = raw ? JSON.parse(raw) : [];
+      const orderPermission = settingPermssion.find((ele) => ele.area === 'one-day-orders')?.write === 1;
       // console.log("fef",orderPermission)
       this.showAccept = orderPermission;
     }
@@ -107,10 +111,16 @@ export class OneDayOrdersComponent implements OnInit, AfterViewInit {
     this.matPaginator._intl.itemsPerPageLabel = this.translate.instant('itemsPerPage');
   }
 
-  getDateQuery(object) {
+  getDateQuery(object: {
+    type: string;
+    deliveryBoyId: string | number;
+    startDate: string;
+    endDate: string;
+    orderStatus: string;
+  }) {
     this.authService.getSalesReport(object).subscribe((res: any) => {
-      this.getOrders = res.deliveryBoyOrderList.reverse();
-      this.dataSource = new MatTableDataSource(this.getOrders);
+      this.getOrders = (res.deliveryBoyOrderList as OneDayOrderRow[]).reverse();
+      this.dataSource = new MatTableDataSource<OneDayOrderRow>(this.getOrders);
       this.dataSource.paginator = this.matPaginator;
       this.dataSource.sort = this.matSort;
     });
@@ -125,7 +135,7 @@ export class OneDayOrdersComponent implements OnInit, AfterViewInit {
     }
   }
 
-  startEvent(event) {
+  startEvent(event: { value: string | Date }) {
     const stDate = event.value;
     const date = new Date(stDate);
 
@@ -147,7 +157,7 @@ export class OneDayOrdersComponent implements OnInit, AfterViewInit {
     this.getDateQuery(object);
   }
 
-  endEvent(event) {
+  endEvent(event: { value: string | Date }) {
     const stDate = event.value;
     const date = new Date(stDate);
 
@@ -169,7 +179,7 @@ export class OneDayOrdersComponent implements OnInit, AfterViewInit {
     this.getDateQuery(object);
   }
 
-  onChangeFilter(value) {
+  onChangeFilter(value: string) {
     // console.log("se", value)
     if (value == 'all') {
       const object = {
@@ -193,7 +203,7 @@ export class OneDayOrdersComponent implements OnInit, AfterViewInit {
     }
   }
 
-  onChangeFlowTypeFilter(value) {
+  onChangeFlowTypeFilter(value: string) {
     this.flowType = value;
     const object = {
       type: this.flowType,
@@ -222,4 +232,23 @@ export class OneDayOrdersComponent implements OnInit, AfterViewInit {
       fileName: `Daily Report ${this.formattedDateTime}`,
     });
   }
+}
+
+interface OneDayOrderRow {
+  orderId?: string | number;
+  customerName?: string;
+  phoneNumber?: string;
+  userType?: string | number;
+  driverName?: string;
+  customerAddress?: string;
+  prodDetails?: string;
+  orderDetails?: string;
+  deliveryCost?: number | string;
+  discount?: number | string;
+  total?: number | string;
+  paymentType?: string;
+  sonicNo?: string;
+  orderStatus?: string;
+  orderDate?: string;
+  deliveryDate?: string;
 }

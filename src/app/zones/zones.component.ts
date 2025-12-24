@@ -16,11 +16,11 @@ import { TranslateService } from '@ngx-translate/core';
 })
 export class ZonesComponent implements OnInit, AfterViewInit {
   displayedColumns!: string[];
-  dataSource!: MatTableDataSource<any>;
-  getvalue: any[] = [];
+  dataSource!: MatTableDataSource<ZoneRow>;
+  getvalue: ZoneRow[] = [];
   zoneForm!: FormGroup;
   isEdit = false;
-  zoneId: any;
+  zoneId: string | number | null = null;
   submitted = false;
   showAccept = true;
   superAdminRole = false;
@@ -52,8 +52,8 @@ export class ZonesComponent implements OnInit, AfterViewInit {
     }
 
     this.authService.getZones().subscribe((res: any) => {
-      this.getvalue = res.data;
-      this.dataSource = new MatTableDataSource<any>(this.getvalue as any[]);
+      this.getvalue = res.data as ZoneRow[];
+      this.dataSource = new MatTableDataSource<ZoneRow>(this.getvalue);
       this.dataSource.paginator = this.matPaginator;
       this.dataSource.sort = this.matSort;
     });
@@ -72,8 +72,8 @@ export class ZonesComponent implements OnInit, AfterViewInit {
   callRolePermission() {
     if (sessionStorage.getItem('roleName') !== 'superAdmin') {
       const rawPermission = sessionStorage.getItem('permission');
-      const settingPermssion = rawPermission ? JSON.parse(rawPermission) : null;
-      const orderPermission = settingPermssion?.find((ele) => ele.area == 'zones')?.write == 1;
+      const settingPermssion: Permission[] = rawPermission ? (JSON.parse(rawPermission) as Permission[]) : [];
+      const orderPermission = settingPermssion?.find((ele: Permission) => ele.area == 'zones')?.write == 1;
       // console.log("fef",orderPermission)
       this.showAccept = orderPermission;
     }
@@ -92,7 +92,7 @@ export class ZonesComponent implements OnInit, AfterViewInit {
     }
   }
 
-  openModal(content) {
+  openModal(content: any) {
     this.zoneForm.reset();
     this.isEdit = false;
     this.modalService.open(content, { centered: true });
@@ -101,7 +101,7 @@ export class ZonesComponent implements OnInit, AfterViewInit {
   onSubmitData() {
     this.submitted = true;
     if (!this.zoneForm.valid) {
-      return false;
+      return;
     }
 
     if (this.isEdit) {
@@ -121,20 +121,20 @@ export class ZonesComponent implements OnInit, AfterViewInit {
     });
   }
 
-  editZone(data, content) {
+  editZone(data: ZoneRow, content: any) {
     this.modalService.open(content, { centered: true });
     this.isEdit = true;
-    this.zoneId = data['id'];
+    this.zoneId = data.id ?? null;
 
     this.zoneForm = this.fb.group({
-      name: [data['name']],
-      arName: [data['arName']],
-      deliveryCharge: [data['deliveryCharge']],
+      name: [data.name],
+      arName: [data.arName],
+      deliveryCharge: [data.deliveryCharge],
     });
   }
 
-  zoneEditService(data) {
-    this.authService.editZone(data, this.zoneId).subscribe((res: any) => {
+  zoneEditService(data: any) {
+    this.authService.editZone(data, this.zoneId as string | number).subscribe((res: any) => {
       if (res.error == false) {
         this.toastr.success('Success ', res.message);
         this.zoneForm.reset();
@@ -146,11 +146,11 @@ export class ZonesComponent implements OnInit, AfterViewInit {
     });
   }
 
-  changeStatus(value) {
+  changeStatus(value: ZoneRow) {
     const visible = value.active === 1 ? 0 : 1;
     const object = { active: visible };
 
-    this.authService.editZone(object, value.id).subscribe((res: any) => {
+    this.authService.editZone(object, value.id as string | number).subscribe((res: any) => {
       if (res.error == false) {
         this.toastr.success('Success ', res.message);
         this.ngOnInit();
@@ -160,7 +160,20 @@ export class ZonesComponent implements OnInit, AfterViewInit {
     });
   }
 
-  zoneWithArea(id) {
+  zoneWithArea(id: string | number) {
     this.router.navigate([`/area/${id}`]);
   }
+}
+
+interface ZoneRow {
+  id?: string | number;
+  name?: string;
+  arName?: string;
+  deliveryCharge?: string | number;
+  active?: number;
+}
+
+interface Permission {
+  area: string;
+  write: number;
 }

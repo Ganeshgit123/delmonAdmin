@@ -1,17 +1,21 @@
 import { Component, OnInit, Inject, Renderer2 } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { DOCUMENT } from '@angular/common';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/shared/auth.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
+import { ReactiveFormsModule } from '@angular/forms';
 import { environment } from 'src/environments/environment.prod';
 
 @Component({
   selector: 'app-navbar',
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.scss'],
+  standalone: true,
+  imports: [CommonModule, TranslateModule, ReactiveFormsModule],
 })
 export class NavbarComponent implements OnInit {
   updatedby: any;
@@ -72,7 +76,7 @@ export class NavbarComponent implements OnInit {
   /**
    * Sidebar toggle on hamburger button click
    */
-  toggleSidebar(e) {
+  toggleSidebar(e: Event) {
     e.preventDefault();
     this.document.body.classList.toggle('sidebar-open');
   }
@@ -115,7 +119,7 @@ export class NavbarComponent implements OnInit {
     }
   }
 
-  readStatusChange(data) {
+  readStatusChange(data: { id: number }) {
     const visible = 1;
     const object = { isRead: visible };
     this.authService.readNotifyChange(object, data.id).subscribe((res: any) => {
@@ -128,7 +132,7 @@ export class NavbarComponent implements OnInit {
     });
   }
 
-  switchLang(lang: any) {
+  switchLang(lang: string) {
     const dir = lang === 'ar' ? 'rtl' : 'ltr';
     localStorage.setItem('lang', lang);
     localStorage.setItem('dir', dir);

@@ -7,13 +7,14 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 
 @NgModule({
-  declarations: [EmployeeComponent],
+  declarations: [],
   imports: [
     CommonModule,
     NgMaterialModule,
     TranslateModule,
     FormsModule,
     ReactiveFormsModule,
+    EmployeeComponent,
     RouterModule.forChild([
       {
         path: '',

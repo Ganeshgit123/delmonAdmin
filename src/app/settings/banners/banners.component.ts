@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+// Router import removed
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AuthService } from 'src/app/shared/auth.service';
 import { MatPaginator } from '@angular/material/paginator';
@@ -18,18 +18,18 @@ import { TranslateService } from '@ngx-translate/core';
 })
 export class BannersComponent implements OnInit, AfterViewInit {
   displayedColumns: string[];
-  dataSource: MatTableDataSource<any>;
-  getvalue = [];
+  dataSource: MatTableDataSource<BannerRow>;
+  getvalue: BannerRow[] = [];
   bannerForm: FormGroup;
   isEdit = false;
-  bannerId: any;
-  iconImg = null;
-  fileImgUpload: any;
-  iconImgUrl: any;
-  ariconImg = null;
-  arfileImgUpload: any;
-  ariconImgUrl: any;
-  filtVAlue: any;
+  bannerId: string | number | null = null;
+  iconImg: string | null = null;
+  fileImgUpload: File | null = null;
+  iconImgUrl: string | null = null;
+  ariconImg: string | null = null;
+  arfileImgUpload: File | null = null;
+  ariconImgUrl: string | null = null;
+  filtVAlue: BannerRow[] = [];
   submitted = false;
   showAccept = true;
   superAdminRole = false;
@@ -43,7 +43,6 @@ export class BannersComponent implements OnInit, AfterViewInit {
     public fb: FormBuilder,
     public authService: AuthService,
     private toastr: ToastrService,
-    private router: Router,
     private spinner: NgxSpinnerService,
     private translate: TranslateService,
   ) {}
@@ -66,15 +65,15 @@ export class BannersComponent implements OnInit, AfterViewInit {
 
     if (this.userType == 1 || this.superAdminRole == true) {
       this.authService.getBanner().subscribe((res: any) => {
-        this.getvalue = res.data.filter((data) => data.type == 'POULTRY');
-        this.dataSource = new MatTableDataSource(this.getvalue);
+        this.getvalue = (res.data as BannerRow[]).filter((data: BannerRow) => data.type == 'POULTRY');
+        this.dataSource = new MatTableDataSource<BannerRow>(this.getvalue);
         this.dataSource.paginator = this.matPaginator;
         this.dataSource.sort = this.matSort;
       });
     } else {
       this.authService.getBanner().subscribe((res: any) => {
-        this.getvalue = res.data.filter((data) => data.type == 'FEEDING');
-        this.dataSource = new MatTableDataSource(this.getvalue);
+        this.getvalue = (res.data as BannerRow[]).filter((data: BannerRow) => data.type == 'FEEDING');
+        this.dataSource = new MatTableDataSource<BannerRow>(this.getvalue);
         this.dataSource.paginator = this.matPaginator;
         this.dataSource.sort = this.matSort;
       });
@@ -94,8 +93,9 @@ export class BannersComponent implements OnInit, AfterViewInit {
 
   callRolePermission() {
     if (sessionStorage.getItem('roleName') !== 'superAdmin') {
-      const settingPermssion = JSON.parse(sessionStorage.getItem('permission'));
-      const orderPermission = settingPermssion?.find((ele) => ele.area == 'master')?.write == 1;
+      const raw = sessionStorage.getItem('permission');
+      const settingPermssion: Permission[] = raw ? (JSON.parse(raw) as Permission[]) : [];
+      const orderPermission = settingPermssion?.find((ele: Permission) => ele.area == 'master')?.write == 1;
       // console.log("fef",orderPermission)
       this.showAccept = orderPermission;
     }
@@ -114,7 +114,7 @@ export class BannersComponent implements OnInit, AfterViewInit {
     }
   }
 
-  openModal(content) {
+  openModal(content: any) {
     this.bannerForm.reset();
     this.isEdit = false;
     this.iconImg = null;
@@ -122,7 +122,7 @@ export class BannersComponent implements OnInit, AfterViewInit {
     this.modalService.open(content, { centered: true });
   }
 
-  checkFileFormat(checkFile) {
+  checkFileFormat(checkFile: File): boolean {
     if (
       checkFile.type == 'image/webp' ||
       checkFile.type == 'image/png' ||
@@ -142,12 +142,13 @@ export class BannersComponent implements OnInit, AfterViewInit {
   }
 
   removeImg() {
-    this.iconImg = '';
-    this.fileImgUpload = '';
+    this.iconImg = null;
+    this.fileImgUpload = null;
   }
 
-  uploadImageFile(event) {
-    const file = event.target.files && event.target.files[0];
+  uploadImageFile(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files && input.files[0];
     if (!file) return;
 
     const valid = this.checkFileFormat(file);
@@ -159,19 +160,20 @@ export class BannersComponent implements OnInit, AfterViewInit {
       reader.onload = (event: any) => {
         this.iconImg = event.target.result;
       };
-      reader.readAsDataURL(file);
+      reader.readAsDataURL(file as File);
 
       this.fileImgUpload = sanitizedFile;
     }
   }
 
   removearImg() {
-    this.ariconImg = '';
-    this.arfileImgUpload = '';
+    this.ariconImg = null;
+    this.arfileImgUpload = null;
   }
 
-  uploadarImageFile(event) {
-    const file = event.target.files && event.target.files[0];
+  uploadarImageFile(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files && input.files[0];
     if (!file) return;
 
     const valid = this.checkFileFormat(file);
@@ -183,23 +185,23 @@ export class BannersComponent implements OnInit, AfterViewInit {
       reader.onload = (event: any) => {
         this.ariconImg = event.target.result;
       };
-      reader.readAsDataURL(file);
+      reader.readAsDataURL(file as File);
 
       this.arfileImgUpload = sanitizedFile;
     }
   }
 
-  editBanner(data, content) {
+  editBanner(data: BannerRow, content: any) {
     this.modalService.open(content, { centered: true });
     this.isEdit = true;
     this.fileImgUpload = null;
-    this.bannerId = data['id'];
-    this.iconImg = data['enImage'];
-    this.ariconImg = data['arImage'];
+    this.bannerId = data.id ?? null;
+    this.iconImg = data.enImage ?? null;
+    this.ariconImg = data.arImage ?? null;
 
     this.bannerForm = this.fb.group({
-      type: [data['type']],
-      name: [data['name']],
+      type: [data.type],
+      name: [data.name],
       enImage: [''],
       arImage: [''],
     });
@@ -208,28 +210,28 @@ export class BannersComponent implements OnInit, AfterViewInit {
   onSubmitData() {
     this.submitted = true;
     if (!this.bannerForm.valid) {
-      return false;
+      return;
     }
 
     if (this.isEdit) {
-      this.bannerEditService(this.bannerForm.value);
+      this.bannerEditService();
       return;
     }
     this.submitted = false;
     this.spinner.show();
     const postData = new FormData();
-    postData.append('image', this.fileImgUpload);
+    postData.append('image', this.fileImgUpload as File);
     this.authService.s3upload(postData).subscribe((res: any) => {
       if (res.error == false) {
         this.iconImgUrl = res.files;
         const postData = new FormData();
-        postData.append('image', this.arfileImgUpload);
+        postData.append('image', this.arfileImgUpload as File);
         this.authService.s3upload(postData).subscribe((res: any) => {
           if (res.error == false) {
             this.ariconImgUrl = res.files;
             const data = this.bannerForm.value;
-            data['enImage'] = this.iconImgUrl;
-            data['arImage'] = this.ariconImgUrl;
+            (data as any)['enImage'] = this.iconImgUrl;
+            (data as any)['arImage'] = this.ariconImgUrl;
             // console.log("add", data)
             this.authService.addBanner(data).subscribe((res: any) => {
               if (res.error == false) {
@@ -250,24 +252,24 @@ export class BannersComponent implements OnInit, AfterViewInit {
     });
   }
 
-  bannerEditService(data) {
+  bannerEditService() {
     if (this.fileImgUpload && this.arfileImgUpload) {
       this.spinner.show();
       const postData = new FormData();
-      postData.append('image', this.fileImgUpload);
+      postData.append('image', this.fileImgUpload as File);
       this.authService.s3upload(postData).subscribe((res: any) => {
         if (res.error == false) {
           this.iconImgUrl = res.files;
           const postData = new FormData();
-          postData.append('image', this.arfileImgUpload);
+          postData.append('image', this.arfileImgUpload as File);
           this.authService.s3upload(postData).subscribe((res: any) => {
             if (res.error == false) {
               this.ariconImgUrl = res.files;
               const data = this.bannerForm.value;
-              data['enImage'] = this.iconImgUrl;
-              data['arImage'] = this.ariconImgUrl;
+              (data as any)['enImage'] = this.iconImgUrl;
+              (data as any)['arImage'] = this.ariconImgUrl;
               // console.log("editBothImage", data)
-              this.authService.editBanner(data, this.bannerId).subscribe((res: any) => {
+              this.authService.editBanner(data, this.bannerId as string | number).subscribe((res: any) => {
                 if (res.error == false) {
                   this.toastr.success('Success ', res.message);
                   this.iconImg = null;
@@ -287,15 +289,15 @@ export class BannersComponent implements OnInit, AfterViewInit {
     } else if (this.fileImgUpload) {
       this.spinner.show();
       const postData = new FormData();
-      postData.append('image', this.fileImgUpload);
+      postData.append('image', this.fileImgUpload as File);
       this.authService.s3upload(postData).subscribe((res: any) => {
         if (res.error == false) {
           this.iconImgUrl = res.files;
           const data = this.bannerForm.value;
-          data['enImage'] = this.iconImgUrl;
-          data['arImage'] = this.ariconImg;
+          (data as any)['enImage'] = this.iconImgUrl;
+          (data as any)['arImage'] = this.ariconImg;
           // console.log("1stImageUpload", data)
-          this.authService.editBanner(data, this.bannerId).subscribe((res: any) => {
+          this.authService.editBanner(data, this.bannerId as string | number).subscribe((res: any) => {
             if (res.error == false) {
               this.toastr.success('Success ', res.message);
               this.iconImg = null;
@@ -313,15 +315,15 @@ export class BannersComponent implements OnInit, AfterViewInit {
     } else if (this.arfileImgUpload) {
       this.spinner.show();
       const postData = new FormData();
-      postData.append('image', this.arfileImgUpload);
+      postData.append('image', this.arfileImgUpload as File);
       this.authService.s3upload(postData).subscribe((res: any) => {
         if (res.error == false) {
           this.ariconImgUrl = res.files;
           const data = this.bannerForm.value;
-          data['enImage'] = this.iconImg;
-          data['arImage'] = this.ariconImgUrl;
+          (data as any)['enImage'] = this.iconImg;
+          (data as any)['arImage'] = this.ariconImgUrl;
           // console.log("2ndImageUpload", data)
-          this.authService.editBanner(data, this.bannerId).subscribe((res: any) => {
+          this.authService.editBanner(data, this.bannerId as string | number).subscribe((res: any) => {
             if (res.error == false) {
               this.toastr.success('Success ', res.message);
               this.iconImg = null;
@@ -338,10 +340,10 @@ export class BannersComponent implements OnInit, AfterViewInit {
       });
     } else {
       const data = this.bannerForm.value;
-      data['enImage'] = this.iconImg;
-      data['arImage'] = this.ariconImg;
+      (data as any)['enImage'] = this.iconImg;
+      (data as any)['arImage'] = this.ariconImg;
       // console.log("withoutupload", data)
-      this.authService.editBanner(data, this.bannerId).subscribe((res: any) => {
+      this.authService.editBanner(data, this.bannerId as string | number).subscribe((res: any) => {
         if (res.error == true) {
           this.toastr.error('Error', res.message);
         } else {
@@ -357,7 +359,7 @@ export class BannersComponent implements OnInit, AfterViewInit {
     }
   }
 
-  deleteBanner(value) {
+  deleteBanner(value: BannerRow) {
     Swal.fire({
       title: this.translate.instant('AreYouSure'),
       text: this.translate.instant('YouWontBeRevertThis'),
@@ -375,7 +377,7 @@ export class BannersComponent implements OnInit, AfterViewInit {
           icon: 'success',
           confirmButtonText: this.translate.instant('Ok'),
         }),
-          this.authService.deleteBanner(value).subscribe((res: any) => {
+          this.authService.deleteBanner(value.id as string | number).subscribe((res: any) => {
             if (res.error == false) {
               this.toastr.success('Success ', res.message);
               this.ngOnInit();
@@ -387,11 +389,11 @@ export class BannersComponent implements OnInit, AfterViewInit {
     });
   }
 
-  changeStatus(value) {
+  changeStatus(value: BannerRow) {
     const visible = value.active === 1 ? 0 : 1;
     const object = { active: visible };
 
-    this.authService.editBanner(object, value.id).subscribe((res: any) => {
+    this.authService.editBanner(object, value.id as string | number).subscribe((res: any) => {
       if (res.error == false) {
         this.toastr.success('Success ', res.message);
         this.ngOnInit();
@@ -401,17 +403,31 @@ export class BannersComponent implements OnInit, AfterViewInit {
     });
   }
 
-  onChangeFilter(value) {
+  onChangeFilter(value: string) {
     if (value == 'all') {
       this.filtVAlue = this.getvalue;
-      this.dataSource = new MatTableDataSource(this.filtVAlue);
+      this.dataSource = new MatTableDataSource<BannerRow>(this.filtVAlue);
       this.dataSource.paginator = this.matPaginator;
       this.dataSource.sort = this.matSort;
     } else {
-      this.filtVAlue = this.getvalue.filter((data) => data.type == value);
-      this.dataSource = new MatTableDataSource(this.filtVAlue);
+      this.filtVAlue = this.getvalue.filter((data: BannerRow) => data.type == value);
+      this.dataSource = new MatTableDataSource<BannerRow>(this.filtVAlue);
       this.dataSource.paginator = this.matPaginator;
       this.dataSource.sort = this.matSort;
     }
   }
+}
+
+interface BannerRow {
+  id?: string | number;
+  type?: string;
+  name?: string;
+  enImage?: string | null;
+  arImage?: string | null;
+  active?: number;
+}
+
+interface Permission {
+  area: string;
+  write: number;
 }

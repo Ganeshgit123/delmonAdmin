@@ -6,10 +6,9 @@ import { NgMaterialModule } from '../../ng-material.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgxSpinnerModule } from 'ngx-spinner';
 import { TranslateModule } from '@ngx-translate/core';
-import { DragDropModule } from '@angular/cdk/drag-drop';
 
 @NgModule({
-  declarations: [FeedingProductComponent],
+  declarations: [],
   imports: [
     CommonModule,
     RouterModule.forChild([
@@ -18,6 +17,7 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
         component: FeedingProductComponent,
       },
     ]),
+    FeedingProductComponent,
     NgMaterialModule,
     TranslateModule,
     FormsModule,

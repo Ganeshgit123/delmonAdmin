@@ -9,7 +9,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { MatSelectModule } from '@angular/material/select';
 
 @NgModule({
-  declarations: [BasketComponent],
+  declarations: [],
   imports: [
     CommonModule,
     MatSelectModule,
@@ -19,6 +19,7 @@ import { MatSelectModule } from '@angular/material/select';
         component: BasketComponent,
       },
     ]),
+    BasketComponent,
     NgMaterialModule,
     TranslateModule,
     FormsModule,

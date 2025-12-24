@@ -41,11 +41,12 @@
   <div class="modal-body p-3">
     <form [formGroup]="categoryForm">
       <div class="form-group">
-        <label for="name">{{ 'Categroy Name' | translate }}</label>
+        <label for="enName">{{ 'Categroy Name' | translate }}</label>
         <input
           type="text"
           class="form-control"
           placeholder="{{ 'Categroy Name' | translate }}"
+          id="enName"
           formControlName="enName"
           [ngClass]="{ 'is-invalid': submitted && f.enName.errors }"
         />
@@ -58,11 +59,12 @@
         }
       </div>
       <div class="form-group">
-        <label for="name">{{ 'Categroy Name Arabic' | translate }}</label>
+        <label for="arName">{{ 'Categroy Name Arabic' | translate }}</label>
         <input
           type="text"
           class="form-control"
           placeholder="{{ 'Categroy Name Arabic' | translate }}"
+          id="arName"
           formControlName="arName"
           [ngClass]="{ 'is-invalid': submitted && f.arName.errors }"
         />
@@ -75,14 +77,14 @@
         }
       </div>
       <div class="form-group">
-        <label for="name">{{ 'Image' | translate }}</label>
+        <label for="customFile">{{ 'Image' | translate }}</label>
         <div class="img_upload">
           <label for="customFile">
             @if (!iconImg) {
-              <img class="upload-img" src="assets/images/upload_img.png" />
+              <img class="upload-img" src="assets/images/upload_img.png" alt="{{ 'Upload Image' | translate }}" />
             }
             @if (iconImg) {
-              <img class="upload-img" src="{{ iconImg }}" />
+              <img class="upload-img" src="{{ iconImg }}" alt="{{ 'Selected Image' | translate }}" />
             }
           </label>
           @if (iconImg) {
@@ -98,12 +100,13 @@
         </div>
       </div>
       <div class="form-group">
-        <label for="name">{{ 'Color Code' | translate }}</label
+        <label for="colorCode">{{ 'Color Code' | translate }}</label
         ><br />
         <input
           type="color"
           formControlName="colorCode"
           class="form-control"
+          id="colorCode"
           [style.background]="categoryForm.get('colorCode')?.value || '#ffffff'"
           (input)="colorClicked($any($event.target).value)"
           [ngClass]="{ 'is-invalid': submitted && f.colorCode.errors }"
@@ -117,11 +120,12 @@
         }
       </div>
       <div class="form-group">
-        <label for="name">{{ 'VAT' | translate }} %</label>
+        <label for="vat">{{ 'VAT' | translate }} %</label>
         <input
           type="text"
           class="form-control"
           placeholder="{{ 'VAT' | translate }} %"
+          id="vat"
           formControlName="vat"
           [ngClass]="{ 'is-invalid': submitted && f.vat.errors }"
         />
@@ -238,6 +242,7 @@
             src="assets/images/edit_icon.svg"
             onmouseover="this.src = 'assets/images/edit_hover_icon.svg'"
             onmouseout="this.src = 'assets/images/edit_icon.svg'"
+            alt="{{ 'Edit' | translate }}"
           />
         </button>
         <button mat-button (click)="deleteCategory(element.id)" class="dele_btn">
@@ -245,6 +250,7 @@
             src="assets/images/delete_icon.svg"
             onmouseover="this.src = 'assets/images/delete_hover_icon.svg'"
             onmouseout="this.src = 'assets/images/delete_icon.svg'"
+            alt="{{ 'Delete' | translate }}"
           />
         </button>
       </td>

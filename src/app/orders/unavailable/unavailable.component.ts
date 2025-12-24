@@ -1,26 +1,38 @@
 import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { CommonModule } from '@angular/common';
+import { FormBuilder } from '@angular/forms';
+import { NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
 import { AuthService } from 'src/app/shared/auth.service';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { ToastrService } from 'ngx-toastr';
-import { NgxSpinnerService } from 'ngx-spinner';
-import { TranslateService } from '@ngx-translate/core';
+import { NgxSpinnerService, NgxSpinnerModule } from 'ngx-spinner';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { NgMaterialModule } from '../../ng-material.module';
+
+interface OrderRow {
+  id: number;
+  _id?: number;
+  orderStatus: string;
+  deliveryAddress?: { zoneName?: string; area?: string } | null;
+  deliveryBoyDetail?: { userName?: string } | null;
+}
 
 @Component({
   selector: 'app-unavailable',
   templateUrl: './unavailable.component.html',
   styleUrls: ['./unavailable.component.scss'],
+  standalone: true,
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, TranslateModule, NgMaterialModule, NgbModalModule, NgxSpinnerModule],
 })
 export class UnavailableComponent implements OnInit, AfterViewInit {
   displayedColumns: string[];
-  dataSource: MatTableDataSource<any>;
-  getvalue = [];
-  getDrivers = [];
-  orderDetail: any;
+  dataSource: MatTableDataSource<OrderRow>;
+  getvalue: OrderRow[] = [];
+  getDrivers: any[] = [];
+  orderDetail: OrderRow | null = null;
   errorMsg = false;
   deliveryDate: any;
   clickedDriverId: any;
@@ -28,8 +40,8 @@ export class UnavailableComponent implements OnInit, AfterViewInit {
   driverMsg = false;
   showAccept = true;
   superAdminRole = false;
-  userType: any;
-  userFlowType: any;
+  userType: string | null;
+  userFlowType: string;
   deliveryType: any = 1;
 
   @ViewChild(MatPaginator) matPaginator: MatPaginator;
@@ -40,7 +52,6 @@ export class UnavailableComponent implements OnInit, AfterViewInit {
     public fb: FormBuilder,
     public authService: AuthService,
     private toastr: ToastrService,
-    private router: Router,
     private spinner: NgxSpinnerService,
     private translate: TranslateService,
   ) {}
@@ -80,16 +91,16 @@ export class UnavailableComponent implements OnInit, AfterViewInit {
       ];
     }
 
-    if (this.userType == 1 || this.userType == 0) {
+    if (this.userType === '1' || this.userType === '0') {
       this.userFlowType = 'POULTRY';
-    } else if (this.userType == 2 || this.userType == 0) {
+    } else if (this.userType === '2' || this.userType === '0') {
       this.userFlowType = 'FEEDING';
     }
 
-    if (this.userType == 1 || this.userType == 0) {
+    if (this.userType === '1' || this.userType === '0') {
       const object = { deliveryType: 1, orderStatus: 'UNAVAILABLE', type: this.userFlowType };
       this.getTypeFilter(object);
-    } else if (this.userType == 2 || this.userType == 0) {
+    } else if (this.userType === '2' || this.userType === '0') {
       const object = { deliveryType: 1, orderStatus: 'UNAVAILABLE', type: this.userFlowType };
       this.getTypeFilter(object);
     }
@@ -101,8 +112,9 @@ export class UnavailableComponent implements OnInit, AfterViewInit {
 
   callRolePermission() {
     if (sessionStorage.getItem('roleName') !== 'superAdmin') {
-      const settingPermssion = JSON.parse(sessionStorage.getItem('permission'));
-      const orderPermission = settingPermssion?.find((ele) => ele.area == 'orders')?.write == 1;
+      const permRaw = sessionStorage.getItem('permission');
+      const settingPermssion = permRaw ? (JSON.parse(permRaw) as { area: string; write: number }[]) : null;
+      const orderPermission = settingPermssion?.find((ele) => ele.area === 'orders')?.write === 1;
       // console.log("fef",orderPermission)
       this.showAccept = orderPermission;
     }
@@ -121,22 +133,22 @@ export class UnavailableComponent implements OnInit, AfterViewInit {
     }
   }
 
-  openModal(content, data) {
+  openModal(content: any, data: OrderRow) {
     this.modalService.open(content, { centered: true, size: 'lg' });
     this.orderDetail = data;
   }
 
-  resheduleOrder(data, editModal) {
+  resheduleOrder(data: OrderRow, editModal: any) {
     this.clickOrderId = data.id;
     this.modalService.open(editModal, { centered: true, size: 'md' });
   }
 
-  driverClick(driverId) {
+  driverClick(driverId: number) {
     this.driverMsg = false;
     this.clickedDriverId = Number(driverId);
   }
 
-  dateEvent(event) {
+  dateEvent(event: any) {
     this.errorMsg = false;
     function formatDate(date: Date): string {
       const day = String(date.getDate()).padStart(2, '0');
@@ -181,22 +193,22 @@ export class UnavailableComponent implements OnInit, AfterViewInit {
     }
   }
 
-  getTypeFilter(value) {
+  getTypeFilter(value: { deliveryType: number; orderStatus: string; type: string }) {
     const object = { deliveryType: value.deliveryType, orderStatus: value.orderStatus, type: value.type };
     this.authService.getOrdersWithStatus(object).subscribe((res: any) => {
-      res.data.forEach((element) => {
+      (res.data as OrderRow[]).forEach((element: OrderRow & { zoneName?: string; area?: string; driverName?: string }) => {
         ((element.zoneName = element.deliveryAddress?.zoneName),
           (element.area = element.deliveryAddress?.area),
           (element.driverName = element.deliveryBoyDetail?.userName));
       });
-      this.getvalue = res.data;
-      this.dataSource = new MatTableDataSource(this.getvalue);
+      this.getvalue = res.data as OrderRow[];
+      this.dataSource = new MatTableDataSource<OrderRow>(this.getvalue);
       this.dataSource.paginator = this.matPaginator;
       this.dataSource.sort = this.matSort;
     });
   }
 
-  onChangeFilter(value) {
+  onChangeFilter(value: string) {
     this.deliveryType = value;
     if (this.deliveryType == '1') {
       const object = { deliveryType: 1, orderStatus: 'UNAVAILABLE', type: this.userFlowType };
@@ -207,7 +219,7 @@ export class UnavailableComponent implements OnInit, AfterViewInit {
     }
   }
 
-  onChangeFlowTypeFilter(value) {
+  onChangeFlowTypeFilter(value: string) {
     this.userFlowType = value;
     const object = { deliveryType: this.deliveryType, orderStatus: 'UNAVAILABLE', type: this.userFlowType };
     this.getTypeFilter(object);

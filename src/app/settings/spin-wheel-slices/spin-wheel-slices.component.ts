@@ -10,6 +10,13 @@ import { ToastrService } from 'ngx-toastr';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { TranslateService } from '@ngx-translate/core';
 
+interface SpinSlice {
+  id: number;
+  type: string;
+  title: string;
+  active: number;
+}
+
 @Component({
   selector: 'app-spin-wheel-slices',
   templateUrl: './spin-wheel-slices.component.html',
@@ -17,8 +24,8 @@ import { TranslateService } from '@ngx-translate/core';
 })
 export class SpinWheelSlicesComponent implements OnInit {
   displayedColumns: string[];
-  dataSource: MatTableDataSource<any>;
-  getvalue = [];
+  dataSource: MatTableDataSource<SpinSlice>;
+  getvalue: SpinSlice[] = [];
   isEdit = false;
   spinForm: FormGroup;
   submitted = false;
@@ -50,8 +57,8 @@ export class SpinWheelSlicesComponent implements OnInit {
     this.displayedColumns = ['index', 'type', 'title', 'rowActionToggle', 'rowActionIcon'];
 
     this.authService.getSpinWheel().subscribe((res: any) => {
-      this.getvalue = res.data;
-      this.dataSource = new MatTableDataSource(this.getvalue);
+      this.getvalue = res.data as SpinSlice[];
+      this.dataSource = new MatTableDataSource<SpinSlice>(this.getvalue);
       this.dataSource.paginator = this.matPaginator;
       this.dataSource.sort = this.matSort;
     });
@@ -68,8 +75,9 @@ export class SpinWheelSlicesComponent implements OnInit {
 
   callRolePermission() {
     if (sessionStorage.getItem('roleName') !== 'superAdmin') {
-      const settingPermssion = JSON.parse(sessionStorage.getItem('permission'));
-      const orderPermission = settingPermssion?.find((ele) => ele.area == 'master')?.write == 1;
+      const raw = sessionStorage.getItem('permission');
+      const settingPermssion: Array<{ area: string; write: number }> = raw ? JSON.parse(raw) : [];
+      const orderPermission = settingPermssion.find((ele) => ele.area === 'master')?.write === 1;
       // console.log("fef",orderPermission)
       this.showAccept = orderPermission;
     }
@@ -88,14 +96,14 @@ export class SpinWheelSlicesComponent implements OnInit {
     }
   }
 
-  openModal(content) {
+  openModal(content: any) {
     this.submitted = false;
     this.spinForm.reset();
     this.isEdit = false;
     this.modalService.open(content, { centered: true, size: 'md' });
   }
 
-  editSpinData(data, content) {
+  editSpinData(data: SpinSlice, content: any) {
     this.modalService.open(content, { centered: true, size: 'md' });
     this.isEdit = true;
     this.spinId = data['id'];
@@ -106,7 +114,7 @@ export class SpinWheelSlicesComponent implements OnInit {
     });
   }
 
-  onSubmitData() {
+  onSubmitData(): boolean | void {
     this.submitted = true;
     if (!this.spinForm.valid) {
       return false;
@@ -129,7 +137,7 @@ export class SpinWheelSlicesComponent implements OnInit {
     });
   }
 
-  spinWheelEditService(data) {
+  spinWheelEditService(data: { type: string; title: string }) {
     this.authService.editSpinWheel(data, this.spinId).subscribe((res: any) => {
       if (res.success == true) {
         this.toastr.success('Success ', res.massage);
@@ -142,7 +150,7 @@ export class SpinWheelSlicesComponent implements OnInit {
     });
   }
 
-  changeStatus(value) {
+  changeStatus(value: SpinSlice) {
     const visible = value.active === 1 ? 0 : 1;
     const object = { active: visible };
 

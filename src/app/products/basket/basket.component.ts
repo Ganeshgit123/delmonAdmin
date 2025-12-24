@@ -1,15 +1,19 @@
 import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
 import { AuthService } from 'src/app/shared/auth.service';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { ToastrService } from 'ngx-toastr';
-import { NgxSpinnerService } from 'ngx-spinner';
+import { NgxSpinnerService, NgxSpinnerModule } from 'ngx-spinner';
 import Swal from 'sweetalert2';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
+import { ApiResponse } from 'src/app/shared/models/api-response';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { NgMaterialModule } from '../../ng-material.module';
+import { MatSelectModule } from '@angular/material/select';
 
 interface Basket {
   id: number;
@@ -31,17 +35,13 @@ interface Product {
   enProductName: string;
 }
 
-interface ApiResponse<T> {
-  error: boolean;
-  message: string;
-  data: T;
-  files?: string | string[];
-}
 
 @Component({
   selector: 'app-basket',
   templateUrl: './basket.component.html',
   styleUrls: ['./basket.component.scss'],
+  standalone: true,
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, TranslateModule, NgMaterialModule, NgbModalModule, NgxSpinnerModule, MatSelectModule],
 })
 export class BasketComponent implements OnInit, AfterViewInit {
   displayedColumns: string[];
@@ -77,7 +77,6 @@ export class BasketComponent implements OnInit, AfterViewInit {
     public fb: FormBuilder,
     public authService: AuthService,
     private toastr: ToastrService,
-    private router: Router,
     private spinner: NgxSpinnerService,
     private translate: TranslateService,
   ) {}
@@ -90,8 +89,8 @@ export class BasketComponent implements OnInit, AfterViewInit {
       this.superAdminRole = false;
     }
 
-    this.authService.getBaskets('POULTRY').subscribe((res: ApiResponse<Basket[]>) => {
-      this.getvalue = res.data;
+    this.authService.getBaskets('POULTRY').subscribe((res) => {
+      this.getvalue = (res as ApiResponse<Basket[]>).data;
       this.dataSource = new MatTableDataSource(this.getvalue);
       this.dataSource.paginator = this.matPaginator;
       this.dataSource.sort = this.matSort;
@@ -126,8 +125,9 @@ export class BasketComponent implements OnInit, AfterViewInit {
 
   callRolePermission() {
     if (sessionStorage.getItem('roleName') !== 'superAdmin') {
-      const settingPermssion = JSON.parse(sessionStorage.getItem('permission'));
-      const orderPermission = settingPermssion?.find((ele) => ele.area == 'products')?.write == 1;
+      const permRaw = sessionStorage.getItem('permission');
+      const settingPermssion = permRaw ? (JSON.parse(permRaw) as { area: string; write: number }[]) : null;
+      const orderPermission = settingPermssion?.find((ele) => ele.area === 'products')?.write === 1;
       // console.log("fef",orderPermission)
       this.showAccept = orderPermission;
     }
@@ -145,7 +145,7 @@ export class BasketComponent implements OnInit, AfterViewInit {
       this.dataSource.paginator.firstPage();
     }
   }
-  addBasket(basket) {
+  addBasket(basket: unknown) {
     this.basketForm.reset();
     this.imageNeed = false;
     this.isBasketEdit = false;
@@ -238,9 +238,10 @@ export class BasketComponent implements OnInit, AfterViewInit {
       this.spinner.show();
       const postData = new FormData();
       postData.append('image', this.fileImgUpload);
-      this.authService.s3upload(postData).subscribe((res: ApiResponse<unknown>) => {
-        if (res.error === false) {
-          this.iconImg = res.files as string;
+      this.authService.s3upload(postData).subscribe((res) => {
+        const r: any = res;
+        if (r.error === false) {
+          this.iconImg = r.files as string;
           this.imgs3.push(this.iconImg);
           this.basketForm.value.image = JSON.stringify(this.imgs3);
           this.onSubmitBasketImage(this.basketForm.value);
@@ -287,9 +288,10 @@ export class BasketComponent implements OnInit, AfterViewInit {
     this.basketForm.value.description = 'null';
     this.basketForm.value.arDescription = 'null';
     // console.log("submit", this.productForm.value)
-    this.authService.addNewBasket(data).subscribe((res: ApiResponse<unknown>) => {
-      if (res.error === false) {
-        this.toastr.success('Success ', res.message);
+    this.authService.addNewBasket(data).subscribe((res) => {
+      const r = res as ApiResponse<unknown>;
+      if (r.error === false) {
+        this.toastr.success('Success ', r.message);
         this.spinner.hide();
         this.submitted = false;
         this.basketForm.reset();
@@ -300,7 +302,7 @@ export class BasketComponent implements OnInit, AfterViewInit {
         this.modalService.dismissAll();
         this.ngOnInit();
       } else {
-        this.toastr.error('Enter valid ', res.message);
+        this.toastr.error('Enter valid ', r.message);
       }
     });
   }
@@ -334,9 +336,10 @@ export class BasketComponent implements OnInit, AfterViewInit {
       this.spinner.show();
       const postData = new FormData();
       postData.append('image', this.fileImgUpload);
-      this.authService.s3upload(postData).subscribe((res: ApiResponse<unknown>) => {
-        if (res.error === false) {
-          this.iconImg = res.files as string;
+      this.authService.s3upload(postData).subscribe((res) => {
+        const r: any = res;
+        if (r.error === false) {
+          this.iconImg = r.files as string;
           this.imgs3.push(this.iconImg);
           this.basketForm.value.image = JSON.stringify(this.imgs3);
           this.editBasketImage(this.basketForm.value);
@@ -376,9 +379,10 @@ export class BasketComponent implements OnInit, AfterViewInit {
   }
 
   editBasketImage(data: unknown) {
-    this.authService.editBakset(data, this.baskedId as number).subscribe((res: ApiResponse<unknown>) => {
-      if (res.error === false) {
-        this.toastr.success('Success ', res.message);
+    this.authService.editBakset(data, this.baskedId as number).subscribe((res) => {
+      const r = res as ApiResponse<unknown>;
+      if (r.error === false) {
+        this.toastr.success('Success ', r.message);
         this.spinner.hide();
         this.submitted = false;
         this.basketForm.reset();
@@ -388,26 +392,27 @@ export class BasketComponent implements OnInit, AfterViewInit {
         this.modalService.dismissAll();
         this.ngOnInit();
       } else {
-        this.toastr.error('Enter valid ', res.message);
+        this.toastr.error('Enter valid ', r.message);
       }
     });
   }
 
-  changeStatus(value) {
+  changeStatus(value: Basket) {
     const visible = value.active === 1 ? 0 : 1;
     const object = { active: visible };
 
-    this.authService.editProduct(object, value.id).subscribe((res: ApiResponse<unknown>) => {
-      if (res.error === false) {
-        this.toastr.success('Success ', res.message);
+    this.authService.editProduct(object, value.id).subscribe((res) => {
+      const r = res as ApiResponse<unknown>;
+      if (r.error === false) {
+        this.toastr.success('Success ', r.message);
         this.ngOnInit();
       } else {
-        this.toastr.error('Enter valid ', res.message);
+        this.toastr.error('Enter valid ', r.message);
       }
     });
   }
 
-  deleteProduct(value) {
+  deleteProduct(value: Basket) {
     Swal.fire({
       title: this.translate.instant('AreYouSure'),
       text: this.translate.instant('YouWontBeRevertThis'),
@@ -425,12 +430,13 @@ export class BasketComponent implements OnInit, AfterViewInit {
           icon: 'success',
           confirmButtonText: this.translate.instant('Ok'),
         });
-        this.authService.deleteProd(value).subscribe((res: ApiResponse<unknown>) => {
-          if (res.error === false) {
-            this.toastr.success('Success ', res.message);
+        this.authService.deleteProd(value.id).subscribe((res) => {
+          const r = res as ApiResponse<unknown>;
+          if (r.error === false) {
+            this.toastr.success('Success ', r.message);
             this.ngOnInit();
           } else {
-            this.toastr.error('Error', res.message);
+            this.toastr.error('Error', r.message);
           }
         });
       }
@@ -443,8 +449,8 @@ export class BasketComponent implements OnInit, AfterViewInit {
     this.modalService.open(content, { centered: true, size: 'xl' });
     this.baskedId = data.id;
     const prod = data.basketProductList;
-    this.authService.getProductsWithoutParentId1('POULTRY').subscribe((res: ApiResponse<Product[]>) => {
-      this.getProducts = res.data;
+    this.authService.getProductsWithoutParentId1('POULTRY').subscribe((res) => {
+      this.getProducts = (res as ApiResponse<Product[]>).data;
       this.selectedProvince = this.getProducts;
       // console.log("ttt", prod)
       let filll = [];
@@ -485,16 +491,19 @@ export class BasketComponent implements OnInit, AfterViewInit {
     const uniqueAddresses = Array.from(new Set(this.filteredProd.map((a) => a.id))).map((id) => {
       return this.filteredProd.find((a) => a.id === id);
     });
-    let lastArray = [];
+    let lastArray: number[] = [];
     uniqueAddresses.forEach((element) => {
-      lastArray.push(element.id);
+      if (element) {
+        lastArray.push(element.id);
+      }
     });
 
     this.basketProdForm.value.basketProductList = JSON.stringify(lastArray);
 
-    this.authService.editBakset(this.basketProdForm.value, (this.baskedId as number)).subscribe((res: ApiResponse<unknown>) => {
-      if (res.error === false) {
-        this.toastr.success('Success ', res.message);
+    this.authService.editBakset(this.basketProdForm.value, (this.baskedId as number)).subscribe((res) => {
+      const r = res as ApiResponse<unknown>;
+      if (r.error === false) {
+        this.toastr.success('Success ', r.message);
         this.basketProdForm.reset();
         lastArray = [];
         this.filteredProd = [];
@@ -504,7 +513,7 @@ export class BasketComponent implements OnInit, AfterViewInit {
         this.modalService.dismissAll();
         this.ngOnInit();
       } else {
-        this.toastr.error('Enter valid ', res.message);
+        this.toastr.error('Enter valid ', r.message);
       }
     });
   }

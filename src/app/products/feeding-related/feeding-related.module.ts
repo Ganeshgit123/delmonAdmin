@@ -8,7 +8,7 @@ import { NgxSpinnerModule } from 'ngx-spinner';
 import { TranslateModule } from '@ngx-translate/core';
 
 @NgModule({
-  declarations: [FeedingRelatedComponent],
+  declarations: [],
   imports: [
     CommonModule,
     RouterModule.forChild([
@@ -22,6 +22,7 @@ import { TranslateModule } from '@ngx-translate/core';
     FormsModule,
     ReactiveFormsModule,
     NgxSpinnerModule,
+    FeedingRelatedComponent,
   ],
 })
 export class FeedingRelatedModule {}

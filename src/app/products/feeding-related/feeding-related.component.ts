@@ -1,14 +1,29 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormGroup, FormBuilder, FormArray } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ActivatedRoute } from '@angular/router';
+import { NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
 import { AuthService } from 'src/app/shared/auth.service';
 import { ToastrService } from 'ngx-toastr';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { TranslateModule } from '@ngx-translate/core';
+import { NgMaterialModule } from '../../ng-material.module';
+import { NgxSpinnerModule } from 'ngx-spinner';
 
 @Component({
   selector: 'app-feeding-related',
   templateUrl: './feeding-related.component.html',
   styleUrls: ['./feeding-related.component.scss'],
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    TranslateModule,
+    NgMaterialModule,
+    NgxSpinnerModule,
+    NgbModalModule,
+  ],
 })
 export class FeedingRelatedComponent implements OnInit {
   pieceForm: FormGroup;
@@ -28,7 +43,6 @@ export class FeedingRelatedComponent implements OnInit {
     public fb: FormBuilder,
     public authService: AuthService,
     private toastr: ToastrService,
-    private router: Router,
     private route: ActivatedRoute,
   ) {
     this.pieceForm = this.fb.group({
@@ -65,11 +79,11 @@ export class FeedingRelatedComponent implements OnInit {
         arProductName: [this.getvalue['arProductName']],
       });
 
-      // delete the firstobject because firstobject is a main product object
-      const deleteFirstObject = res.data.shift();
+      // delete the first object because first object is a main product object
+      res.data.shift();
 
       // filter the old related product with soldType = 1 for piece
-      this.pieceRelatedArray = res.data.filter((element) => {
+      this.pieceRelatedArray = res.data.filter((element: any) => {
         return element.soldType == 1;
       });
 
@@ -95,14 +109,15 @@ export class FeedingRelatedComponent implements OnInit {
 
   callRolePermission() {
     if (sessionStorage.getItem('roleName') !== 'superAdmin') {
-      const settingPermssion = JSON.parse(sessionStorage.getItem('permission'));
-      const orderPermission = settingPermssion?.find((ele) => ele.area == 'products')?.write == 1;
+      const perm = sessionStorage.getItem('permission');
+      const settingPermssion: any[] | null = perm ? JSON.parse(perm) : null;
+      const orderPermission = settingPermssion?.find((ele: any) => ele.area == 'products')?.write == 1;
       // console.log("fef",orderPermission)
       this.showAccept = orderPermission;
     }
   }
 
-  getPiecesValue(obj): FormGroup {
+  getPiecesValue(obj: any): FormGroup {
     return this.fb.group({
       id: [obj.id],
       categoryId: [obj.categoryId],
@@ -143,8 +158,8 @@ export class FeedingRelatedComponent implements OnInit {
 
   onSubmitData() {
     // Compare the old product value to new product value and remove the old product value for piece flow
-    this.pieceForm.value.product = this.pieceForm.value.product.filter((val) => {
-      return !this.pieceRelatedArray.find((val2) => {
+    this.pieceForm.value.product = this.pieceForm.value.product.filter((val: any) => {
+      return !this.pieceRelatedArray.find((val2: any) => {
         return val.id === val2.id;
       });
     });
@@ -167,7 +182,7 @@ export class FeedingRelatedComponent implements OnInit {
     });
   }
 
-  changePieceStatus(value) {
+  changePieceStatus(value: any) {
     const visible = value.piecesActive === 1 ? 0 : 1;
     const object = { piecesActive: visible };
     // console.log("fef",object,value.id)
@@ -182,12 +197,12 @@ export class FeedingRelatedComponent implements OnInit {
     });
   }
 
-  updateProduct(data) {
+  updateProduct(data: any) {
     const editArray = [];
     editArray.push(data);
     const keyToRemove = 'isEdit';
     // Remove the specified key from all objects in the array
-    const newArray = editArray.map((obj) => {
+    const newArray = editArray.map((obj: any) => {
       const { [keyToRemove]: removedKey, ...rest } = obj;
       return rest;
     });
@@ -204,7 +219,7 @@ export class FeedingRelatedComponent implements OnInit {
     });
   }
 
-  changeProdStatus(value) {
+  changeProdStatus(value: any) {
     const visible = value.active === 1 ? 0 : 1;
     const object = { active: visible };
     // console.log("fef",object,value.id)

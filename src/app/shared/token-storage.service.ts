@@ -5,7 +5,7 @@ const USER_KEY = 'auth-user';
   providedIn: 'root',
 })
 export class TokenStorageService {
-  constructor() {}
+  // No-op constructor removed to satisfy linting best practices
   signOut(): void {
     window.sessionStorage.clear();
   }

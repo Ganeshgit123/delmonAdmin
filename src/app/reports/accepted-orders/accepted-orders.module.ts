@@ -6,7 +6,7 @@ import { NgMaterialModule } from '../../ng-material.module';
 import { TranslateModule } from '@ngx-translate/core';
 
 @NgModule({
-  declarations: [AcceptedOrdersComponent],
+  declarations: [],
   imports: [
     CommonModule,
     RouterModule.forChild([
@@ -17,6 +17,7 @@ import { TranslateModule } from '@ngx-translate/core';
     ]),
     NgMaterialModule,
     TranslateModule,
+    AcceptedOrdersComponent
   ],
 })
 export class AcceptedOrdersModule {}

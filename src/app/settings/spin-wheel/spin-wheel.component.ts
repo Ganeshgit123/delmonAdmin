@@ -17,8 +17,8 @@ import { TranslateService } from '@ngx-translate/core';
 })
 export class SpinWheelComponent implements OnInit, AfterViewInit {
   displayedColumns: string[];
-  dataSource: MatTableDataSource<any>;
-  getvalue = [];
+  dataSource: MatTableDataSource<SpinUserRow>;
+  getvalue: SpinUserRow[] = [];
   isEdit = false;
   spinForm: FormGroup;
   submitted = false;
@@ -27,7 +27,7 @@ export class SpinWheelComponent implements OnInit, AfterViewInit {
   spinId: any;
   startDate: any = '';
   endDate: any = '';
-  getOrders = [];
+  getOrders: SpinUserRow[] = [];
   userIds: number[];
 
   @ViewChild(MatPaginator) matPaginator: MatPaginator;
@@ -55,8 +55,8 @@ export class SpinWheelComponent implements OnInit, AfterViewInit {
 
     const object = { startDate: this.startDate, endDate: this.endDate, amount: '' };
     this.authService.getSpinList(object).subscribe((res: any) => {
-      this.getOrders = res.data;
-      this.dataSource = new MatTableDataSource(this.getOrders);
+      this.getOrders = res.data as SpinUserRow[];
+      this.dataSource = new MatTableDataSource<SpinUserRow>(this.getOrders);
       this.dataSource.paginator = this.matPaginator;
       this.dataSource.sort = this.matSort;
     });
@@ -64,8 +64,9 @@ export class SpinWheelComponent implements OnInit, AfterViewInit {
 
   callRolePermission() {
     if (sessionStorage.getItem('roleName') !== 'superAdmin') {
-      const settingPermssion = JSON.parse(sessionStorage.getItem('permission'));
-      const orderPermission = settingPermssion?.find((ele) => ele.area == 'master')?.write == 1;
+      const raw = sessionStorage.getItem('permission');
+      const settingPermssion: Array<{ area: string; write: number }> = raw ? JSON.parse(raw) : [];
+      const orderPermission = settingPermssion.find((ele) => ele.area === 'master')?.write === 1;
       // console.log("fef",orderPermission)
       this.showAccept = orderPermission;
     }
@@ -84,7 +85,7 @@ export class SpinWheelComponent implements OnInit, AfterViewInit {
     }
   }
 
-  startEvent(event) {
+  startEvent(event: { value: string | Date }) {
     const stDate = event.value;
     const date = new Date(stDate);
 
@@ -97,7 +98,7 @@ export class SpinWheelComponent implements OnInit, AfterViewInit {
     this.startDate = startFomatDate;
   }
 
-  endEvent(event) {
+  endEvent(event: { value: string | Date }) {
     const stDate = event.value;
     const date = new Date(stDate);
 
@@ -110,11 +111,11 @@ export class SpinWheelComponent implements OnInit, AfterViewInit {
     this.endDate = endFomatDate;
   }
 
-  getList(value) {
+  getList(value: string | number) {
     const object = { startDate: this.startDate, endDate: this.endDate, amount: value };
     this.authService.getSpinList(object).subscribe((res: any) => {
-      this.getOrders = res.data;
-      this.dataSource = new MatTableDataSource(this.getOrders);
+      this.getOrders = res.data as SpinUserRow[];
+      this.dataSource = new MatTableDataSource<SpinUserRow>(this.getOrders);
       this.dataSource.paginator = this.matPaginator;
       this.dataSource.sort = this.matSort;
     });
@@ -137,9 +138,16 @@ export class SpinWheelComponent implements OnInit, AfterViewInit {
   }
 
   restrictNumeric(event: KeyboardEvent) {
-    const charCode = event.which ? event.which : event.keyCode;
-    if (charCode < 48 || charCode > 57) {
+    const key = event.key;
+    if (!/^[0-9]$/.test(key)) {
       event.preventDefault();
     }
   }
+}
+
+interface SpinUserRow {
+  userID: number;
+  user_name: string;
+  mobile_number: string;
+  totalAmount: number;
 }

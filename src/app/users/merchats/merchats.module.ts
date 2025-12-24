@@ -8,7 +8,7 @@ import { NgxSpinnerModule } from 'ngx-spinner';
 import { TranslateModule } from '@ngx-translate/core';
 
 @NgModule({
-  declarations: [MerchatsComponent],
+  declarations: [],
   imports: [
     CommonModule,
     RouterModule.forChild([
@@ -17,6 +17,7 @@ import { TranslateModule } from '@ngx-translate/core';
         component: MerchatsComponent,
       },
     ]),
+    MerchatsComponent,
     NgMaterialModule,
     TranslateModule,
     FormsModule,

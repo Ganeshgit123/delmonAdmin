@@ -1,21 +1,25 @@
 import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/shared/auth.service';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ExportType, MatTableExporterDirective } from '@csmart/mat-table-exporter';
+import { NgMaterialModule } from '../../ng-material.module';
 
 @Component({
   selector: 'app-most-wanted-products',
   templateUrl: './most-wanted-products.component.html',
   styleUrls: ['./most-wanted-products.component.scss'],
+  standalone: true,
+  imports: [CommonModule, TranslateModule, NgMaterialModule],
 })
 export class MostWantedProductsComponent implements OnInit, AfterViewInit {
   displayedColumns: string[];
-  dataSource: MatTableDataSource<any>;
-  getOrders = [];
+  dataSource: MatTableDataSource<MostWantedRow>;
+  getOrders: MostWantedRow[] = [];
   formattedDateTime: string;
   startDate: any = '';
   endDate: any = '';
@@ -56,9 +60,9 @@ export class MostWantedProductsComponent implements OnInit, AfterViewInit {
 
     const object = { type: this.flowType, startDate: '', endDate: '' };
     this.authService.getMostWantedProductReport(object).subscribe((res: any) => {
-      this.getOrders = res.data;
+      this.getOrders = res.data as MostWantedRow[];
       // console.log("Fef",this.getOrders)
-      this.dataSource = new MatTableDataSource(this.getOrders);
+      this.dataSource = new MatTableDataSource<MostWantedRow>(this.getOrders);
       this.dataSource.paginator = this.matPaginator;
       this.dataSource.sort = this.matSort;
     });
@@ -66,8 +70,9 @@ export class MostWantedProductsComponent implements OnInit, AfterViewInit {
 
   callRolePermission() {
     if (sessionStorage.getItem('roleName') !== 'superAdmin') {
-      const settingPermssion = JSON.parse(sessionStorage.getItem('permission'));
-      const orderPermission = settingPermssion?.find((ele) => ele.area == 'most-wanted-product-reports')?.write == 1;
+      const raw = sessionStorage.getItem('permission');
+      const settingPermssion: Array<{ area: string; write: number }> = raw ? JSON.parse(raw) : [];
+      const orderPermission = settingPermssion.find((ele) => ele.area === 'most-wanted-product-reports')?.write === 1;
       // console.log("fef",orderPermission)
       this.showAccept = orderPermission;
     }
@@ -77,10 +82,10 @@ export class MostWantedProductsComponent implements OnInit, AfterViewInit {
     this.matPaginator._intl.itemsPerPageLabel = this.translate.instant('itemsPerPage');
   }
 
-  getDateQuery(object) {
+  getDateQuery(object: { type: string; startDate: string; endDate: string }) {
     this.authService.getMostWantedProductReport(object).subscribe((res: any) => {
-      this.getOrders = res.data;
-      this.dataSource = new MatTableDataSource(this.getOrders);
+      this.getOrders = res.data as MostWantedRow[];
+      this.dataSource = new MatTableDataSource<MostWantedRow>(this.getOrders);
       this.dataSource.paginator = this.matPaginator;
       this.dataSource.sort = this.matSort;
     });
@@ -95,7 +100,7 @@ export class MostWantedProductsComponent implements OnInit, AfterViewInit {
     }
   }
 
-  startEvent(event) {
+  startEvent(event: { value: string | Date }) {
     const stDate = event.value;
     const date = new Date(stDate);
 
@@ -111,7 +116,7 @@ export class MostWantedProductsComponent implements OnInit, AfterViewInit {
     // this.getDateQuery(object)
   }
 
-  endEvent(event) {
+  endEvent(event: { value: string | Date }) {
     const stDate = event.value;
     const date = new Date(stDate);
 
@@ -127,7 +132,7 @@ export class MostWantedProductsComponent implements OnInit, AfterViewInit {
     this.getDateQuery(object);
   }
 
-  onChangeFlowTypeFilter(value) {
+  onChangeFlowTypeFilter(value: string) {
     this.flowType = value;
     const object = { type: this.flowType, startDate: this.startDate, endDate: this.endDate };
     this.getDateQuery(object);
@@ -150,4 +155,10 @@ export class MostWantedProductsComponent implements OnInit, AfterViewInit {
       fileName: `Most Wanted Product Report ${this.formattedDateTime}`,
     });
   }
+}
+
+interface MostWantedRow {
+  name: string;
+  productId: string | number;
+  productCount: number;
 }

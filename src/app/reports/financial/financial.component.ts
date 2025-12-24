@@ -1,25 +1,29 @@
 import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
 import { AuthService } from 'src/app/shared/auth.service';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { ExportType, MatTableExporterDirective } from '@csmart/mat-table-exporter';
-import { NgxSpinnerService } from 'ngx-spinner';
+import { NgxSpinnerService, NgxSpinnerModule } from 'ngx-spinner';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { NgMaterialModule } from '../../ng-material.module';
 
 @Component({
   selector: 'app-financial',
   templateUrl: './financial.component.html',
   styleUrls: ['./financial.component.scss'],
+  standalone: true,
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, TranslateModule, NgMaterialModule, NgxSpinnerModule],
 })
 export class FinancialComponent implements OnInit, AfterViewInit {
   displayedColumns: string[];
-  dataSource: MatTableDataSource<any>;
-  getOrders = [];
+  dataSource: MatTableDataSource<FinancialRow>;
+  getOrders: FinancialRow[] = [];
   formattedDateTime: string;
-  startDate: any = '';
-  endDate: any = '';
+  startDate: string = '';
+  endDate: string = '';
   showAccept = true;
   superAdminRole = false;
   dir: any;
@@ -32,7 +36,6 @@ export class FinancialComponent implements OnInit, AfterViewInit {
 
   constructor(
     public authService: AuthService,
-    private router: Router,
     private translate: TranslateService,
     private spinner: NgxSpinnerService,
   ) {}
@@ -75,14 +78,15 @@ export class FinancialComponent implements OnInit, AfterViewInit {
     }
 
     this.spinner.show();
-    const object = { type: this.flowType, startDate: '', endDate: '' };
+    const object: DateQuery = { type: this.flowType, startDate: '', endDate: '' };
     this.getDateQuery(object);
   }
 
   callRolePermission() {
     if (sessionStorage.getItem('roleName') !== 'superAdmin') {
-      const settingPermssion = JSON.parse(sessionStorage.getItem('permission'));
-      const orderPermission = settingPermssion?.find((ele) => ele.area == 'financial-reports')?.write == 1;
+      const raw = sessionStorage.getItem('permission');
+      const settingPermssion: Permission[] = raw ? (JSON.parse(raw) as Permission[]) : [];
+      const orderPermission = settingPermssion?.find((ele: Permission) => ele.area == 'financial-reports')?.write == 1;
       // console.log("fef",orderPermission)
       this.showAccept = orderPermission;
     }
@@ -123,7 +127,7 @@ export class FinancialComponent implements OnInit, AfterViewInit {
   }
 
   // Normalize price by stripping currency like "BD" and returning a number
-  private normalizePrice(price: string | number): number {
+  private normalizePrice(price: string | number | undefined): number {
     if (typeof price === 'number') return price;
     if (typeof price === 'string') {
       const numStr = price.replace(/[^\d.-]/g, '');
@@ -133,33 +137,33 @@ export class FinancialComponent implements OnInit, AfterViewInit {
     return 0;
   }
 
-  getDateQuery(object) {
+  getDateQuery(object: DateQuery) {
     this.spinner.show();
     this.authService.getFinanceReport(object).subscribe((res: any) => {
       // ...existing code...
-      this.getOrders = res.deliveryBoyOrderList.reverse();
+      this.getOrders = (res.deliveryBoyOrderList as FinancialRow[]).reverse();
 
-      this.getOrders = this.getOrders.map((order) => {
-        const items = order.order;
+      this.getOrders = this.getOrders.map((order: FinancialRow) => {
+        const items = order.order ?? [];
         const vatItems = this.filterVat(items).map((i) => ({
           ...i,
-          price: this.normalizePrice(i.price), // store price without "BD"
+          price: this.normalizePrice(i.price),
         }));
         const deliveryItems = this.filterDelivery(items).map((i) => ({
           ...i,
-          price: this.normalizePrice(i.price), // store price without "BD"
+          price: this.normalizePrice(i.price),
         }));
         return {
           ...order,
           vatItems,
           deliveryItems,
-        };
+        } as FinancialRow;
       });
 
       // ...existing code...
       this.spinner.hide();
       // console.log("Fef", this.getOrders);
-      this.dataSource = new MatTableDataSource(this.getOrders);
+      this.dataSource = new MatTableDataSource<FinancialRow>(this.getOrders);
       this.dataSource.paginator = this.matPaginator;
       this.dataSource.sort = this.matSort;
     });
@@ -174,7 +178,7 @@ export class FinancialComponent implements OnInit, AfterViewInit {
     }
   }
 
-  startEvent(event) {
+  startEvent(event: { value: Date }) {
     const stDate = event.value;
     const date = new Date(stDate);
 
@@ -190,7 +194,7 @@ export class FinancialComponent implements OnInit, AfterViewInit {
     // this.getDateQuery(object)
   }
 
-  endEvent(event) {
+  endEvent(event: { value: Date }) {
     const stDate = event.value;
     const date = new Date(stDate);
 
@@ -202,13 +206,13 @@ export class FinancialComponent implements OnInit, AfterViewInit {
 
     this.endDate = endFomatDate;
 
-    const object = { type: this.flowType, startDate: this.startDate, endDate: this.endDate };
+    const object: DateQuery = { type: this.flowType, startDate: this.startDate, endDate: this.endDate };
     this.getDateQuery(object);
   }
 
-  onChangeFlowTypeFilter(value) {
+  onChangeFlowTypeFilter(value: string) {
     this.flowType = value;
-    const object = { type: this.flowType, startDate: this.startDate, endDate: this.endDate };
+    const object: DateQuery = { type: this.flowType, startDate: this.startDate, endDate: this.endDate };
     this.getDateQuery(object);
   }
 
@@ -229,4 +233,43 @@ export class FinancialComponent implements OnInit, AfterViewInit {
       fileName: `Financial Report ${this.formattedDateTime}`,
     });
   }
+}
+
+interface FinancialOrderItem {
+  title: string;
+  price?: string | number;
+}
+
+interface FinancialRow {
+  order?: FinancialOrderItem[];
+  vatItems?: FinancialOrderItem[];
+  deliveryItems?: FinancialOrderItem[];
+  // plus other fields shown in displayedColumns, left as optional to avoid implicit any
+  orderId?: string | number;
+  salesInvoiceNo?: string;
+  bankTransationNo?: string;
+  customerName?: string;
+  userType?: string;
+  driverName?: string;
+  orderDetails?: string;
+  prodDetails?: string;
+  vat?: string | number;
+  deliveryFee?: string | number;
+  total?: string | number;
+  paymentType?: string;
+  sonicNo?: string;
+  orderStatus?: string;
+  orderDate?: string;
+  deliveryDate?: string;
+}
+
+interface DateQuery {
+  type: string;
+  startDate: string;
+  endDate: string;
+}
+
+interface Permission {
+  area: string;
+  write: number;
 }

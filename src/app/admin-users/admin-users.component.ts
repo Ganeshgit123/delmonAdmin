@@ -1,27 +1,30 @@
 import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AuthService } from 'src/app/shared/auth.service';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { ToastrService } from 'ngx-toastr';
-import { TranslateService } from '@ngx-translate/core';
+import { NgMaterialModule } from '../ng-material.module';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-admin-users',
   templateUrl: './admin-users.component.html',
   styleUrls: ['./admin-users.component.scss'],
+  standalone: true,
+  imports: [CommonModule, NgMaterialModule, TranslateModule],
 })
 export class AdminUsersComponent implements OnInit, AfterViewInit {
   displayedColumns: string[];
-  dataSource: MatTableDataSource<any>;
-  getAdminUsers = [];
+  dataSource: MatTableDataSource<AdminUserRow>;
+  getAdminUsers: AdminUserRow[] = [];
   adminUserForm: FormGroup;
   isEdit = false;
-  adminUserId: any;
-  getRoles = [];
+  adminUserId: number | null = null;
+  getRoles: RoleRow[] = [];
   submitted = false;
   some: any;
   showAccept = true;
@@ -35,7 +38,6 @@ export class AdminUsersComponent implements OnInit, AfterViewInit {
     public fb: FormBuilder,
     public authService: AuthService,
     private toastr: ToastrService,
-    private router: Router,
     private translate: TranslateService,
   ) {}
 
@@ -54,15 +56,15 @@ export class AdminUsersComponent implements OnInit, AfterViewInit {
     }
 
     this.authService.getAdminUser().subscribe((res: any) => {
-      res.data = res.data.filter((obj) => obj.id !== 1);
-      this.getAdminUsers = res.data.reverse();
-      this.dataSource = new MatTableDataSource(this.getAdminUsers);
+      res.data = res.data.filter((obj: any) => obj.id !== 1);
+      this.getAdminUsers = (res.data as AdminUserRow[]).reverse();
+      this.dataSource = new MatTableDataSource<AdminUserRow>(this.getAdminUsers);
       this.dataSource.paginator = this.matPaginator;
       this.dataSource.sort = this.matSort;
     });
 
     this.authService.getRoles().subscribe((res: any) => {
-      this.getRoles = res.data;
+      this.getRoles = res.data as RoleRow[];
     });
 
     this.adminUserForm = this.fb.group({
@@ -79,8 +81,11 @@ export class AdminUsersComponent implements OnInit, AfterViewInit {
 
   callRolePermission() {
     if (sessionStorage.getItem('roleName') !== 'superAdmin') {
-      const settingPermssion = JSON.parse(sessionStorage.getItem('permission'));
-      const orderPermission = settingPermssion?.find((ele) => ele.area == 'adminUsers')?.write == 1;
+      const permStr = sessionStorage.getItem('permission');
+      const settingPermssion: Array<{ area: string; read: number; write: number }> | null = permStr
+        ? JSON.parse(permStr)
+        : null;
+      const orderPermission = settingPermssion?.find((ele: { area: string; read: number; write: number }) => ele.area == 'adminUsers')?.write == 1;
       // console.log("fef",orderPermission)
       this.showAccept = orderPermission;
     }
@@ -99,22 +104,22 @@ export class AdminUsersComponent implements OnInit, AfterViewInit {
     }
   }
 
-  openModal(content) {
+  openModal(content: any) {
     this.adminUserForm.reset();
     this.isEdit = false;
     this.modalService.open(content, { centered: true });
   }
 
-  editAdminUser(data, content) {
+  editAdminUser(data: AdminUserRow, content: any) {
     this.modalService.open(content, { centered: true });
     this.isEdit = true;
-    this.adminUserId = data['id'];
+    this.adminUserId = data.id;
 
     this.adminUserForm = this.fb.group({
-      email: [data['email']],
-      password: [data['password']],
-      userType: [data['userType']],
-      roles: [data['roles']],
+      email: [data.email],
+      password: [data.password],
+      userType: [data.userType],
+      roles: [data.roles],
     });
   }
 
@@ -142,7 +147,7 @@ export class AdminUsersComponent implements OnInit, AfterViewInit {
     });
   }
 
-  adminEditService(data) {
+  adminEditService(data: any) {
     this.authService.editAdminUser(data, this.adminUserId).subscribe((res: any) => {
       if (res.error == false) {
         this.toastr.success('Success ', res.message);
@@ -156,7 +161,20 @@ export class AdminUsersComponent implements OnInit, AfterViewInit {
   }
 
   getNameById(id: number): string {
-    const item = this.getRoles.find((item) => item.id === id);
+    const item = this.getRoles.find((item: RoleRow) => item.id === id);
     return item ? item.roleName : 'Unknown';
   }
+}
+
+interface AdminUserRow {
+  id: number;
+  email: string;
+  password: string;
+  userType: string;
+  roles: number;
+}
+
+interface RoleRow {
+  id: number;
+  roleName: string;
 }

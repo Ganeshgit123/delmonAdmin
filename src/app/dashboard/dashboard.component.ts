@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { NgApexchartsModule } from 'ng-apexcharts';
@@ -52,30 +52,30 @@ export interface apexChartOptions {
 })
 export class DashboardComponent implements OnInit {
   getDashboardData: any;
-  postsArray = [];
-  adsSeparateArray = [];
-  usersListArray = [];
-  adsArrayLabels = [];
-  adsSeparateArrayLabels = [];
-  usersListArrayLabels = [];
+  postsArray: number[] = [];
+  adsSeparateArray: any[] = [];
+  usersListArray: any[] = [];
+  adsArrayLabels: string[] = [];
+  adsSeparateArrayLabels: string[] = [];
+  usersListArrayLabels: string[] = [];
   reportedAds: any;
   totCommission: any;
   totCategories: any;
   totCities: any;
-  startDate: any = '';
-  endDate: any = '';
+  startDate: string = '';
+  endDate: string = '';
   getDashReport: any;
-  getReportSell: any = [];
-  getReportRent: any = [];
-  getReportRequest: any = [];
-  getReportCommission: any = [];
+  getReportSell: any[] = [];
+  getReportRent: any[] = [];
+  getReportRequest: any[] = [];
+  getReportCommission: any[] = [];
   sellWord: any;
   rentWord: any;
   requestWord: any;
   commissionWord: any;
   countWord: any;
   deletedAds: any;
-  getvalue = [];
+  getvalue: SalesCount[] = [];
 
   public pieChartOptions: Partial<apexChartOptions>;
 
@@ -110,7 +110,7 @@ export class DashboardComponent implements OnInit {
   ngOnInit(): void {
     this.adsArrayLabels = ['Total Sales for the week', 'Total Sales for the month', 'Total Sales during the year'];
     this.authService.dashboard('POULTRY').subscribe((res: any) => {
-      this.getvalue = res.data;
+      this.getvalue = res.data as SalesCount[];
       this.postsArray.push(
         Number(this.getvalue[0].weekSalesCount.weekSalesCount),
         Number(this.getvalue[0].monthSalesCount.monthSalesCount),
@@ -142,4 +142,16 @@ export class DashboardComponent implements OnInit {
       };
     });
   }
+}
+
+interface SalesCount {
+  weekSalesCount: { weekSalesCount: number };
+  monthSalesCount: { monthSalesCount: number };
+  yearSalesCount: { yearSalesCount: number };
+  userCount: { totalUserCount: number; totalEmployeeCount: number };
+  ordersCount: { orderCount: number; cancelledOrder: number };
+  deliveryCount: { deliveryCount: number };
+  areaCount: { areaCount: number };
+  poultryCategoriesCount: { active: number };
+  feedingCount: { active: number };
 }

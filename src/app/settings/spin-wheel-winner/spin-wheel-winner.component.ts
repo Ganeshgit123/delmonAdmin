@@ -14,8 +14,8 @@ import { TranslateService } from '@ngx-translate/core';
 })
 export class SpinWheelWinnerComponent implements OnInit {
   displayedColumns: string[];
-  dataSource: MatTableDataSource<any>;
-  getvalue = [];
+  dataSource: MatTableDataSource<SpinWinnerRow>;
+  getvalue: SpinWinnerRow[] = [];
 
   @ViewChild(MatPaginator) matPaginator: MatPaginator;
   @ViewChild(MatSort) matSort: MatSort;
@@ -31,10 +31,17 @@ export class SpinWheelWinnerComponent implements OnInit {
     this.displayedColumns = ['index', 'userId', 'type', 'title'];
 
     this.authService.getSpinWheelWinner().subscribe((res: any) => {
-      this.getvalue = res.data;
-      this.dataSource = new MatTableDataSource(this.getvalue);
+      this.getvalue = res.data as SpinWinnerRow[];
+      this.dataSource = new MatTableDataSource<SpinWinnerRow>(this.getvalue);
       this.dataSource.paginator = this.matPaginator;
       this.dataSource.sort = this.matSort;
     });
   }
+}
+
+interface SpinWinnerRow {
+  userId: number;
+  type: string;
+  title: string;
+  id?: number;
 }

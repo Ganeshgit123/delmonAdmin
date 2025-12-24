@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+// Router not used here; removed to clean DI
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AuthService } from 'src/app/shared/auth.service';
 import { MatPaginator } from '@angular/material/paginator';
@@ -17,8 +17,8 @@ import { TranslateService } from '@ngx-translate/core';
 })
 export class OverallProductsComponent implements OnInit, AfterViewInit {
   displayedColumns: string[];
-  dataSource: MatTableDataSource<any>;
-  getvalue = [];
+  dataSource: MatTableDataSource<ProductRow>;
+  getvalue: ProductRow[] = [];
 
   @ViewChild(MatPaginator) matPaginator: MatPaginator;
   @ViewChild(MatSort) matSort: MatSort;
@@ -28,7 +28,6 @@ export class OverallProductsComponent implements OnInit, AfterViewInit {
     public fb: FormBuilder,
     public authService: AuthService,
     private toastr: ToastrService,
-    private router: Router,
     private spinner: NgxSpinnerService,
     private translate: TranslateService,
   ) {}
@@ -37,8 +36,8 @@ export class OverallProductsComponent implements OnInit, AfterViewInit {
     this.displayedColumns = ['index', 'name', 'image', 'noOfPieces', 'serves', 'weight'];
 
     this.authService.getProducts('POULTRY').subscribe((res: any) => {
-      this.getvalue = res.data;
-      this.dataSource = new MatTableDataSource(this.getvalue);
+      this.getvalue = res.data as ProductRow[];
+      this.dataSource = new MatTableDataSource<ProductRow>(this.getvalue);
       this.dataSource.paginator = this.matPaginator;
       this.dataSource.sort = this.matSort;
     });
@@ -56,4 +55,13 @@ export class OverallProductsComponent implements OnInit, AfterViewInit {
       this.dataSource.paginator.firstPage();
     }
   }
+}
+
+interface ProductRow {
+  id: number;
+  name: string;
+  image: string;
+  noOfPieces: number | string;
+  serves: number | string;
+  weight: number | string;
 }

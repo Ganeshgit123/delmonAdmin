@@ -1,25 +1,30 @@
 import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
+// Router import removed
 import { AuthService } from 'src/app/shared/auth.service';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { ToastrService } from 'ngx-toastr';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { NgMaterialModule } from '../../ng-material.module';
 import { ExportType, MatTableExporterDirective } from '@csmart/mat-table-exporter';
 
 @Component({
   selector: 'app-merchats',
   templateUrl: './merchats.component.html',
   styleUrls: ['./merchats.component.scss'],
+  standalone: true,
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, TranslateModule, NgMaterialModule, NgbModalModule],
 })
 export class MerchatsComponent implements OnInit, AfterViewInit {
   displayedColumns: string[];
-  dataSource: MatTableDataSource<any>;
-  getUsers = [];
-  userId: any;
+  dataSource: MatTableDataSource<MerchantRow>;
+  getUsers: MerchantRow[] = [];
+  userId: string | number | null = null;
   approveForm: FormGroup;
   submitted = false;
   showAccept = true;
@@ -33,7 +38,6 @@ export class MerchatsComponent implements OnInit, AfterViewInit {
   constructor(
     public authService: AuthService,
     private toastr: ToastrService,
-    private router: Router,
     private modalService: NgbModal,
     public fb: FormBuilder,
     private translate: TranslateService,
@@ -63,8 +67,8 @@ export class MerchatsComponent implements OnInit, AfterViewInit {
     }
 
     this.authService.getMerchantUsers().subscribe((res: any) => {
-      this.getUsers = res.data;
-      this.dataSource = new MatTableDataSource(this.getUsers);
+      this.getUsers = res.data as MerchantRow[];
+      this.dataSource = new MatTableDataSource<MerchantRow>(this.getUsers);
       this.dataSource.paginator = this.matPaginator;
       this.dataSource.sort = this.matSort;
     });
@@ -80,8 +84,9 @@ export class MerchatsComponent implements OnInit, AfterViewInit {
 
   callRolePermission() {
     if (sessionStorage.getItem('roleName') !== 'superAdmin') {
-      const settingPermssion = JSON.parse(sessionStorage.getItem('permission'));
-      const orderPermission = settingPermssion?.find((ele) => ele.area == 'users')?.write == 1;
+      const raw = sessionStorage.getItem('permission');
+      const settingPermssion: Permission[] = raw ? (JSON.parse(raw) as Permission[]) : [];
+      const orderPermission = settingPermssion?.find((ele: Permission) => ele.area == 'users')?.write == 1;
       // console.log("fef",orderPermission)
       this.showAccept = orderPermission;
     }
@@ -100,7 +105,7 @@ export class MerchatsComponent implements OnInit, AfterViewInit {
     }
   }
 
-  approve(Package, id) {
+  approve(Package: any, id: string | number) {
     this.userId = id;
     this.modalService.open(Package, { centered: true });
   }
@@ -111,7 +116,7 @@ export class MerchatsComponent implements OnInit, AfterViewInit {
       return;
     }
     this.approveForm.value.isApprove = 1;
-    this.authService.approveMerchant(this.approveForm.value, this.userId).subscribe((res: any) => {
+    this.authService.approveMerchant(this.approveForm.value, this.userId as string | number).subscribe((res: any) => {
       if (res.error == false) {
         this.toastr.success('Success ', res.message);
         this.approveForm.reset();
@@ -123,7 +128,7 @@ export class MerchatsComponent implements OnInit, AfterViewInit {
     });
   }
 
-  reject(id) {
+  reject(id: string | number) {
     this.approveForm.value.isApprove = 2;
     this.authService.approveMerchant(this.approveForm.value, id).subscribe((res: any) => {
       if (res.error == false) {
@@ -137,10 +142,10 @@ export class MerchatsComponent implements OnInit, AfterViewInit {
     });
   }
 
-  changeActiveStatus(value) {
+  changeActiveStatus(value: MerchantRow) {
     const visible = value.active === 1 ? 0 : 1;
     const object = { active: visible };
-    this.authService.updateUserType(object, value.id).subscribe((res: any) => {
+    this.authService.updateUserType(object, value.id as string | number).subscribe((res: any) => {
       if (res.error == false) {
         this.toastr.success('Success ', res.message);
         this.ngOnInit();
@@ -167,4 +172,19 @@ export class MerchatsComponent implements OnInit, AfterViewInit {
       fileName: `Merchants ${this.formattedDateTime}`,
     });
   }
+}
+
+interface MerchantRow {
+  id?: string | number;
+  mobileNumber?: string;
+  crNumber?: string;
+  userName?: string;
+  email?: string;
+  merchantType?: string;
+  active?: number;
+}
+
+interface Permission {
+  area: string;
+  write: number;
 }

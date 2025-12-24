@@ -1,10 +1,10 @@
-# delmonAngular
+# Delmon Admin
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 8.3.4.
+Angular application (currently targeting Angular 21) with standardized TypeScript, ESLint, and Prettier configuration.
 
 ## Development server
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+Run `ng serve` for a dev server and navigate to `http://localhost:4200/`. The app will automatically reload on source changes.
 
 ## Code scaffolding
 
@@ -12,7 +12,7 @@ Run `ng generate component component-name` to generate a new component. You can 
 
 ## Build
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+Run `ng build` to build the project. Artifacts are stored in `dist/`. Use `ng build --configuration production` for optimized builds.
 
 ## Running unit tests
 
@@ -20,7 +20,29 @@ Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.
 
 ## Running end-to-end tests
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
+Run `ng e2e` to execute the end-to-end tests.
+
+## Coding Standards
+
+- Lint: `npm run lint` (Angular ESLint). Autofixes: `npm run lint:fix`.
+- Format: `npm run format` (Prettier) and `npm run format:check` to verify.
+- Type checking:
+	- Baseline: `npm run type-check` (using `tsconfig.app.json`).
+	- Strict mode: `npm run type-check:strict` (using `tsconfig.strict.json`). Fix findings progressively.
+- Angular style guide highlights:
+	- Selectors: components use `app-` kebab-case; directives use `app` camelCase.
+	- Avoid `any`; prefer well-defined interfaces and types.
+	- Provide alternative text for images and associate labels with controls (accessibility).
+	- Prefer `for-of` over index-based loops for simple iteration.
+
+## Project Tooling
+
+- ESLint flat config with `angular-eslint` and `typescript-eslint`.
+- Prettier config in `.prettierrc`; editor defaults in `.editorconfig`.
+
+## Upgrade Notes
+
+The repository has been updated to modern Angular tooling. Older references to Angular CLI v8 have been replaced. Use the scripts documented here for development.
 
 ## Further help
 

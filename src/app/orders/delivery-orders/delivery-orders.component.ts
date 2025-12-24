@@ -1,41 +1,52 @@
 import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { CommonModule } from '@angular/common';
+import { FormBuilder } from '@angular/forms';
+import { NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
 import { AuthService } from 'src/app/shared/auth.service';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { ToastrService } from 'ngx-toastr';
-import { NgxSpinnerService } from 'ngx-spinner';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { NgMaterialModule } from '../../ng-material.module';
+
+interface OrderRow {
+  id: number;
+  _id?: number;
+  orderStatus: string;
+  deliveryAddress?: { zoneName?: string; area?: string } | null;
+  deliveryBoyDetail?: { userName?: string } | null;
+}
 
 @Component({
   selector: 'app-delivery-orders',
   templateUrl: './delivery-orders.component.html',
   styleUrls: ['./delivery-orders.component.scss'],
+  standalone: true,
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, TranslateModule, NgMaterialModule, NgbModalModule],
 })
 export class DeliveryOrdersComponent implements OnInit, AfterViewInit {
   displayedColumns: string[];
-  dataSource: MatTableDataSource<any>;
-  getvalue = [];
-  ordSelectId = [];
-  ordDriverSelectId = [];
-  currentStatus: any;
+  dataSource: MatTableDataSource<OrderRow>;
+  getvalue: OrderRow[] = [];
+  ordSelectId: number[] = [];
+  ordDriverSelectId: number[] = [];
+  currentStatus: string | null = null;
   isAllSelect = false;
   isAllDriverSelect = false;
-  orderDetail: any;
-  getDrivers = [];
+  orderDetail: OrderRow | null = null;
+  getDrivers: any[] = [];
   deliveryDate: any;
-  deliveryType: any;
-  orderDeliverId: any;
+  deliveryType: string | number | null = null;
+  orderDeliverId: number | null = null;
   showAccept = true;
   superAdminRole = false;
-  userType: any;
-  newOrders: any;
-  notAssignedOrders: any;
+  userType: string | null = null;
+  newOrders: OrderRow[] = [];
+  notAssignedOrders: OrderRow[] = [];
   multiDriverDropdown = false;
-  flowType: any;
+  flowType: string;
 
   @ViewChild(MatPaginator) matPaginator: MatPaginator;
   @ViewChild(MatSort) matSort: MatSort;
@@ -45,14 +56,12 @@ export class DeliveryOrdersComponent implements OnInit, AfterViewInit {
     public fb: FormBuilder,
     public authService: AuthService,
     private toastr: ToastrService,
-    private router: Router,
-    private spinner: NgxSpinnerService,
     private translate: TranslateService,
   ) {}
 
   ngOnInit(): void {
     this.callRolePermission();
-    if (sessionStorage.getItem('roleName') == 'superAdmin') {
+    if (sessionStorage.getItem('roleName') === 'superAdmin') {
       this.superAdminRole = true;
     } else {
       this.superAdminRole = false;
@@ -60,7 +69,7 @@ export class DeliveryOrdersComponent implements OnInit, AfterViewInit {
 
     this.userType = sessionStorage.getItem('userType');
 
-    if (this.showAccept == true) {
+    if (this.showAccept === true) {
       this.displayedColumns = [
         'checkbox',
         'index',
@@ -75,7 +84,7 @@ export class DeliveryOrdersComponent implements OnInit, AfterViewInit {
         'deliveryDate',
         'rowActionIcon',
       ];
-    } else if (this.showAccept == false) {
+    } else if (this.showAccept === false) {
       this.displayedColumns = [
         'index',
         'orderId',
@@ -89,7 +98,7 @@ export class DeliveryOrdersComponent implements OnInit, AfterViewInit {
       ];
     }
 
-    if (this.userType == 1) {
+    if (this.userType == '1') {
       this.flowType = 'POULTRY';
     } else {
       this.flowType = 'FEEDING';
@@ -102,16 +111,15 @@ export class DeliveryOrdersComponent implements OnInit, AfterViewInit {
         type: 'POULTRY',
       };
       this.authService.getOrdersWithStatus(object).subscribe((res: any) => {
-        res.data.forEach((element) => {
+        (res.data as OrderRow[]).forEach((element: OrderRow & { zoneName?: string; area?: string; driverName?: string }) => {
           ((element.zoneName = element.deliveryAddress?.zoneName),
             (element.area = element.deliveryAddress?.area),
             (element.driverName = element.deliveryBoyDetail?.userName));
         });
-        this.getvalue = res.data;
-        this.getvalue = res.data;
-        this.newOrders = res.data.filter((item) => item.orderStatus == 'PLACED');
-        this.notAssignedOrders = res.data.filter((item) => item.orderStatus == 'USERACCEPTED');
-        this.dataSource = new MatTableDataSource(this.getvalue);
+        this.getvalue = res.data as OrderRow[];
+        this.newOrders = (res.data as OrderRow[]).filter((item: OrderRow) => item.orderStatus === 'PLACED');
+        this.notAssignedOrders = (res.data as OrderRow[]).filter((item: OrderRow) => item.orderStatus === 'USERACCEPTED');
+        this.dataSource = new MatTableDataSource<OrderRow>(this.getvalue);
         this.dataSource.paginator = this.matPaginator;
         this.dataSource.sort = this.matSort;
       });
@@ -125,31 +133,32 @@ export class DeliveryOrdersComponent implements OnInit, AfterViewInit {
     }
 
     this.authService.getDriversActive(1).subscribe((res: any) => {
-      this.getDrivers = res.data.reverse();
+      this.getDrivers = (res.data as any[]).reverse();
     });
   }
 
   callRolePermission() {
     if (sessionStorage.getItem('roleName') !== 'superAdmin') {
-      const settingPermssion = JSON.parse(sessionStorage.getItem('permission'));
-      const orderPermission = settingPermssion?.find((ele) => ele.area == 'orders')?.write == 1;
+      const permRaw = sessionStorage.getItem('permission');
+      const settingPermssion = permRaw ? (JSON.parse(permRaw) as { area: string; write: number }[]) : null;
+      const orderPermission = settingPermssion?.find((ele) => ele.area === 'orders')?.write === 1;
       // console.log("fef",orderPermission)
       this.showAccept = orderPermission;
     }
   }
 
-  getTypeFilter(value) {
+  getTypeFilter(value: { deliveryType: number; orderStatus: string; type: string }) {
     const object = { deliveryType: value.deliveryType, orderStatus: value.orderStatus, type: value.type };
     this.authService.getOrdersWithStatus(object).subscribe((res: any) => {
-      res.data.forEach((element) => {
+      (res.data as OrderRow[]).forEach((element: OrderRow & { zoneName?: string; area?: string; driverName?: string }) => {
         ((element.zoneName = element.deliveryAddress?.zoneName),
           (element.area = element.deliveryAddress?.area),
           (element.driverName = element.deliveryBoyDetail?.userName));
       });
-      this.getvalue = res.data;
-      this.newOrders = res.data.filter((item) => item.orderStatus == 'PLACED');
-      this.notAssignedOrders = res.data.filter((item) => item.orderStatus == 'USERACCEPTED');
-      this.dataSource = new MatTableDataSource(this.getvalue);
+      this.getvalue = res.data as OrderRow[];
+      this.newOrders = (res.data as OrderRow[]).filter((item: OrderRow) => item.orderStatus === 'PLACED');
+      this.notAssignedOrders = (res.data as OrderRow[]).filter((item: OrderRow) => item.orderStatus === 'USERACCEPTED');
+      this.dataSource = new MatTableDataSource<OrderRow>(this.getvalue);
       this.dataSource.paginator = this.matPaginator;
       this.dataSource.sort = this.matSort;
     });
@@ -173,7 +182,7 @@ export class DeliveryOrdersComponent implements OnInit, AfterViewInit {
     return specificFormatRegex.test(dateStr);
   }
 
-  approveOrder(id) {
+  approveOrder(id: number) {
     const object = {
       orderStatus: 'USERACCEPTED',
     };
@@ -187,21 +196,23 @@ export class DeliveryOrdersComponent implements OnInit, AfterViewInit {
     });
   }
 
-  onInputChange(id) {
+  onInputChange(id: number) {
     const index = this.ordSelectId.indexOf(id);
     if (index > -1) {
       this.ordSelectId = this.removeItemOnce(this.ordSelectId, id);
       if (this.ordSelectId.length == 0) {
         this.currentStatus = null;
-        this.dataSource = new MatTableDataSource(this.getvalue);
+        this.dataSource = new MatTableDataSource<OrderRow>(this.getvalue);
         this.ngOnInit();
       }
     } else {
       if (this.ordSelectId.length > 0) {
         this.ordSelectId.push(id);
       } else {
-        this.currentStatus = this.getvalue.find((data) => data._id == id)?.orderStatus;
-        this.getvalue = this.getvalue.filter((data) => data.orderStatus == this.currentStatus);
+        this.currentStatus = this.getvalue.find((data) => data._id === id)?.orderStatus ?? null;
+        if (this.currentStatus) {
+          this.getvalue = this.getvalue.filter((data) => data.orderStatus === this.currentStatus);
+        }
         this.ordSelectId.push(id);
       }
     }
@@ -217,8 +228,8 @@ export class DeliveryOrdersComponent implements OnInit, AfterViewInit {
     this.isAllSelect = !this.isAllSelect;
     if (this.isAllSelect) {
       //selection
-      const totalA = [];
-      await this.newOrders.map(async (element) => {
+      const totalA: number[] = [];
+      await this.newOrders.map(async (element: OrderRow) => {
         await totalA.push(element.id);
       });
       this.ordSelectId = totalA;
@@ -230,7 +241,7 @@ export class DeliveryOrdersComponent implements OnInit, AfterViewInit {
     }
   }
 
-  removeItemOnce(arr, value) {
+  removeItemOnce(arr: number[], value: number): number[] {
     const index = arr.indexOf(value);
     if (index > -1) {
       arr.splice(index, 1);
@@ -238,37 +249,35 @@ export class DeliveryOrdersComponent implements OnInit, AfterViewInit {
     return arr;
   }
 
-  onDriverInputChange(id) {
+  onDriverInputChange(id: number) {
     const index = this.ordDriverSelectId.indexOf(id);
     if (index > -1) {
       this.ordDriverSelectId = this.removeItemOnce(this.ordDriverSelectId, id);
       if (this.ordDriverSelectId.length == 0) {
-        this.dataSource = new MatTableDataSource(this.getvalue);
+        this.dataSource = new MatTableDataSource<OrderRow>(this.getvalue);
         this.ngOnInit();
       }
     } else {
       if (this.ordDriverSelectId.length > 0) {
         this.ordDriverSelectId.push(id);
       } else {
-        const currentStatus = this.getvalue.find((data) => data._id == id)?.orderStatus;
-        this.getvalue = this.getvalue.filter((data) => data.orderStatus == currentStatus);
+        const currentStatus = this.getvalue.find((data) => data._id === id)?.orderStatus;
+        if (currentStatus) {
+          this.getvalue = this.getvalue.filter((data) => data.orderStatus === currentStatus);
+        }
         this.ordDriverSelectId.push(id);
       }
     }
-
-    if (this.ordDriverSelectId.length == this.getvalue.length) {
-      this.isAllDriverSelect = true;
-    } else {
-      this.isAllDriverSelect = false;
-    }
   }
+
+  
 
   async selectDriverAllClick() {
     this.isAllDriverSelect = !this.isAllDriverSelect;
     if (this.isAllDriverSelect) {
       //selection
-      const totalA = [];
-      await this.notAssignedOrders.map(async (element) => {
+      const totalA: number[] = [];
+      await this.notAssignedOrders.map(async (element: OrderRow) => {
         await totalA.push(element.id);
       });
       this.ordDriverSelectId = totalA;
@@ -300,7 +309,7 @@ export class DeliveryOrdersComponent implements OnInit, AfterViewInit {
     this.multiDriverDropdown = true;
   }
 
-  assignMultiDriverToOrder(id) {
+  assignMultiDriverToOrder(id: number) {
     const assignDriverId = id;
     function formatDate(date: Date): string {
       const day = String(date.getDate()).padStart(2, '0');
@@ -332,12 +341,12 @@ export class DeliveryOrdersComponent implements OnInit, AfterViewInit {
     });
   }
 
-  openModal(content, data) {
+  openModal(content: any, data: any) {
     this.modalService.open(content, { centered: true, size: 'lg' });
     this.orderDetail = data;
   }
 
-  assignDriver(driverId, orderId) {
+  assignDriver(driverId: number, orderId: number) {
     const assignDriverId = driverId;
     const assignOrderId = orderId;
 
@@ -370,12 +379,15 @@ export class DeliveryOrdersComponent implements OnInit, AfterViewInit {
     });
   }
 
-  editOrderType(data, editModal) {
+  editOrderType(data: any, editModal: any) {
     this.modalService.open(editModal, { centered: true, size: 'sm' });
-    this.deliveryType = data.deliveryType;
+    this.deliveryType = data.deliveryType ?? null;
     this.orderDeliverId = data.id;
   }
   onSubmitDeliveryType() {
+    if (this.orderDeliverId == null) {
+      return;
+    }
     const object = {
       deliveryType: 'PICKUP',
     };
@@ -390,7 +402,7 @@ export class DeliveryOrdersComponent implements OnInit, AfterViewInit {
     });
   }
 
-  cancelOrder(id) {
+  cancelOrder(id: number) {
     const object = {
       orderStatus: 'CANCELLED',
     };
@@ -404,7 +416,7 @@ export class DeliveryOrdersComponent implements OnInit, AfterViewInit {
     });
   }
 
-  onChangeFilter(value) {
+  onChangeFilter(value: string) {
     const object = { deliveryType: 1, orderStatus: 'PLACED,USERACCEPTED,DRIVERASSIGNED,OUTFORDELIVERY', type: value };
     this.getTypeFilter(object);
   }

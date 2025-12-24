@@ -5,6 +5,11 @@ import { IDropdownSettings } from 'ng-multiselect-dropdown';
 import { ToastrService } from 'ngx-toastr';
 import { map, Observable, startWith } from 'rxjs';
 
+interface UserOption {
+  id: string | number;
+  text: string;
+}
+
 @Component({
   selector: 'app-push',
   templateUrl: './push.component.html',
@@ -14,9 +19,9 @@ export class PushComponent implements OnInit {
   fcmForm: FormGroup;
   smsForm: FormGroup;
   dropdownSettingsuser: IDropdownSettings = {};
-  getuser;
-  dropdownList;
-  selectuser = [];
+  getuser: any;
+  dropdownList: any;
+  selectuser: UserOption[] = [];
   showAccept = true;
   superAdminRole = false;
   userGroups = [
@@ -29,10 +34,10 @@ export class PushComponent implements OnInit {
   submittedSms = false;
 
   userCtrl = new FormControl('');
-  filteredUsers = new Observable<any[]>();
+  filteredUsers = new Observable<UserOption[]>();
 
-  allUsers: any[] = [];
-  selectedUsers: any[] = [];
+  allUsers: UserOption[] = [];
+  selectedUsers: UserOption[] = [];
 
   constructor(
     public fb: FormBuilder,
@@ -65,7 +70,7 @@ export class PushComponent implements OnInit {
 
     // Load & map API users
     this.authService.getNormalUsers().subscribe((res: any) => {
-      this.allUsers = res.data.map((u) => ({
+      this.allUsers = res.data.map((u: any) => ({
         id: u.id,
         text: u.mobileNumber,
       }));
@@ -80,8 +85,9 @@ export class PushComponent implements OnInit {
 
   callRolePermission() {
     if (sessionStorage.getItem('roleName') !== 'superAdmin') {
-      const settingPermssion = JSON.parse(sessionStorage.getItem('permission'));
-      const orderPermission = settingPermssion?.find((ele) => ele.area == 'master')?.write == 1;
+      const raw = sessionStorage.getItem('permission');
+      const settingPermssion: Array<{ area: string; write: number }> = raw ? JSON.parse(raw) : [];
+      const orderPermission = settingPermssion.find((ele) => ele.area === 'master')?.write === 1;
       // console.log("fef",orderPermission)
       this.showAccept = orderPermission;
     }
@@ -103,12 +109,12 @@ export class PushComponent implements OnInit {
   }
 
   // For autocomplete display
-  displayFn(user: any): string {
+  displayFn(user: UserOption): string {
     return user?.text || '';
   }
 
   // When selecting autocomplete option
-  selectUser(option: any) {
+  selectUser(option: UserOption) {
     if (this.selectedUsers.some((u) => u.id === option.id)) {
       this.toastr.warning('User already added');
       this.userCtrl.setValue('');
@@ -129,7 +135,7 @@ export class PushComponent implements OnInit {
   handleEnter(event: any) {
     event.preventDefault();
 
-    const value = this.userCtrl.value?.trim();
+    const value = (this.userCtrl.value || '').toString().trim();
 
     const list = this.filteredUsersSource(value);
 
@@ -235,7 +241,7 @@ export class PushComponent implements OnInit {
           this.toastr.error(res.massage || 'Failed to send notification', '', { timeOut: 2000 });
         }
       },
-      (err) => {
+      (_err) => {
         this.toastr.error('Failed to send notification', '', { timeOut: 2000 });
       },
     );
@@ -286,7 +292,7 @@ export class PushComponent implements OnInit {
           this.toastr.error(res.massage || 'Failed to send SMS', '', { timeOut: 2000 });
         }
       },
-      (err) => {
+      (_err) => {
         this.toastr.error('Failed to send SMS', '', { timeOut: 2000 });
       },
     );

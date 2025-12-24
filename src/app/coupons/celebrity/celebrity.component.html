@@ -39,11 +39,12 @@
       <div class="row">
         <div class="col-md-6">
           <div class="form-group">
-            <label for="name">{{ 'CounponNameEN' | translate }}</label>
+            <label for="enCouponName">{{ 'CounponNameEN' | translate }}</label>
             <input
               type="text"
               class="form-control"
               placeholder="{{ 'CounponNameEN' | translate }}"
+              id="enCouponName"
               formControlName="enCouponName"
               [ngClass]="{ 'is-invalid': submitted && f.enCouponName.errors }"
             />
@@ -56,11 +57,12 @@
             }
           </div>
           <div class="form-group">
-            <label for="name">{{ 'DiscountPercentage' | translate }} (%)</label>
+            <label for="discountPercentage">{{ 'DiscountPercentage' | translate }} (%)</label>
             <input
               type="number"
               class="form-control"
               placeholder="{{ 'CouponCode' | translate }}"
+              id="discountPercentage"
               formControlName="discountPercentage"
               [ngClass]="{ 'is-invalid': submitted && f.discountPercentage.errors }"
             />
@@ -73,11 +75,12 @@
             }
           </div>
           <div class="form-group">
-            <label for="name">{{ 'CouponCode' | translate }} ({{ 'EnterEnglishWords' | translate }})</label>
+            <label for="couponCode">{{ 'CouponCode' | translate }} ({{ 'EnterEnglishWords' | translate }})</label>
             <input
               type="text"
               class="form-control"
               placeholder="{{ 'CouponCode' | translate }}"
+              id="couponCode"
               formControlName="couponCode"
               (input)="onCouponInput($event)"
               (paste)="onCouponPaste($event)"
@@ -92,10 +95,11 @@
             }
           </div>
           <div class="form-group">
-            <label for="name">{{ 'DescriptionEN' | translate }}</label>
+            <label for="enDescription">{{ 'DescriptionEN' | translate }}</label>
             <textarea
               class="form-control"
               placeholder="{{ 'DescriptionEN' | translate }}"
+              id="enDescription"
               formControlName="enDescription"
               [ngClass]="{ 'is-invalid': submitted && f.enDescription.errors }"
             ></textarea>
@@ -108,17 +112,18 @@
             }
           </div>
           <div class="form-group">
-            <label for="name">{{ 'ExpiryDate' | translate }}</label>
-            <input type="date" class="form-control" formControlName="expiryDate" />
+            <label for="expiryDate">{{ 'ExpiryDate' | translate }}</label>
+            <input type="date" class="form-control" id="expiryDate" formControlName="expiryDate" />
           </div>
         </div>
         <div class="col-md-6">
           <div class="form-group">
-            <label for="name">{{ 'CounponNameAR' | translate }}</label>
+            <label for="arCouponName">{{ 'CounponNameAR' | translate }}</label>
             <input
               type="text"
               class="form-control"
               placeholder="{{ 'CounponNameAR' | translate }}"
+              id="arCouponName"
               formControlName="arCouponName"
               [ngClass]="{ 'is-invalid': submitted && f.arCouponName.errors }"
             />
@@ -131,11 +136,12 @@
             }
           </div>
           <div class="form-group">
-            <label for="name">{{ 'Title' | translate }}</label>
+            <label for="title">{{ 'Title' | translate }}</label>
             <input
               type="text"
               class="form-control"
               placeholder="{{ 'Title' | translate }}"
+              id="title"
               formControlName="title"
               [ngClass]="{ 'is-invalid': submitted && f.title.errors }"
             />
@@ -148,11 +154,12 @@
             }
           </div>
           <div class="form-group">
-            <label for="name">{{ 'MaximumDiscount' | translate }}</label>
+            <label for="maximumDiscount">{{ 'MaximumDiscount' | translate }}</label>
             <input
               type="number"
               class="form-control"
               placeholder="{{ 'MaximumDiscount' | translate }}"
+              id="maximumDiscount"
               formControlName="maximumDiscount"
               [ngClass]="{ 'is-invalid': submitted && f.maximumDiscount.errors }"
             />
@@ -165,10 +172,11 @@
             }
           </div>
           <div class="form-group">
-            <label for="name">{{ 'DescriptionAR' | translate }}</label>
+            <label for="arDescription">{{ 'DescriptionAR' | translate }}</label>
             <textarea
               class="form-control"
               placeholder="{{ 'DescriptionEN' | translate }}"
+              id="arDescription"
               formControlName="arDescription"
               [ngClass]="{ 'is-invalid': submitted && f.arDescription.errors }"
             ></textarea>
@@ -261,6 +269,7 @@
             src="assets/images/edit_icon.svg"
             onmouseover="this.src = 'assets/images/edit_hover_icon.svg'"
             onmouseout="this.src = 'assets/images/edit_icon.svg'"
+            alt="Edit"
           />
         </button>
         <!-- <button mat-button (click)="deleteCoupon(element.id)" class="dele_btn">

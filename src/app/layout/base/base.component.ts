@@ -1,12 +1,19 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { NavbarComponent } from '../navbar/navbar.component';
+import { SidebarComponent } from '../sidebar/sidebar.component';
+import { FooterComponent } from '../footer/footer.component';
 import { Router, RouteConfigLoadStart, RouteConfigLoadEnd } from '@angular/router';
 
 @Component({
   selector: 'app-base',
   templateUrl: './base.component.html',
   styleUrls: ['./base.component.scss'],
+  standalone: true,
+  imports: [CommonModule, RouterModule, NavbarComponent, SidebarComponent, FooterComponent],
 })
-export class BaseComponent implements OnInit {
+export class BaseComponent {
   isLoading: boolean;
 
   constructor(private router: Router) {
@@ -19,6 +26,4 @@ export class BaseComponent implements OnInit {
       }
     });
   }
-
-  ngOnInit(): void {}
 }

@@ -7,7 +7,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { NgMaterialModule } from '../../ng-material.module';
 
 @NgModule({
-  declarations: [RolesComponent],
+  declarations: [],
   imports: [
     CommonModule,
     NgMaterialModule,
@@ -20,6 +20,7 @@ import { NgMaterialModule } from '../../ng-material.module';
     FormsModule,
     ReactiveFormsModule,
     TranslateModule,
+    RolesComponent,
   ],
 })
 export class RolesModule {}
