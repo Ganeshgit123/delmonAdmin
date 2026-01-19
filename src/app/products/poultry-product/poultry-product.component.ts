@@ -11,6 +11,7 @@ import { ToastrService } from 'ngx-toastr';
 import { NgxSpinnerService, NgxSpinnerModule } from 'ngx-spinner';
 import Swal from 'sweetalert2';
 import { TranslateService, TranslateModule } from '@ngx-translate/core';
+import { RouterModule } from '@angular/router';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgMaterialModule } from '../../ng-material.module';
 
@@ -34,7 +35,7 @@ interface ProductRow {
   templateUrl: './poultry-product.component.html',
   styleUrls: ['./poultry-product.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, TranslateModule, NgMaterialModule, NgbModalModule, NgxSpinnerModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, TranslateModule, NgMaterialModule, NgbModalModule, NgxSpinnerModule, RouterModule],
 })
 export class PoultryProductComponent implements OnInit, AfterViewInit {
   displayedColumns: string[];

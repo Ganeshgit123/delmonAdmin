@@ -12,6 +12,7 @@ import { NgxSpinnerService, NgxSpinnerModule } from 'ngx-spinner';
 import Swal from 'sweetalert2';
 import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 import { NgMaterialModule } from '../../ng-material.module';
 
 // Remove local ApiResponse to avoid clashes with service typing
@@ -33,7 +34,7 @@ interface ProductRow {
   templateUrl: './feeding-product.component.html',
   styleUrls: ['./feeding-product.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, TranslateModule, NgMaterialModule, NgbModalModule, NgxSpinnerModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, TranslateModule, NgMaterialModule, NgbModalModule, NgxSpinnerModule, RouterModule],
 })
 export class FeedingProductComponent implements OnInit, AfterViewInit {
   displayedColumns: string[];

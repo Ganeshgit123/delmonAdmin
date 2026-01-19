@@ -17,12 +17,12 @@ import { TranslateModule } from '@ngx-translate/core';
         component: PoultyComponent,
       },
     ]),
-    PoultyComponent,
     NgMaterialModule,
     TranslateModule,
     FormsModule,
     ReactiveFormsModule,
     NgxSpinnerModule,
+    PoultyComponent
   ],
 })
 export class PoultyModule {}

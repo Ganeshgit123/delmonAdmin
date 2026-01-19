@@ -13,6 +13,9 @@ import { TranslateService } from '@ngx-translate/core';
   selector: 'app-pin',
   templateUrl: './pin.component.html',
   styleUrls: ['./pin.component.scss'],
+  standalone: true,
+  imports: [
+  ],
 })
 export class PinComponent implements OnInit, AfterViewInit {
   displayedColumns!: string[];

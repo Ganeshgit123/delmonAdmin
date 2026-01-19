@@ -5,7 +5,7 @@
 // Template variables
 @import './variables';
 
-// Bootstrap main SCSS
+// Bootstrap main SCSS (kept as @import to preserve variable overrides)
 @import 'bootstrap/scss/bootstrap.scss';
 
 // Template mixins
@@ -67,7 +67,7 @@
 @import "./components/auth";
 
 
-// Plugin styles
+// Plugin styles (remain as CSS imports)
 @import "highlight.js/styles/googlecode.css";
 // @import url("//at.alicdn.com/t/font_o5hd5vvqpoqiwwmi.css"); //(feather-font). github https://github.com/AT-UI/feather-font
 @import "../fonts/feather/style.css";

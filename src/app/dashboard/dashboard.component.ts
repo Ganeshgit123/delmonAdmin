@@ -1,9 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { NgApexchartsModule } from 'ng-apexcharts';
 import { AuthService } from '../shared/auth.service';
-import { ToastrService } from 'ngx-toastr';
 import {
   ApexAxisChartSeries,
   ApexNonAxisChartSeries,
@@ -75,13 +74,13 @@ export class DashboardComponent implements OnInit {
   commissionWord: any;
   countWord: any;
   deletedAds: any;
-  getvalue: SalesCount[] = [];
+  getvalue: any[] = [];
 
   public pieChartOptions: Partial<apexChartOptions>;
 
   constructor(
     public authService: AuthService,
-    private toastr: ToastrService,
+    private cdr: ChangeDetectorRef,
   ) {
     this.pieChartOptions = {
       nonAxisSeries: [0, 0, 0],
@@ -110,48 +109,39 @@ export class DashboardComponent implements OnInit {
   ngOnInit(): void {
     this.adsArrayLabels = ['Total Sales for the week', 'Total Sales for the month', 'Total Sales during the year'];
     this.authService.dashboard('POULTRY').subscribe((res: any) => {
-      this.getvalue = res.data as SalesCount[];
-      this.postsArray.push(
-        Number(this.getvalue[0].weekSalesCount.weekSalesCount),
-        Number(this.getvalue[0].monthSalesCount.monthSalesCount),
-        Number(this.getvalue[0].yearSalesCount.yearSalesCount),
-      );
-      // this.postsArray.push(90, 89, 89);
-      // console.log("vdf", this.postsArray)
-      this.pieChartOptions = {
-        nonAxisSeries: this.postsArray,
-        colors: ['#50a820', '#f3c64f', '#ee9e43'],
-        chart: {
-          height: 300,
-          type: 'donut',
-        },
-        chartLabels: this.adsArrayLabels,
-        stroke: {
-          colors: ['rgba(0,0,0,0)'],
-        },
-        legend: {
-          position: 'top',
-          horizontalAlign: 'center',
-        },
-        dataLabels: {
-          enabled: true,
-          formatter(value: any, opts: any): any {
-            return opts.w.config.series[opts.seriesIndex];
+      // Defer state updates to the next microtask to avoid NG0100 in dev mode
+      Promise.resolve().then(() => {
+        this.getvalue = res.data;
+        this.postsArray.push(
+          Number(this.getvalue[0].weekSalesCount.weekSalesCount),
+          Number(this.getvalue[0].monthSalesCount.monthSalesCount),
+          Number(this.getvalue[0].yearSalesCount.yearSalesCount),
+        );
+        this.pieChartOptions = {
+          nonAxisSeries: this.postsArray,
+          colors: ['#50a820', '#f3c64f', '#ee9e43'],
+          chart: {
+            height: 300,
+            type: 'donut',
           },
-        },
-      };
+          chartLabels: this.adsArrayLabels,
+          stroke: {
+            colors: ['rgba(0,0,0,0)'],
+          },
+          legend: {
+            position: 'top',
+            horizontalAlign: 'center',
+          },
+          dataLabels: {
+            enabled: true,
+            formatter(value: any, opts: any): any {
+              return opts.w.config.series[opts.seriesIndex];
+            },
+          },
+        };
+        // Trigger change detection for the deferred updates
+        this.cdr.detectChanges();
+      });
     });
   }
-}
-
-interface SalesCount {
-  weekSalesCount: { weekSalesCount: number };
-  monthSalesCount: { monthSalesCount: number };
-  yearSalesCount: { yearSalesCount: number };
-  userCount: { totalUserCount: number; totalEmployeeCount: number };
-  ordersCount: { orderCount: number; cancelledOrder: number };
-  deliveryCount: { deliveryCount: number };
-  areaCount: { areaCount: number };
-  poultryCategoriesCount: { active: number };
-  feedingCount: { active: number };
 }

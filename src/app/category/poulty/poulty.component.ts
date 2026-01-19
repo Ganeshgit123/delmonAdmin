@@ -1,19 +1,23 @@
 import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { CommonModule } from '@angular/common';
+import { FormGroup, FormBuilder, Validators,FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { NgbModal,NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
 import { AuthService } from 'src/app/shared/auth.service';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { ToastrService } from 'ngx-toastr';
 import { NgxSpinnerService } from 'ngx-spinner';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService,TranslateModule } from '@ngx-translate/core';
+import { NgMaterialModule } from '../../ng-material.module';
 import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-poulty',
   templateUrl: './poulty.component.html',
   styleUrls: ['./poulty.component.scss'],
+   standalone: true,
+    imports: [CommonModule, FormsModule, ReactiveFormsModule, TranslateModule, NgMaterialModule, NgbModalModule],
 })
 export class PoultyComponent implements OnInit, AfterViewInit {
   displayedColumns: string[];

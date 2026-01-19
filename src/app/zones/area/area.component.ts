@@ -13,6 +13,10 @@ import { TranslateService } from '@ngx-translate/core';
   selector: 'app-area',
   templateUrl: './area.component.html',
   styleUrls: ['./area.component.scss'],
+  standalone: true,
+  imports: [
+
+  ],
 })
 export class AreaComponent implements OnInit, AfterViewInit {
   displayedColumns!: string[];

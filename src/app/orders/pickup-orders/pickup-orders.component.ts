@@ -16,10 +16,32 @@ interface OrderRow {
   _id?: number;
   orderId?: string | number;
   orderStatus: string;
-  deliveryType?: string;
+  deliveryType?: string | number;
   deliveryOrderDate?: string;
-  deliveryAddress?: { zoneName?: string; area?: string } | null;
+  userType?: string | number;
+  userName?: string;
+  mobileNumber?: string;
+  deliveryAddress?: {
+    zoneName?: string;
+    area?: string;
+    blockNo?: string | number;
+    houseNo?: string | number;
+    roadNo?: string | number;
+    flat?: string | number;
+    pin?: string | number;
+    notes?: string;
+  } | null;
+  deliveryAddressType?: string;
+  paymentTypeId?: string | number;
+  deliveryNotes?: string;
+  unAvailableNotes?: string;
+  sonicNumber?: string | number;
+  cartDetails?: Array<{ enProductName?: string; weight?: string | number; quantity?: number }>;
+  order?: Array<{ title?: string; price?: string | number }>;
   deliveryBoyDetail?: { userName?: string } | null;
+  zoneName?: string;
+  area?: string;
+  driverName?: string;
 }
 
 @Component({

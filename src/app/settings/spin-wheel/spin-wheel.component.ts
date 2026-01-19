@@ -14,6 +14,9 @@ import { TranslateService } from '@ngx-translate/core';
   selector: 'app-spin-wheel',
   templateUrl: './spin-wheel.component.html',
   styleUrls: ['./spin-wheel.component.scss'],
+  standalone: true,
+  imports: [
+  ],
 })
 export class SpinWheelComponent implements OnInit, AfterViewInit {
   displayedColumns: string[];

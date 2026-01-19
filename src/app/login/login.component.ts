@@ -65,12 +65,16 @@ export class LoginComponent implements OnInit {
         sessionStorage.setItem('roleName', res.roleName);
         sessionStorage.setItem('permission', JSON.stringify(res.roles));
         this.router.navigate([this.returnUrl]);
-        this.toastr.success('Success', res.massage);
+        setTimeout(() => {
+          this.toastr.success('Success', res.massage);
+        });
         localStorage.setItem('dir', 'ltr');
         localStorage.setItem('lang', 'en');
         localStorage.setItem('flow', 'POULTRY');
       } else {
-        this.toastr.error('Error', res.massage);
+        setTimeout(() => {
+          this.toastr.error('Error', res.massage);
+        });
       }
     });
   }

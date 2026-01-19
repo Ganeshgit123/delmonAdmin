@@ -7,7 +7,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { ToastrService } from 'ngx-toastr';
 import { TranslateService, TranslateModule } from '@ngx-translate/core';
-import { NgxSpinnerService } from 'ngx-spinner';
+import { NgxSpinnerService, NgxSpinnerModule } from 'ngx-spinner';
 import { NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ExportType, MatTableExporterDirective } from '@csmart/mat-table-exporter';
@@ -19,7 +19,7 @@ import { NgMaterialModule } from '../../ng-material.module';
   templateUrl: './normal-user.component.html',
   styleUrls: ['./normal-user.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, TranslateModule, NgMaterialModule, NgbModalModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, TranslateModule, NgMaterialModule, NgbModalModule, NgxSpinnerModule],
 })
 export class NormalUserComponent implements OnInit, AfterViewInit {
   displayedColumns: string[];

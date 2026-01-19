@@ -13,6 +13,8 @@ import { TranslateService } from '@ngx-translate/core';
   selector: 'app-zones',
   templateUrl: './zones.component.html',
   styleUrls: ['./zones.component.scss'],
+  standalone: true,
+  imports: [],
 })
 export class ZonesComponent implements OnInit, AfterViewInit {
   displayedColumns!: string[];

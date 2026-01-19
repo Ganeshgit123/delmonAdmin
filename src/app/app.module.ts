@@ -1,7 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { AppComponent } from './app.component';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { AppRoutingModule } from './app-routing.module';
 
@@ -9,28 +8,25 @@ import { LayoutModule } from './layout/layout.module';
 import { AuthGuard } from './core/guard/auth.guard';
 import { AuthInterceptor } from './shared/auth.interceptor';
 
-// Root module bootstraps AppComponent
-
 import { HIGHLIGHT_OPTIONS } from 'ngx-highlightjs';
 import { ToastrModule } from 'ngx-toastr';
 import { MatTableModule } from '@angular/material/table';
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 
-import { HttpClientModule, HttpClient, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HttpClient, HTTP_INTERCEPTORS } from '@angular/common/http';
 
 export function createTranslateLoader(http: HttpClient): any {
   return new TranslateHttpLoader(http, 'assets/i18n/', '.json');
 }
 
 @NgModule({
-  declarations: [AppComponent],
+  declarations: [
+  ],
   imports: [
     BrowserModule,
     AppRoutingModule,
-    BrowserAnimationsModule,
     LayoutModule,
-    HttpClientModule,
     MatTableModule,
     ToastrModule.forRoot(),
     TranslateModule.forRoot({
@@ -41,6 +37,8 @@ export function createTranslateLoader(http: HttpClient): any {
         deps: [HttpClient],
       },
     }),
+    AppComponent,
+    
   ],
   providers: [
     {
@@ -61,7 +59,6 @@ export function createTranslateLoader(http: HttpClient): any {
       },
     },
   ],
-  bootstrap: [AppComponent],
 })
 export class AppModule {}
 export function HttpLoaderFactory(http: HttpClient) {

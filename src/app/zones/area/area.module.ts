@@ -7,7 +7,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 
 @NgModule({
-  declarations: [AreaComponent],
+  declarations: [],
   imports: [
     CommonModule,
     RouterModule.forChild([
@@ -20,6 +20,7 @@ import { TranslateModule } from '@ngx-translate/core';
     TranslateModule,
     FormsModule,
     ReactiveFormsModule,
+    AreaComponent,
   ],
 })
 export class AreaModule {}
