@@ -4,6 +4,7 @@ import { EmployeePurchaseComponent } from './employee-purchase.component';
 import { RouterModule } from '@angular/router';
 import { NgMaterialModule } from '../../ng-material.module';
 import { TranslateModule } from '@ngx-translate/core';
+import { NgxSpinnerModule } from 'ngx-spinner';
 
 @NgModule({
   declarations: [
@@ -19,6 +20,7 @@ import { TranslateModule } from '@ngx-translate/core';
     ]),
     NgMaterialModule,
     TranslateModule,
+    NgxSpinnerModule
   ]
 })
 export class EmployeePurchaseModule { }

@@ -6,6 +6,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { TranslateService } from '@ngx-translate/core';
 import { ExportType, MatTableExporterDirective } from 'mat-table-exporter';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 @Component({
   selector: 'app-salesman-report',
@@ -30,7 +31,9 @@ export class SalesmanReportComponent implements OnInit {
   @ViewChild(MatSort) matSort: MatSort;
   @ViewChild(MatTableExporterDirective, { static: true }) exporter: MatTableExporterDirective;
 
-  constructor(public authService: AuthService, private router: Router, private translate: TranslateService,) { }
+  constructor(public authService: AuthService, private router: Router, private translate: TranslateService,
+    private spinner: NgxSpinnerService,
+  ) { }
 
   ngOnInit(): void {
     this.dir = localStorage.getItem('dir') || 'ltr';
@@ -54,15 +57,9 @@ export class SalesmanReportComponent implements OnInit {
       this.flowType = 'FEEDING'
     }
 
+    this.spinner.show();
     const object = { type: this.flowType, startDate: '', endDate: '' }
-    this.authService.getFinanceReport(object).subscribe(
-      (res: any) => {
-        this.getOrders = res.deliveryBoyOrderList.reverse();
-        // console.log("Fef",this.getOrders)
-        this.dataSource = new MatTableDataSource(this.getOrders);
-        this.dataSource.paginator = this.matPaginator;
-        this.dataSource.sort = this.matSort;
-      });
+    this.getDateQuery(object)
   }
 
   callRolePermission() {
@@ -79,10 +76,12 @@ export class SalesmanReportComponent implements OnInit {
   }
 
   getDateQuery(object) {
+     this.spinner.show();
     this.authService.getFinanceReport(object).subscribe(
       (res: any) => {
-        this.getOrders = res.deliveryBoyOrderList;
+        this.getOrders = res.deliveryBoyOrderList.reverse();;
         this.dataSource = new MatTableDataSource(this.getOrders);
+         this.spinner.hide();
         this.dataSource.paginator = this.matPaginator;
         this.dataSource.sort = this.matSort;
       }
