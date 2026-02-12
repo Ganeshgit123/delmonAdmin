@@ -735,6 +735,14 @@ export class AuthService {
         { headers: headers });
   }
 
+  pushWhatsup(data: any) {  
+    const headers = new HttpHeaders()
+      .set('type', 'POULTRY')
+    return this.http
+      .post<any>(`${this.endpoint}/whatsapp`, data,
+        { headers: headers });
+  }
+
   pushEMails(data: any) {
     const headers = new HttpHeaders()
       .set('type', 'POULTRY')

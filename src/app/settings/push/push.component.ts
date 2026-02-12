@@ -13,6 +13,7 @@ import { map, Observable, startWith } from 'rxjs';
 export class PushComponent implements OnInit {
   fcmForm: FormGroup;
   smsForm: FormGroup;
+  whatsupForm: FormGroup;
   dropdownSettingsuser: IDropdownSettings = {};
   getuser;
   dropdownList;
@@ -27,6 +28,7 @@ export class PushComponent implements OnInit {
   // added submitted flags
   submittedFcm = false;
   submittedSms = false;
+  submittedWhatsup = false;
 
   userCtrl = new FormControl('');
   filteredUsers: Observable<any[]> = new Observable();
@@ -53,6 +55,14 @@ export class PushComponent implements OnInit {
 
     this.smsForm = this.fb.group({
       title: ['', Validators.required],
+      message: ['', [Validators.required]],
+      userId: [[]],
+      recipientType: ['', Validators.required], // <- added required validator
+      groupId: ['']
+    });
+
+
+    this.whatsupForm = this.fb.group({
       message: ['', [Validators.required]],
       userId: [[]],
       recipientType: ['', Validators.required], // <- added required validator
@@ -87,6 +97,7 @@ export class PushComponent implements OnInit {
   // convenience getters for template
   get fF() { return this.fcmForm.controls; }
   get fS() { return this.smsForm.controls; }
+  get fW() { return this.whatsupForm.controls; }
 
   // Normalize autocomplete input
   private filterUsers(value: any) {
@@ -186,6 +197,7 @@ export class PushComponent implements OnInit {
     const ids = this.selectedUsers.map(u => u.id);
     this.fcmForm.get('userId')?.setValue(ids);
     this.smsForm.get('userId')?.setValue(ids);
+    this.whatsupForm.get('userId')?.setValue(ids);
   }
 
   sendFCMNotification() {
@@ -286,6 +298,54 @@ export class PushComponent implements OnInit {
         }
       }, (err) => {
         this.toastr.error('Failed to send SMS', '', { timeOut: 2000 });
+      });
+  }
+
+  sendWhatsup(){
+    this.submittedWhatsup = true;
+    if (this.whatsupForm.invalid) {
+      return;
+    }
+
+    const recipientType = this.whatsupForm.get('recipientType')?.value;
+
+    // validate based on recipientType
+    if (recipientType === 'single' && this.selectedUsers.length === 0) {
+      this.toastr.error('Please select at least one user', '', { timeOut: 2000 });
+      return;
+    }
+
+    if (recipientType === 'group' && !this.whatsupForm.get('groupId')?.value) {
+      this.toastr.error('Please select a group', '', { timeOut: 2000 });
+      return;
+    }
+
+    // build payload with only the relevant key
+    const payload: any = {
+      message: this.whatsupForm.get('message')?.value,
+      recipientType: recipientType
+    };
+
+    if (recipientType === 'single') {
+      // use synced form control
+      payload.userId = this.whatsupForm.value.userId;
+    } else {
+      payload.groupId = this.whatsupForm.value.groupId;
+    }
+
+    this.authService.pushWhatsup(payload)
+      .subscribe((res: any) => {
+        if (res.success == true) {
+          this.toastr.success("WhatsApp Sent Successfully", '', { timeOut: 2000 });
+          this.whatsupForm.reset();
+          this.selectedUsers = [];
+          this.updateFormUserIds();
+          this.submittedWhatsup = false;
+        } else {
+          this.toastr.error(res.massage || 'Failed to send WhatsApp', '', { timeOut: 2000 });
+        }
+      }, (err) => {
+        this.toastr.error('Failed to send WhatsApp', '', { timeOut: 2000 });
       });
   }
 

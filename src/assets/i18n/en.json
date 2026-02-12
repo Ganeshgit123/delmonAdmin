@@ -482,5 +482,6 @@
     "SubjectRequire": "Subject is Required",
     "EmailBody": "Email Body",
     "EnterBody": "Enter Body",
-    "BodyRequired": "Body is Required"
+    "BodyRequired": "Body is Required",
+    "Push Whatsapp":"Push Whatsapp"
 }
