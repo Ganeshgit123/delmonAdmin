@@ -24,7 +24,6 @@ export class NavbarComponent implements OnInit {
   dir: any;
   notificationList: any;
   notifyCount: any;
-  webDevPoint: any;
   webLivePoint: any;
   roleName: any;
   
@@ -38,11 +37,7 @@ export class NavbarComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    if(environment.webDevUrl !== ''){
-      this.webDevPoint = environment.webDevUrl;
-    }else{
-      this.webLivePoint = environment.webLiveUrl;
-    }
+    this.webLivePoint = environment.webLiveUrl;
     // console.log("ll",this.webLivePoint)
     this.lang = localStorage.getItem("lang") || "en";
     this.translate.use(this.lang);

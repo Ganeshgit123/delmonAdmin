@@ -483,5 +483,10 @@
     "EmailBody": "Email Body",
     "EnterBody": "Enter Body",
     "BodyRequired": "Body is Required",
-    "Push Whatsapp":"Push Whatsapp"
+    "Push Whatsapp":"Push Whatsapp",
+    "Wallet Reports":"Wallet Reports",
+    "Total Amount Added": "Total Amount Added",
+    "Total Amount Used": "Total Amount Used",
+    "Remaining Amount": "Remaining Amount",
+    "Date": "تاريخ"
 }

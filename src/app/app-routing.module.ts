@@ -209,6 +209,10 @@ const routes: Routes = [
         loadChildren: () => import("./reports/accepted-orders/accepted-orders.module").then((m) => m.AcceptedOrdersModule),
       },
       {
+        path: "wallet-report",
+        loadChildren: () => import("./reports/wallet-report/wallet-report.module").then((m) => m.WalletReportModule),
+      },
+      {
         path: "lucky-draw",
         loadChildren: () => import("./settings/lucky-draw/lucky-draw.module").then((m) => m.LuckyDrawModule),
       },

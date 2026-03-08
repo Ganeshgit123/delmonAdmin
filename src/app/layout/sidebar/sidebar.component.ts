@@ -570,6 +570,11 @@ export class SidebarComponent implements OnInit, AfterViewInit {
               label: 'Favorite Product Reports',
               link: '/favorite-products',
             } : false,
+           (this.isSuperAdmin || (!this.isSuperAdmin && datat?.find(ele => ele.area == 'favortie-product-reports')?.read == 1)) ?
+            {
+              label: 'Wallet Reports',
+              link: '/wallet-report',
+            } : false,
           // {
           //   label: 'Accepted Orders Report',
           //   link: '/accepted-orders-reports',

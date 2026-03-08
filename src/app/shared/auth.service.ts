@@ -735,7 +735,7 @@ export class AuthService {
         { headers: headers });
   }
 
-  pushWhatsup(data: any) {  
+  pushWhatsup(data: any) {
     const headers = new HttpHeaders()
       .set('type', 'POULTRY')
     return this.http
@@ -831,6 +831,18 @@ export class AuthService {
     const headers = new HttpHeaders()
       .set('type', object.type)
     return this.http.get<any>(`${this.endpoint}/product/mostFavoritesProduct`,
+      {
+        headers: headers,
+        params: new HttpParams()
+          .set('startDate', object.startDate)
+          .set('endDate', object.endDate)
+      });
+  }
+
+  getWalletReport(object) {
+    const headers = new HttpHeaders()
+      .set('type', 'POULTRY')
+    return this.http.get<any>(`${this.endpoint}/wallet/walletReport`,
       {
         headers: headers,
         params: new HttpParams()
