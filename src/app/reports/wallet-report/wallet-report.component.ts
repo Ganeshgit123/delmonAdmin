@@ -38,7 +38,7 @@ export class WalletReportComponent implements OnInit {
       this.superAdminRole = false;
     }
 
-    this.displayedColumns = ['index', 'name', 'totalAmountAdded', 'totalAmountUsed', 'remainingAmount', 'date'];
+    this.displayedColumns = ['index', 'name', 'phoneNumber', 'totalAmountAdded', 'totalAmountUsed', 'remainingAmount', 'date'];
 
     const object = { startDate: '', endDate: '' }
     this.authService.getWalletReport(object).subscribe(

@@ -48,6 +48,11 @@
             <td mat-cell *matCellDef="let element">{{element.user_name}}</td>
         </ng-container>
 
+        <ng-container matColumnDef="phoneNumber">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"Mobile Number" | translate}}</th>
+            <td mat-cell *matCellDef="let element">{{element.mobile_number}}</td>
+        </ng-container>
+
         <ng-container matColumnDef="totalAmountAdded">
             <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"Total Amount Added" | translate}}</th>
             <td mat-cell *matCellDef="let element"> {{element.total_added}}</td>
