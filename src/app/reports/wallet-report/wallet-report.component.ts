@@ -54,7 +54,7 @@ export class WalletReportComponent implements OnInit {
   callRolePermission() {
     if (sessionStorage.getItem('roleName') !== 'superAdmin') {
       let settingPermssion = JSON.parse(sessionStorage.getItem('permission'))
-      const orderPermission = settingPermssion?.find(ele => ele.area == 'most-wanted-product-reports')?.write == 1
+      const orderPermission = settingPermssion?.find(ele => ele.area == 'wallet-reports')?.write == 1
       // console.log("fef",orderPermission)
       this.showAccept = orderPermission
     }
