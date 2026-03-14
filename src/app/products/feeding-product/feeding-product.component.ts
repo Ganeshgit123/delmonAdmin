@@ -195,33 +195,6 @@ export class FeedingProductComponent implements OnInit {
     this.modalService.open(content, { centered: true, size: 'lg' });
   }
 
-  // changeProductImages(event: any) {
-  //   this.imageNeed = false;
-  //   if (event.target.files && event.target.files[0]) {
-  //     const numberOfFiles = event.target.files.length;
-  //     if (numberOfFiles <= 1) {
-  //       for (let i = 0; i < numberOfFiles; i++) {
-  //         const reader = new FileReader();
-  //         reader.onload = (e: any) => {
-  //           this.previews.push(e.target.result);
-  //           // console.log("fehh",this.previews)
-  //           this.pushedImage.push(e.target.result);
-  //         };
-  //         reader.readAsDataURL(event.target.files[i]);
-  //         this.uploadFiles.push(event.target.files[i]);
-  //       }
-  //     } else {
-  //       this.toastr.error('Error', 'Max 1 images is allowed');
-  //     }
-  //   }
-  // }
-
-  // removeImage(i: any) {
-  //   this.previews.splice(i, 1);
-  //   this.uploadFiles.splice(i, 1);
-  //   this.pushedImage.splice(i, 1);
-  // }
-
   uploadImageFile(event) {
     if (event.target.files && event.target.files[0]) {
       const file = event.target.files && event.target.files[0];
@@ -265,31 +238,6 @@ export class FeedingProductComponent implements OnInit {
       this.productForm.value.image = JSON.stringify([]);;
       this.onSubmitProductImage(this.productForm.value);
     }
-
-    // if (this.uploadFiles.length > 0) {
-    //   var imgLength = this.uploadFiles.length;
-
-    //   for (let i = 0; i < this.uploadFiles.length; i++) {
-    //     var postData = new FormData();
-    //     postData.append('image', this.uploadFiles[i]);
-    //     this.authService.s3upload(postData).subscribe((res: any) => {
-    //       if (res.error == false) {
-    //         var uploadedImg = res.files[0].url;
-    //         // console.log("uploadimg", uploadedImg)
-    //         this.imgs3.push(uploadedImg);
-    //         // this.previews.push(uploadedImg);
-
-    //         if (0 === --imgLength) {
-    //           this.productForm.value.image = JSON.stringify(this.imgs3.reverse());
-    //           this.onSubmitProductImage(this.productForm.value);
-    //         }
-    //       }
-    //     })
-    //   }
-    // } else {
-    //   this.productForm.value.image = JSON.stringify(this.previews);
-    //   this.onSubmitProductImage(this.productForm.value);
-    // }
   }
 
   onSubmitProductImage(data) {
@@ -356,35 +304,9 @@ export class FeedingProductComponent implements OnInit {
         }
       })
     } else {
-      this.productForm.value.image = JSON.stringify(this.iconImg);
+      this.productForm.value.image = JSON.stringify(this.iconImg ? [this.iconImg] : []);
       this.editProductImage(this.productForm.value);
     }
-    // if (this.uploadFiles.length > 0) {
-    //   var imgLength = this.uploadFiles.length;
-
-    //   for (let i = 0; i < this.uploadFiles.length; i++) {
-    //     var postData = new FormData();
-    //     postData.append('image', this.uploadFiles[i]);
-    //     this.authService.s3upload(postData).subscribe((res: any) => {
-    //       if (res.error == false) {
-    //         var uploadedImg = res.files[0].url;
-    //         // console.log("uploadimg", uploadedImg)
-    //         this.newUploadImg.push(uploadedImg);
-
-    //         this.previews = this.previews.filter(val => !this.pushedImage.includes(val));
-
-    //         if (0 === --imgLength) {
-    //           var merge = this.previews.concat(this.newUploadImg)
-    //           this.productForm.value.image = JSON.stringify(merge);
-    //           this.editProductImage(this.productForm.value);
-    //         }
-    //       }
-    //     })
-    //   }
-    // } else {
-    //   this.productForm.value.image = JSON.stringify(this.previews);
-    //   this.editProductImage(this.productForm.value);
-    // }
   }
 
   editProductImage(data) {
