@@ -850,6 +850,27 @@ export class AuthService {
           .set('endDate', object.endDate)
       });
   }
+
+  getFullWeekSchedule(): Observable<any> {
+    const headers = new HttpHeaders()
+      .set('type', 'POULTRY')
+    return this.http.get<any>(`${this.endpoint}/schedule/delivery-schedule`,
+      { headers: headers });
+  }
+
+  postWeekSchedule(payload: any): Observable<any> {
+    const headers = new HttpHeaders()
+      .set('type', 'POULTRY')
+    return this.http.post(`${this.endpoint}/schedule/delivery-schedule`, payload,
+      { headers: headers });
+  }
+
+  postGlobalSchedule(payload: any): Observable<any> {
+    const headers = new HttpHeaders()
+      .set('type', 'POULTRY')
+    return this.http.post(`${this.endpoint}/schedule/delivery-schedule/global`, payload,
+      { headers: headers });
+  }
 }
 
 

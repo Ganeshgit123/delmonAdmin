@@ -9,8 +9,9 @@ import { MatInputModule } from "@angular/material/input";
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatMenuModule } from '@angular/material/menu';
-import {MatIconModule} from '@angular/material/icon';
-import {MatCheckboxModule} from '@angular/material/checkbox';
+import { MatIconModule } from '@angular/material/icon';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatCardModule } from '@angular/material/card';
 import { MatTableExporterModule } from 'mat-table-exporter';
 
 const materialModules = [
@@ -26,6 +27,7 @@ const materialModules = [
   MatIconModule,
   MatCheckboxModule,
   MatTableExporterModule,
+  MatCardModule
 ];
 
 @NgModule({

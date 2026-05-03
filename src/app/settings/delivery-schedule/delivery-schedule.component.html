@@ -1,0 +1,255 @@
+<div class="row flex-grow">
+    <div class="col-3 col-xl-3">
+        <h2 class="mb-3 mb-md-0">{{"Delivery Schedule" | translate}}</h2>
+        <p>{{"WeekOf" | translate}} {{weekLabel}}</p>
+    </div>
+    <div class="col-9 col-xl-9 stretch-card">
+        <div class="row flex-grow">
+            <div class="col-md-3 grid-margin">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-baseline">
+                            <h6 class="card-title mb-0">{{"ActiveDays" | translate}}</h6>
+                        </div>
+                        <div class="row pt-2">
+                            <div class="col-6 col-md-12 col-xl-8">
+                                <h3 class="mb-0" style="color: var(--main-color)"><span class="highlight">{{
+                                        activeDaysCount }}</span>/7
+                                </h3>
+                                <p class="card-hint mb-0">{{"daysEnabled" | translate}}</p>
+                            </div>
+                            <div class="col-6 col-md-12 col-xl-4">
+                                <i class="mdi mdi-calendar-month"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 grid-margin">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-baseline">
+                            <h6 class="card-title mb-0">{{"MorningShifts" | translate}}</h6>
+                        </div>
+                        <div class="row pt-2">
+                            <div class="col-6 col-md-12 col-xl-8">
+                                <h3 class="mb-0 highlight">{{ morningShiftsCount }}</h3>
+                                <p class="card-hint mb-0">{{"daysScheduled" | translate}}</p>
+                            </div>
+                            <div class="col-6 col-md-12 col-xl-4">
+                                <i class="mdi mdi-white-balance-sunny"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 grid-margin">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-baseline">
+                            <h6 class="card-title mb-0">{{"EveningShifts" | translate}}</h6>
+                        </div>
+                        <div class="row pt-2">
+                            <div class="col-6 col-md-12 col-xl-8">
+                                <h3 class="mb-0 highlight">{{ eveningShiftsCount }}</h3>
+                                <p class="card-hint mb-0">{{"daysScheduled" | translate}}</p>
+                            </div>
+                            <div class="col-6 col-md-12 col-xl-4">
+                                <i class="mdi mdi-weather-night"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 grid-margin">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-baseline">
+                            <h6 class="card-title mb-0">{{"ToalShifts" | translate}}</h6>
+                        </div>
+                        <div class="row pt-2">
+                            <div class="col-6 col-md-12 col-xl-8">
+                                <h3 class="mb-0 highlight">{{ totalShiftsCount }}</h3>
+                                <p class="card-hint mb-0">{{"scheduled" | translate}}</p>
+                            </div>
+                            <div class="col-6 col-md-12 col-xl-4">
+                                <i class="mdi mdi-file-clock-outline"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row flex-grow">
+    <div class="col-12 col-xl-12">
+        <div class="bd-b">
+            <h2 class="mb-3 mb-md-0">{{"GlobalShiftTimings" | translate}}</h2>
+            <p class="card-hint1">{{"ApplySameTiming" | translate}}</p>
+        </div>
+    </div>
+</div>
+
+<form [formGroup]="globalForm">
+    <div class="row flex-grow">
+        <!-- Morning Global -->
+        <div class="col-md-6" formGroupName="morning">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-1 col-md-1 col-xl-1">
+                            <div class="mt-top"><i class="mdi mdi-white-balance-sunny"></i></div>
+                        </div>
+                        <div class="col-10 col-md-10 col-xl-10">
+                            <h3 class="mb-0">{{"MorningShifts" | translate}}</h3>
+                            <p class="card-hint1 mb-0">{{"SetGlobalMornTime" | translate}}</p>
+                        </div>
+                    </div>
+                    <div class="row mt-4">
+                        <div class="col-4 col-md-4 col-xl-4">
+                            <label class="form-label">{{"StartTime" | translate}}</label>
+                            <input type="time" class="form-control" formControlName="start"
+                                [ngClass]="{'is-invalid': morningGroup.get('start')?.invalid && morningGroup.get('start')?.touched}">
+                            <div class="invalid-feedback">Start time is required</div>
+                        </div>
+                        <div class="col-4 col-md-4 col-xl-4">
+                            <label class="form-label">{{"EndTime" | translate}}</label>
+                            <input type="time" class="form-control" formControlName="end"
+                                [ngClass]="{'is-invalid': morningGroup.get('end')?.invalid && morningGroup.get('end')?.touched}">
+                            <div class="invalid-feedback">End time is required</div>
+                        </div>
+                        <div class="col-4 col-md-4 col-xl-4">
+                            <button class="btn btn-own btn-mt-top"
+                                [disabled]="morningGroup.invalid || isApplyingMorning" (click)="applyGlobalMorning()">
+                                <span *ngIf="isApplyingMorning" class="spinner-border spinner-border-sm me-1"></span>
+                                {{"ApplyToAllDays" | translate}}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Evening Global -->
+        <div class="col-md-6" formGroupName="evening">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-1 col-md-1 col-xl-1">
+                            <div class="mt-top"><i class="mdi mdi-weather-night"></i></div>
+                        </div>
+                        <div class="col-10 col-md-10 col-xl-10">
+                            <h3 class="mb-0">{{"EveningShifts" | translate}}</h3>
+                            <p class="card-hint1 mb-0">{{"SetGlobalEveTime" | translate}}</p>
+                        </div>
+                    </div>
+                    <div class="row mt-4">
+                        <div class="col-4 col-md-4 col-xl-4">
+                            <label class="form-label">{{"StartTime" | translate}}</label>
+                            <input type="time" class="form-control" formControlName="start"
+                                [ngClass]="{'is-invalid': eveningGroup.get('start')?.invalid && eveningGroup.get('start')?.touched}">
+                            <div class="invalid-feedback">Start time is required</div>
+                        </div>
+                        <div class="col-4 col-md-4 col-xl-4">
+                            <label class="form-label">{{"EndTime" | translate}}</label>
+                            <input type="time" class="form-control" formControlName="end"
+                                [ngClass]="{'is-invalid': eveningGroup.get('end')?.invalid && eveningGroup.get('end')?.touched}">
+                            <div class="invalid-feedback">End time is required</div>
+                        </div>
+                        <div class="col-4 col-md-4 col-xl-4">
+                            <button class="btn btn-own btn-mt-top"
+                                [disabled]="eveningGroup.invalid || isApplyingEvening" (click)="applyGlobalEvening()">
+                                <span *ngIf="isApplyingEvening" class="spinner-border spinner-border-sm me-1"></span>
+                                {{"ApplyToAllDays" | translate}}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<div class="row flex-grow mt-4">
+    <div class="col-12 col-xl-12">
+        <div class="bd-b">
+            <h2 class="mb-3 mb-md-0">{{"WeeklySchedule" | translate}}</h2>
+            <p class="card-hint1">{{"configureAvaiTime" | translate}}</p>
+        </div>
+    </div>
+</div>
+
+<form [formGroup]="form">
+
+    <div class="row mt-4 custom-week-row" formArrayName="week">
+
+        <div class="custom-col" *ngFor="let day of week.controls; let i = index" [formGroupName]="i"
+            [ngClass]="{'second-row': i >= 4}">
+
+            <div class="card day-card">
+                <div class="card-body">
+
+                    <!-- Header -->
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h3 class="mb-0">{{ day.get('name')?.value | translate }}</h3>
+
+                        <label class="switch">
+                            <input type="checkbox" formControlName="enabled" (change)="onDayToggle(i)">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+
+                    <p class="card-hint1 mb-2" [ngClass]="{'text-success': day.get('enabled')?.value}">
+                        {{ day.get('enabled')?.value ? 'Enabled' : 'Disabled' }}
+                    </p>
+
+                    <!-- Morning -->
+                    <div class="shift-block">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <label>{{"Morning" | translate}}</label>
+
+                            <label class="switch">
+                                <input type="checkbox" formControlName="morning" (change)="onMorningToggle(i)">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+
+                        <div class="d-flex gap-2 mt-2">
+                            <input type="time" class="form-control mr-1" formControlName="morningStart">
+                            <input type="time" class="form-control ml-1" formControlName="morningEnd">
+                        </div>
+                    </div>
+
+                    <!-- Evening -->
+                    <div class="shift-block mt-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <label>{{"Evening" | translate}}</label>
+
+                            <label class="switch">
+                                <input type="checkbox" formControlName="evening" (change)="onEveningToggle(i)">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+
+                        <div class="d-flex gap-2 mt-2">
+                            <input type="time" class="form-control mr-1" formControlName="eveningStart">
+                            <input type="time" class="form-control ml-1" formControlName="eveningEnd">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-8"></div>
+        <div class="col-md-4">
+            <div class="text-right">
+                <button class="btn btn-own" [disabled]="!isFormDirty || isSaving" (click)="saveSchedule()">
+                    <span *ngIf="isSaving" class="spinner-border spinner-border-sm me-1"></span>
+                    {{"SaveSchedule" | translate}}
+                </button>
+            </div>
+        </div>
+    </div>
+</form>

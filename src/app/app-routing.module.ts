@@ -229,6 +229,10 @@ const routes: Routes = [
         loadChildren: () => import("./settings/spin-wheel-winner/spin-wheel-winner.module").then((m) => m.SpinWheelWinnerModule),
       },
       {
+        path: "delivery-schedule",
+        loadChildren: () => import("./settings/delivery-schedule/delivery-schedule.module").then((m) => m.DeliveryScheduleModule),
+      },
+      {
         path: "content_editor",
         loadChildren: () => import("./content-editor/content-editor.module").then((m) => m.ContentEditorModule),
       },

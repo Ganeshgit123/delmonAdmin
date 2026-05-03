@@ -2,3 +2,17 @@
 @function social-color($key: "twitter") {
   @return map-get($social-colors, $key);
 }
+
+// Return theme color (falls back to gradient map if needed)
+@function theme-color($key) {
+  @if variable-exists(theme-colors) and map-has-key($theme-colors, $key) {
+    @return map-get($theme-colors, $key);
+  }
+
+  @if variable-exists(theme-gradient-colors) and map-has-key($theme-gradient-colors, $key) {
+    @return map-get($theme-gradient-colors, $key);
+  }
+
+  @warn "theme-color('#{$key}') not found; returning null.";
+  @return null;
+}

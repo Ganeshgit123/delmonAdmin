@@ -336,9 +336,9 @@ select.form-control {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: #F21C471F;
-  -webkit-transition: .5s;
-  transition: .5s;
+  background-color: #f21c471f;
+  -webkit-transition: 0.5s;
+  transition: 0.5s;
   border-radius: 10px;
   cursor: pointer;
 }
@@ -348,16 +348,16 @@ select.form-control {
   content: "";
   width: 10px;
   height: 10px;
-  background: #F21C47;
+  background: #f21c47;
   border-radius: 1.125rem;
-  -webkit-transition: .5s;
-  transition: .5s;
-  right: 4px;
+  -webkit-transition: 0.5s;
+  transition: 0.5s;
+  left: 4px;
   top: 3px;
 }
 
 input:checked+.slider {
-  background-color: #00C8531F;
+  background-color: #00c8531f;
 }
 
 input:focus+.slider {
@@ -365,10 +365,10 @@ input:focus+.slider {
 }
 
 input:checked+.slider:before {
-  background: #00C853;
-  left: 4px;
-  position: absolute;
-  right: 0;
+  background: #00c853;
+  -webkit-transform: translateX(26px);
+  transform: translateX(26px);
+  left: 0px;
 }
 
 .tog_btn {

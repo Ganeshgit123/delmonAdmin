@@ -1,0 +1,91 @@
+.card .card-body {
+    padding: 1rem !important;
+}
+
+.card .card-title {
+    text-transform: capitalize !important;
+}
+
+.mdi {
+    font-size: 28px;
+    color: var(--main-color) !important;
+}
+
+.card-hint {
+    font-size: 10px;
+}
+
+.highlight {
+    font-size: 20px;
+    color: var(--main-color) !important;
+    font-weight: 600;
+}
+
+.card-hint1 {
+    font-size: 12px;
+}
+
+.mt-top {
+    margin-top: 0.85rem;
+}
+
+.btn-own {
+    font-size: 12px !important;
+    margin-right: 0 !important;
+}
+
+.btn-mt-top {
+    margin-top: 1.6rem;
+}
+
+.custom-week-row {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+/* First row: 4 */
+.custom-col {
+    width: 25%;
+    padding: 8px;
+}
+
+/* Second row: 3 */
+.custom-col.second-row {
+    width: 33.33%;
+}
+
+.day-card {
+    border-radius: 10px;
+    height: 100%;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+
+    .custom-col,
+    .custom-col.second-row {
+        width: 50%;
+    }
+}
+
+@media (max-width: 576px) {
+
+    .custom-col,
+    .custom-col.second-row {
+        width: 100%;
+    }
+}
+
+.btn-own {
+
+    &:disabled,
+    &[disabled] {
+        opacity: 0.5;
+        cursor: not-allowed;
+        pointer-events: all !important;
+        background-color: #b0b0b0;
+        border-color: #b0b0b0;
+        color: #fff;
+        box-shadow: none;
+    }
+}

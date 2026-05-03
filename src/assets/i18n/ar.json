@@ -488,5 +488,10 @@
     "Total Amount Added": "Total Amount Added",
     "Total Amount Used": "Total Amount Used",
     "Remaining Amount": "Remaining Amount",
-    "Date": "تاريخ"
+    "Date": "تاريخ",
+    "Delivery Schedule":"Delivery Schedule",
+    "ActiveDays": "Active Days",
+    "MorningShifts": "Morning Shifts",
+    "EveningShifts": "Evening Shifts",
+    "ToalShifts": "Total Shifts"
 }

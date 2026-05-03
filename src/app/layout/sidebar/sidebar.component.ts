@@ -471,6 +471,10 @@ export class SidebarComponent implements OnInit, AfterViewInit {
           {
             label: 'Holiday List',
             link: '/holiday_list',
+          },
+          {
+            label: 'Delivery Schedule',
+            link: '/delivery-schedule',
           }
         ]
       } : false,
