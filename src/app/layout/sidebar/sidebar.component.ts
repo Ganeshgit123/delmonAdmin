@@ -441,6 +441,10 @@ export class SidebarComponent implements OnInit, AfterViewInit {
             link: '/settings',
           },
           {
+            label: 'Delivery Schedule',
+            link: '/delivery-schedule',
+          },
+          {
             label: 'Ad Popup',
             link: '/advertisement',
           },
@@ -471,10 +475,6 @@ export class SidebarComponent implements OnInit, AfterViewInit {
           {
             label: 'Holiday List',
             link: '/holiday_list',
-          },
-          {
-            label: 'Delivery Schedule',
-            link: '/delivery-schedule',
           }
         ]
       } : false,
